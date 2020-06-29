@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using HookrTelegramBot.Models.Telegram;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace HookrTelegramBot.Utilities.Selectors
+namespace HookrTelegramBot.Utilities.Telegram.Selectors
 {
     public class ChatSelector : IChatSelector
     {
