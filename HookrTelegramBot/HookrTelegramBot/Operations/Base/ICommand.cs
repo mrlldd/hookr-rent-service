@@ -6,6 +6,6 @@ namespace HookrTelegramBot.Operations.Base
 {
     public interface ICommand
     {
-        public Task ExecuteAsync(ExtendedUpdate update);
+        public Task ExecuteAsync();
     }
 }

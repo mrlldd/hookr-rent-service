@@ -2,6 +2,7 @@
 {
     public interface IAppSettings
     {
-        
+        string TelegramBotToken { get; }
+        string WebhookUrl { get; }
     }
 }

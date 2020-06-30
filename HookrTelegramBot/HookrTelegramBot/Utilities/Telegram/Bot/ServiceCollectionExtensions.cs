@@ -9,6 +9,7 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot
         public static IServiceCollection AddTelegramBotServices(this IServiceCollection services)
             => services
                 .AddSingleton<ITelegramBotProvider, TelegramBotProvider>()
-                .AddScoped<IExtendedTelegramBotClient, ExtendedTelegramBotClient>();
+                .AddScoped<IExtendedTelegramBotClient, ExtendedTelegramBotClient>()
+                .AddScoped<ICurrentUpdateProvider, CurrentUpdateProvider>();
     }
 }

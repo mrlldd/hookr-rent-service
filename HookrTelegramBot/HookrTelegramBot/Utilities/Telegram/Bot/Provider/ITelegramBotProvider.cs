@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Telegram.Bot;
 
 namespace HookrTelegramBot.Utilities.Telegram.Bot.Provider
@@ -7,6 +8,6 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Provider
     {
         ITelegramBotClient Instance { get; }
 
-        Task InitializeAsync();
+        Task InitializeAsync(CancellationToken token = default);
     }
 }

@@ -13,7 +13,7 @@ namespace HookrTelegramBot.Models.Telegram
 
         public ExtendedUpdate(Update update)
         {
-            Type = base.Type;
+            Type = update.Type;
             Initialize(update);
         }
 
