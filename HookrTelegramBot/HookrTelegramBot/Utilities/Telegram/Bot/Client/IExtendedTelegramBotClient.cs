@@ -1,4 +1,4 @@
-﻿using HookrTelegramBot.Utilities.Telegram.Bot.Client.User;
+﻿using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using Telegram.Bot;
 
 namespace HookrTelegramBot.Utilities.Telegram.Bot.Client

@@ -4,5 +4,6 @@
     {
         string TelegramBotToken { get; }
         string WebhookUrl { get; }
+        IDatabaseConfig Database { get; }
     }
 }

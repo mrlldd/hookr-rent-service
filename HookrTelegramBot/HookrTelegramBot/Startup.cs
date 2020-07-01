@@ -1,10 +1,13 @@
 using HookrTelegramBot.ActionFilters;
 using HookrTelegramBot.Operations;
+using HookrTelegramBot.Repository;
+using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Utilities;
 using HookrTelegramBot.Utilities.App.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -33,20 +36,26 @@ namespace HookrTelegramBot
                 .Console()
                 .CreateLogger();
             Log.Logger = log;
-            
+            AppSettings appSettings = null;
             if (hostEnvironment.IsDevelopment())
             {
-                var appSettings = new AppSettings();
+                appSettings = new AppSettings();
                 configuration.Bind(appSettings);
-                services.AddSingleton<IAppSettings>(appSettings);
             }
+
+            services.AddSingleton<IAppSettings>(appSettings);
+
             services
                 .AddScoped<CurrentTelegramUpdateGrabber>()
                 .AddControllers()
                 .AddNewtonsoftJson();
             services
                 .AddHttpClient()
+                .AddDbContext<HookrContext>(
+                    builder => builder.UseSqlServer(appSettings.Database.ConnectionString)
+                )
                 .AddOperations()
+                .AddRepositories()
                 .AddUtilities();
         }
 
@@ -57,22 +66,22 @@ namespace HookrTelegramBot
             {
                 app.UseDeveloperExceptionPage();
             }
+
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/", context =>
-                    {
+                {
 #if DEBUG
-                        return context.Response.WriteAsync("Bruh");
+                    return context.Response.WriteAsync("Bruh, here we go again.");
 #endif
 #if !DEBUG
                         context.Response.Redirect("https://t.me/HookrBot");
                         return Task.CompletedTask;
 #endif
-                    });
+                });
                 endpoints.MapControllers();
             });
-
         }
     }
 }

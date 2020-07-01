@@ -3,9 +3,10 @@ using Telegram.Bot.Types;
 
 namespace HookrTelegramBot.Utilities.Telegram.Bot
 {
-    public interface ICurrentUpdateProvider
+    public interface IUserContextProvider
     {
-        ExtendedUpdate Instance { get; }
+        ExtendedUpdate Update { get; }
+        Message Message { get; }
         void Set(Update update);
     }
 }

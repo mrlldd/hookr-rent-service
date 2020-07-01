@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using HookrTelegramBot.Utilities.Telegram.Selectors.UpdateMessage;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HookrTelegramBot.Utilities.Telegram.Selectors
 {
@@ -6,6 +7,6 @@ namespace HookrTelegramBot.Utilities.Telegram.Selectors
     {
         public static IServiceCollection AddTelegramSelectors(this IServiceCollection services)
             => services
-                .AddSingleton<IChatSelector, ChatSelector>();
+                .AddSingleton<IUpdateMessageSelector, UpdateMessageSelector>();
     }
 }

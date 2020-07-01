@@ -10,6 +10,6 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot
             => services
                 .AddSingleton<ITelegramBotProvider, TelegramBotProvider>()
                 .AddScoped<IExtendedTelegramBotClient, ExtendedTelegramBotClient>()
-                .AddScoped<ICurrentUpdateProvider, CurrentUpdateProvider>();
+                .AddScoped<IUserContextProvider, UserContextProvider>();
     }
 }

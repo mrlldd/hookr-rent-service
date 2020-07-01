@@ -2,7 +2,7 @@
 using HookrTelegramBot.Models.Telegram;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
-using HookrTelegramBot.Utilities.Telegram.Bot.Client.User;
+using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Selectors;
 using Telegram.Bot;
 using Telegram.Bot.Types;

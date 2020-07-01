@@ -7,15 +7,15 @@ namespace HookrTelegramBot.ActionFilters
 {
     public class CurrentTelegramUpdateGrabber : ActionFilterAttribute
     {
-        private readonly ICurrentUpdateProvider currentUpdateProvider;
+        private readonly IUserContextProvider userContextProvider;
 
-        public CurrentTelegramUpdateGrabber(ICurrentUpdateProvider currentUpdateProvider)
+        public CurrentTelegramUpdateGrabber(IUserContextProvider userContextProvider)
         {
-            this.currentUpdateProvider = currentUpdateProvider;
+            this.userContextProvider = userContextProvider;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
-            => currentUpdateProvider.Set(
+            => userContextProvider.Set(
                 context.ActionArguments.Values.FirstOrDefault(x => x is Update) as Update);
     }
 }
