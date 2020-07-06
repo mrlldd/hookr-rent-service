@@ -12,5 +12,12 @@ namespace HookrTelegramBot.Utilities.Extensions
                    .FirstOrDefault()?
                    .ToLower() ?? s;
 
+        public static string ExtractCommand(this string s)
+            => s
+                .Split(Space)
+                .FirstOrDefault()?
+                .ToLower()
+                .Substring(1);
+
     }
 }

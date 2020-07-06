@@ -7,6 +7,6 @@ namespace HookrTelegramBot.Utilities.Telegram.Selectors
     {
         public static IServiceCollection AddTelegramSelectors(this IServiceCollection services)
             => services
-                .AddSingleton<IUpdateMessageSelector, UpdateMessageSelector>();
+                .AddSingleton<IUpdateMessageSelectorsContainer, UpdateMessageSelectorsContainer>();
     }
 }

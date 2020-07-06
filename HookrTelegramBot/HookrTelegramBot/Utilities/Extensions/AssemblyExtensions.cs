@@ -10,11 +10,11 @@ namespace HookrTelegramBot.Utilities.Extensions
     {
         public static IEnumerable<(Type Interface, Type Implementation)> ExtractCommandServicesTypes(this Assembly assembly)
         {
-            var commandType = typeof(ICommand);
+            var commandType = typeof(Command);
             return assembly
                 .GetTypes()
                 .Where(x => x != commandType && !x.IsAbstract && commandType.IsAssignableFrom(x))
-                .Select<Type, (Type Interface, Type Implementation)>(x => (x.GetInterfaces().FirstOrDefault(y => y != commandType), x));
+                .Select<Type, (Type Interface, Type Implementation)>(x => (x.GetInterfaces().FirstOrDefault(y => y != commandType && y != typeof(ICommand)), x));
         }
     }
 }

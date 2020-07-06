@@ -6,10 +6,10 @@ using Telegram.Bot.Types.Enums;
 
 namespace HookrTelegramBot.Utilities.Telegram.Selectors.UpdateMessage
 {
-    public class UpdateMessageSelector : IUpdateMessageSelector
+    public class UpdateMessageSelectorsContainer : IUpdateMessageSelectorsContainer
     {
-        private readonly IDictionary<UpdateType, Func<ExtendedUpdate, Message>> selectors =
-            new Dictionary<UpdateType, Func<ExtendedUpdate, Message>>
+        private readonly IDictionary<UpdateType, Func<Update, Message>> selectors =
+            new Dictionary<UpdateType, Func<Update, Message>>
             {
                 {UpdateType.Message, update => update.Message},
                 {UpdateType.CallbackQuery, update => update.CallbackQuery.Message},
@@ -18,9 +18,10 @@ namespace HookrTelegramBot.Utilities.Telegram.Selectors.UpdateMessage
                 {UpdateType.EditedChannelPost, update => update.EditedChannelPost}
             };
 
-        public Message Select(ExtendedUpdate update)
+        public Func<Update, Message> GetSelector(Update update)
             => selectors.TryGetValue(update.Type, out var selector)
-                ? selector(update)
+                ? selector
                 : throw new ArgumentOutOfRangeException(update.Type.ToString());
+        
     }
 }
