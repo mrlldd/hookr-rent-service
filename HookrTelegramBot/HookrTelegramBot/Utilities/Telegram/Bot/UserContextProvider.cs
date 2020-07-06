@@ -15,14 +15,14 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot
         }
 
         public ExtendedUpdate Update { get; private set; }
-        public void Set(Update update)
+        public ExtendedUpdate Set(Update update)
         {
             if (Update != null)
             {
                 throw new InvalidOperationException("Update is already set.");
             }
 
-            Update = extendedUpdateFactory.Create(update);
+            return Update = extendedUpdateFactory.Create(update);
         }
     }
 }

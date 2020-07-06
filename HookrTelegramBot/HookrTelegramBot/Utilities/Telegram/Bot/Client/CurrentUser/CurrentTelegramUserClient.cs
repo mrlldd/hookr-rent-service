@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using HookrTelegramBot.Models.Telegram;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -10,12 +11,12 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser
     public class CurrentTelegramUserClient : ICurrentTelegramUserClient
     {
         private readonly ITelegramBotClient botClient;
-        private readonly Chat chat;
+        private readonly ExtendedUpdate update;
 
-        public CurrentTelegramUserClient(ITelegramBotClient botClient, Chat chat)
+        public CurrentTelegramUserClient(ITelegramBotClient botClient, ExtendedUpdate update)
         {
             this.botClient = botClient;
-            this.chat = chat;
+            this.update = update;
         }
 
         public Task<Message> SendTextMessageAsync(string text,
@@ -26,7 +27,7 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser
             IReplyMarkup replyMarkup = null,
             CancellationToken cancellationToken = default)
             => botClient
-                .SendTextMessageAsync(chat,
+                .SendTextMessageAsync(update.Chat,
                     text,
                     parseMode,
                     disableWebPagePreview,

@@ -18,6 +18,6 @@ namespace HookrTelegramBot.Controllers
         
         [ServiceFilter(typeof(CurrentTelegramUpdateGrabber))]
         [HttpPost("update")]
-        public Task Update([FromBody]Update _) => dispatcher.DispatchAsync();
+        public Task Update([FromBody]Update update) => dispatcher.DispatchAsync();
     }
 }

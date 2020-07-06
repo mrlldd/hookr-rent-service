@@ -6,6 +6,6 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot
     public interface IUserContextProvider
     {
         ExtendedUpdate Update { get; }
-        void Set(Update update);
+        ExtendedUpdate Set(Update update);
     }
 }
