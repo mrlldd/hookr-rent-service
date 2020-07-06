@@ -34,7 +34,7 @@ namespace HookrTelegramBot.Repository.Context
         }
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             OnPreSaving();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
@@ -52,7 +52,7 @@ namespace HookrTelegramBot.Repository.Context
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             OnPreSaving();
             return base.SaveChangesAsync(cancellationToken);
@@ -61,7 +61,7 @@ namespace HookrTelegramBot.Repository.Context
         private void OnPreSaving()
         {
             var entries = ChangeTracker.Entries();
-            var messageSource = userContextProvider.Message.From;
+            var messageSource = userContextProvider.Update.RealMessage.From;
             entries.ForEach(x =>
             {
                 if (!(x.Entity is Entity entity))
