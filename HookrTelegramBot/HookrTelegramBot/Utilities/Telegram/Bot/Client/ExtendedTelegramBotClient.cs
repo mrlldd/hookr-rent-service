@@ -6,13 +6,13 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client
 {
     public class ExtendedTelegramBotClient : DecoratedTelegramBotClientBase, IExtendedTelegramBotClient
     {
-        public ExtendedTelegramBotClient(IUpdateMessageSelector messageSelector,
+        public ExtendedTelegramBotClient(
             IUserContextProvider userContextProvider,
             ITelegramBotProvider provider,
             bool omitEventProxies = true)
             : base(provider, omitEventProxies)
         {
-            WithCurrentUser = new CurrentTelegramUserClient(Bot, messageSelector.Select(userContextProvider.Update).Chat);
+            WithCurrentUser = new CurrentTelegramUserClient(Bot, userContextProvider.Update.Chat);
         }
 
         public ICurrentTelegramUserClient WithCurrentUser { get; }

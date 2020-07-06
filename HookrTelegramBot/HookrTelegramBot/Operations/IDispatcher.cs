@@ -6,6 +6,6 @@ namespace HookrTelegramBot.Operations
 {
     public interface IDispatcher
     {
-        Task DispatchAsync(Update update);
+        Task DispatchAsync();
     }
 }

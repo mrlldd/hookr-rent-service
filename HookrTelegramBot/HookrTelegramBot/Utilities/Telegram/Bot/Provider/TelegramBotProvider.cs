@@ -46,7 +46,7 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Provider
             await bot.SetWebhookAsync(finalWebhook, cancellationToken: token);
             Instance = bot;
             Info = info;
-            Log.Information("Successfully initialized telegram bot instance with webhook {0}", finalWebhook);
+            Log.Information("Successfully initialized telegram bot instance (@{0}) with webhook {1}", info.Username, finalWebhook);
         }
     }
 }

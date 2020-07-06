@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -15,7 +16,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Start
         }
 
         protected override Task ProcessAsync() => Task.CompletedTask;
-
+        
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
             => client
                 .SendTextMessageAsync("Hey!", replyMarkup: new ReplyKeyboardMarkup
@@ -28,7 +29,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Start
                         {
                             new KeyboardButton
                             {
-                                Text = "hi",
+                                Text = "hi"
                             },
                             new KeyboardButton
                             {

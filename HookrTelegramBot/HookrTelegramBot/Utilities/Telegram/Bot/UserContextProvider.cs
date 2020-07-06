@@ -1,22 +1,20 @@
 ﻿using System;
 using HookrTelegramBot.Models.Telegram;
-using HookrTelegramBot.Utilities.Telegram.Selectors.UpdateMessage;
+using HookrTelegramBot.Utilities.Telegram.Bot.Factory;
 using Telegram.Bot.Types;
 
 namespace HookrTelegramBot.Utilities.Telegram.Bot
 {
     public class UserContextProvider : IUserContextProvider
     {
-        private readonly IUpdateMessageSelector updateMessageSelector;
+        private readonly IExtendedUpdateFactory extendedUpdateFactory;
 
-        public UserContextProvider(IUpdateMessageSelector updateMessageSelector)
+        public UserContextProvider(IExtendedUpdateFactory extendedUpdateFactory)
         {
-            this.updateMessageSelector = updateMessageSelector;
+            this.extendedUpdateFactory = extendedUpdateFactory;
         }
 
         public ExtendedUpdate Update { get; private set; }
-        private Message RealMessage { get; set; }
-        public Message Message => RealMessage ??= updateMessageSelector.Select(Update);
         public void Set(Update update)
         {
             if (Update != null)
@@ -24,7 +22,7 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot
                 throw new InvalidOperationException("Update is already set.");
             }
 
-            Update = new ExtendedUpdate(update);
+            Update = extendedUpdateFactory.Create(update);
         }
     }
 }
