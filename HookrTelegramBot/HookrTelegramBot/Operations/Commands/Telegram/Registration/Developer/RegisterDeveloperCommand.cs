@@ -14,7 +14,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration.Developer
         protected override Func<Guid, IManagementConfig, bool> KeyValidator { get; } =
             (key, config) => config.DeveloperKey.Equals(key);
 
-
         public RegisterDeveloperCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserContextProvider userContextProvider,

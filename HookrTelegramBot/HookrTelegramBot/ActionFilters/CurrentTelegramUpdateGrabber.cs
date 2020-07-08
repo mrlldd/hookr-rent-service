@@ -28,7 +28,7 @@ namespace HookrTelegramBot.ActionFilters
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var extendedUpdate = userContextProvider.Set(
-                context.ActionArguments.Values.FirstOrDefault(x => x is Update) as Update);;
+                context.ActionArguments.Values.FirstOrDefault(x => x is Update) as Update);
             var result = await next();
             if (result.Exception != null)
             {
