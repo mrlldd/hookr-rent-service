@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
@@ -16,6 +17,8 @@ namespace HookrTelegramBot.Repository.Context
             => this.userContextProvider = userContextProvider;
 
         public DbSet<TelegramUser> TelegramUsers { get; set; }
+        
+        public DbSet<Hookah> Hookahs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +33,25 @@ namespace HookrTelegramBot.Repository.Context
                     user
                         .Property(x => x.Id)
                         .ValueGeneratedNever();
+                });
+            modelBuilder
+                .Entity<Hookah>(hookah =>
+                {
+                    hookah
+                        .HasKey(x => x.Id);
+                    hookah
+                        .Property(x => x.Id)
+                        .ValueGeneratedOnAdd();
+                    hookah
+                        .HasOne(x => x.CreatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.CreatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    hookah
+                        .HasOne(x => x.UpdatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.UpdatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
                 });
         }
 
