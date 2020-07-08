@@ -5,6 +5,7 @@ using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Selectors;
+using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -26,7 +27,10 @@ namespace HookrTelegramBot.Operations.Base
         }
 
         protected virtual Task<Message> SendErrorAsync(ICurrentTelegramUserClient client, Exception exception)
-            => client.SendTextMessageAsync("Not available at the moment, sorry :(");
+        {
+            Log.Information(exception.ToString());
+            return client.SendTextMessageAsync("Not available at the moment, sorry :(");
+        }
 
     }
     public abstract class CommandWithResponse : Command

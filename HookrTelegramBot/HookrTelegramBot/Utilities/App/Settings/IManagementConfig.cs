@@ -2,7 +2,7 @@
 
 namespace HookrTelegramBot.Utilities.App.Settings
 {
-    public interface IAdminConfig
+    public interface IManagementConfig
     {
         Guid ServiceKey { get; }
         Guid DeveloperKey { get; }

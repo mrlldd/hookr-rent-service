@@ -6,6 +6,6 @@
         string WebhookUrl { get; }
         IDatabaseConfig Database { get; }
         
-        IAdminConfig Admin { get; }
+        IManagementConfig Management { get; }
     }
 }

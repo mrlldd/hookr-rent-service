@@ -8,6 +8,7 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser
 {
     public interface ICurrentTelegramUserClient
     {
+        User User { get; }
         Task<Message> SendTextMessageAsync(string text,
             ParseMode parseMode = default,
             bool disableWebPagePreview = false,

@@ -27,7 +27,6 @@ namespace HookrTelegramBot.ActionFilters
  
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            
             var extendedUpdate = userContextProvider.Set(
                 context.ActionArguments.Values.FirstOrDefault(x => x is Update) as Update);;
             var result = await next();
@@ -38,7 +37,7 @@ namespace HookrTelegramBot.ActionFilters
                         .Where(x => x.State == TelegramUserStates.Dev)
                         .ToArrayAsync(token));
                 await Task.WhenAll(devs
-                    .Select(x => telegramBotClient.SendTextMessageAsync(new ChatId(x.Username), "exception handled"))
+                    .Select(x => telegramBotClient.SendTextMessageAsync(new ChatId(x.Id), "exception handled"))
                     .Append(telegramBotClient.SendTextMessageAsync(extendedUpdate.Chat,"There is an error :("))
                 );
                 result.ExceptionHandled = true;

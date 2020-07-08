@@ -5,11 +5,11 @@
         public AppSettings()
         {
             Database = new DatabaseConfig();
-            Admin = new AdminConfig();
+            Management = new ManagementConfig();
         }
         public string TelegramBotToken { get; set; }
         public string WebhookUrl { get; set; }
         public IDatabaseConfig Database { get; }
-        public IAdminConfig Admin { get; }
+        public IManagementConfig Management { get; }
     }
 }

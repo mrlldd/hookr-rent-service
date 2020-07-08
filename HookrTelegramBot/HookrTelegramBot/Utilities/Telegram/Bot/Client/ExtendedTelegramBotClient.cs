@@ -12,7 +12,7 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client
             bool omitEventProxies = true)
             : base(provider, omitEventProxies)
         {
-            WithCurrentUser = new CurrentTelegramUserClient(Bot, userContextProvider.Update);
+            WithCurrentUser = new CurrentTelegramUserClient(Bot, userContextProvider);
         }
 
         public ICurrentTelegramUserClient WithCurrentUser { get; }

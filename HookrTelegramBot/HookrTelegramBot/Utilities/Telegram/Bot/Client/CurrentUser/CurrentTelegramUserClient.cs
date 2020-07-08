@@ -11,13 +11,15 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser
     public class CurrentTelegramUserClient : ICurrentTelegramUserClient
     {
         private readonly ITelegramBotClient botClient;
-        private readonly ExtendedUpdate update;
+        private readonly IUserContextProvider userContextProvider;
 
-        public CurrentTelegramUserClient(ITelegramBotClient botClient, ExtendedUpdate update)
+        public CurrentTelegramUserClient(ITelegramBotClient botClient, IUserContextProvider userContextProvider)
         {
             this.botClient = botClient;
-            this.update = update;
+            this.userContextProvider = userContextProvider;
         }
+
+        public User User => userContextProvider.Update.RealMessage.From;
 
         public Task<Message> SendTextMessageAsync(string text,
             ParseMode parseMode = default,
@@ -27,7 +29,7 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser
             IReplyMarkup replyMarkup = null,
             CancellationToken cancellationToken = default)
             => botClient
-                .SendTextMessageAsync(update.Chat,
+                .SendTextMessageAsync(userContextProvider.Update.Chat,
                     text,
                     parseMode,
                     disableWebPagePreview,
