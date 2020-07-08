@@ -50,13 +50,10 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
                     context.TelegramUsers
                         .AnyAsync(x => x.Id == user.Id, token)))
             {
-                hookrRepository.Context.TelegramUsers.Update(new TelegramUser
-                {
-                    Id = user.Id,
-                    State = ExpectedState,
-                    Username = user.Username,
-                    LastUpdatedAt = now
-                });
+                var dbUser = userContextProvider.DatabaseUser;
+                dbUser.State = ExpectedState;
+                dbUser.Username = user.Username;
+                dbUser.LastUpdatedAt = now;
             }
             else
             {

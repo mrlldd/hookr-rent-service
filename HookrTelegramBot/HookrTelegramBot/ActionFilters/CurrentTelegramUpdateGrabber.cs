@@ -29,6 +29,11 @@ namespace HookrTelegramBot.ActionFilters
         {
             var extendedUpdate = userContextProvider.Set(
                 context.ActionArguments.Values.FirstOrDefault(x => x is Update) as Update);
+            var dbUser = await hookrRepository
+                .ReadAsync((hookrContext, token)
+                    => hookrContext.TelegramUsers.FirstOrDefaultAsync(x => x.Id == extendedUpdate.RealMessage.From.Id,
+                        token));
+            userContextProvider.SetDatabaseUser(dbUser);
             var result = await next();
             if (result.Exception != null)
             {

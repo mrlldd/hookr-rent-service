@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using HookrTelegramBot.Models.Telegram;
-using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
-using HookrTelegramBot.Utilities.Telegram.Selectors;
 using Serilog;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace HookrTelegramBot.Operations.Base
