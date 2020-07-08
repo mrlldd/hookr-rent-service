@@ -9,6 +9,6 @@ namespace HookrTelegramBot.Repository
     {
         HookrContext Context { get; }
         Task<TResult> ReadAsync<TResult>(Func<HookrContext, CancellationToken, Task<TResult>> functor);
-        Task<TResult> WriteAsync<TResult>(Func<HookrContext, CancellationToken, Task<TResult>> functor);
+        Task WriteAsync(Func<HookrContext, CancellationToken, Task> functor);
     }
 }

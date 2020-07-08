@@ -97,14 +97,14 @@ namespace HookrTelegramBot.Repository.Context
                 if (x.State == EntityState.Added)
                 {
                     entity.CreatedAt = now;
-                    entity.CreatedBy = userEntity;
+                    entity.CreatedBy = userContextProvider.DatabaseUser;
                     return;
                 }
 
                 if (x.State == EntityState.Modified)
                 {
                     entity.UpdatedAt = now;
-                    entity.UpdatedBy = userEntity;
+                    entity.UpdatedBy = userContextProvider.DatabaseUser;
                 }
             });
         }

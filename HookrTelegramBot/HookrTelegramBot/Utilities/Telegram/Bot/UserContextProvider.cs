@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram;
+using HookrTelegramBot.Repository;
+using HookrTelegramBot.Repository.Context.Entities.Base;
 using HookrTelegramBot.Utilities.Telegram.Bot.Factory;
+using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 
 namespace HookrTelegramBot.Utilities.Telegram.Bot
@@ -15,6 +19,7 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot
         }
 
         public ExtendedUpdate Update { get; private set; }
+        public TelegramUser DatabaseUser { get; private set; }
         public ExtendedUpdate Set(Update update)
         {
             if (Update != null)
@@ -24,5 +29,8 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot
 
             return Update = extendedUpdateFactory.Create(update);
         }
+
+        public void SetDatabaseUser(TelegramUser telegramUser)
+            => DatabaseUser = telegramUser;
     }
 }
