@@ -78,7 +78,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
                 ? client.SendTextMessageAsync("Seems like there is a wrong key passed in.")
                 : base.SendErrorAsync(client, exception);
 
-        private (Guid Key, bool Success) ExtractKey(string messageWithCommand)
+        private static (Guid Key, bool Success) ExtractKey(string messageWithCommand)
         {
             var subs = messageWithCommand
                 .Split(Space);

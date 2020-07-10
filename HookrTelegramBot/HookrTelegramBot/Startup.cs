@@ -51,6 +51,7 @@ namespace HookrTelegramBot
                 .AddNewtonsoftJson();
             services
                 .AddHttpClient()
+                .AddMemoryCache()
                 .AddDbContext<HookrContext>(
                     builder => builder.UseSqlServer(appSettings.Database.ConnectionString)
                 )

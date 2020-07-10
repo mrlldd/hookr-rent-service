@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
@@ -10,7 +9,7 @@ using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using Telegram.Bot.Types;
 
-namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs
+namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Add
 {
     public class AddHookahCommand : CommandWithResponse, IAddHookahCommand
     {

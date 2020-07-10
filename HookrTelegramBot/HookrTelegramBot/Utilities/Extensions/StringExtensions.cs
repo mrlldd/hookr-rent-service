@@ -19,5 +19,7 @@ namespace HookrTelegramBot.Utilities.Extensions
                 .ToLower()
                 .Substring(1);
 
+        public static bool IsNumber(this string s)
+            => int.TryParse(s, out _);
     }
 }
