@@ -33,7 +33,8 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
                 {
                     if (x.IsCompletedSuccessfully)
                     {
-                        userTemporaryStatusCache.Set(TelegramBotClient.WithCurrentUser.User.Id, UserTemporaryStatus.WaitingForHookah);
+                        userTemporaryStatusCache.Set(TelegramBotClient.WithCurrentUser.User.Id,
+                            UserTemporaryStatus.WaitingForHookah);
                     }
 
                     return x.Result;
@@ -41,8 +42,10 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
 
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Hookah[] response)
             => client
-                .SendTextMessageAsync(response
-                    .Select((x, index) => $"/{index + 1} {x.Name} - {x.Price}")
-                    .Aggregate((prev, next) => prev + "\n" + next));
+                .SendTextMessageAsync(response.Any()
+                    ? response
+                        .Select((x, index) => $"/{index + 1} {x.Name} - {x.Price}")
+                        .Aggregate((prev, next) => prev + "\n" + next)
+                    : "There is no hookahs at the moment :(");
     }
 }

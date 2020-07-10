@@ -41,11 +41,14 @@ namespace HookrTelegramBot.Operations
 
         public Task DispatchAsync()
         {
-            var message = userContextProvider.Update.RealMessage;
-            var commandName = message.Text.ExtractCommand();
+            var update = userContextProvider.Update;
+            var data = update.Type == UpdateType.CallbackQuery
+                ? update.CallbackQuery.Data
+                : update.RealMessage.Text;
+            var commandName = data.ExtractCommand();
             if (commandName.IsNumber())
             {
-                var userStatus = userTemporaryStatusCache.Get(message.From.Id);
+                var userStatus = userTemporaryStatusCache.Get(update.RealMessage.From.Id);
                 Log.Information("Dispatching user with status {0} response {1}", userStatus, commandName);
                 return userResponseHandlers[userStatus]();
             }

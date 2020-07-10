@@ -3,8 +3,8 @@
     public enum TelegramUserStates
     {
         Unknown = 0,
-        Default,
-        Service,
-        Dev
+        Default = 1,
+        Service = 2,
+        Dev = 3
     }
 }
