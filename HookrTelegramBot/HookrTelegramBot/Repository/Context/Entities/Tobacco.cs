@@ -2,7 +2,7 @@
 
 namespace HookrTelegramBot.Repository.Context.Entities
 {
-    public class Hookah : Product
+    public class Tobacco : Product
     {
         public int Id { get; set; }
     }

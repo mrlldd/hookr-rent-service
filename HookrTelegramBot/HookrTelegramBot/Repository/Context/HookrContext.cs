@@ -19,6 +19,8 @@ namespace HookrTelegramBot.Repository.Context
         public DbSet<TelegramUser> TelegramUsers { get; set; }
         
         public DbSet<Hookah> Hookahs { get; set; }
+        
+        public DbSet<Tobacco> Tobaccos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +38,26 @@ namespace HookrTelegramBot.Repository.Context
                 });
             modelBuilder
                 .Entity<Hookah>(hookah =>
+                {
+                    hookah
+                        .HasKey(x => x.Id);
+                    hookah
+                        .Property(x => x.Id)
+                        .ValueGeneratedOnAdd();
+                    hookah
+                        .HasOne(x => x.CreatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.CreatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    hookah
+                        .HasOne(x => x.UpdatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.UpdatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                });
+            
+            modelBuilder
+                .Entity<Tobacco>(hookah =>
                 {
                     hookah
                         .HasKey(x => x.Id);

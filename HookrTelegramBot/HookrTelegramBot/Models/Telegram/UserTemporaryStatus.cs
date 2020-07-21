@@ -3,6 +3,7 @@
     public enum UserTemporaryStatus
     {
         Default = 0,
-        WaitingForHookah
+        ChoosingHookah,
+        ChoosingTobacco
     }
 }
