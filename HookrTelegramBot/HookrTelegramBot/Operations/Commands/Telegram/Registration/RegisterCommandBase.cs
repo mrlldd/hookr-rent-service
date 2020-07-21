@@ -18,7 +18,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
         private const string Space = " ";
         protected abstract TelegramUserStates ExpectedState { get; }
 
-        protected abstract Func<Guid, IManagementConfig, bool> KeyValidator { get; }
+        protected virtual Func<Guid, IManagementConfig, bool> KeyValidator { get; } = (x, y) => false;
 
         private readonly IHookrRepository hookrRepository;
         private readonly IUserContextProvider userContextProvider;
@@ -38,10 +38,13 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
 
         protected override async Task ProcessAsync()
         {
-            var (key, keyExtractSuccess) = ExtractKey(userContextProvider.Update.RealMessage.Text);
-            if (!keyExtractSuccess || !KeyValidator(key, appSettings.Management))
+            if (!OmitKeyValidation)
             {
-                throw new InvalidOperationException("Wrong arguments for registration.");
+                var (key, keyExtractSuccess) = ExtractKey(userContextProvider.Update.RealMessage.Text);
+                if (!keyExtractSuccess || !KeyValidator(key, appSettings.Management))
+                {
+                    throw new InvalidOperationException("Wrong arguments for registration.");
+                }
             }
 
             var user = TelegramBotClient.WithCurrentUser.User;
@@ -90,5 +93,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
             var success = Guid.TryParse(subs[1], out var key);
             return (key, success);
         }
+
+        protected virtual bool OmitKeyValidation { get; } = false;
     }
 }
