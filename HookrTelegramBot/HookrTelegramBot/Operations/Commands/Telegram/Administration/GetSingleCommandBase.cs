@@ -33,10 +33,13 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
                 .ContinueWith(task =>
                 {
                     var id = ExtractIndex(UserContextProvider.Update.RealMessage.Text);
-                    return CastToResult(task.Result[id], id);
+                    return new Identified<TEntity>
+                    {
+                        Entity = task.Result[id - 1],
+                        Index = id
+                    };
                 });
 
-        protected abstract Identified<TEntity> CastToResult(TEntity entity, int index);
 
         protected abstract int ExtractIndex(string command); 
     }

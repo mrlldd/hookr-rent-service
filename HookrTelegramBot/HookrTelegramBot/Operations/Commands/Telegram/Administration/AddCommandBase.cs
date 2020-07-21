@@ -15,6 +15,8 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
     {
         private readonly IHookrRepository hookrRepository;
         private readonly IUserContextProvider userContextProvider;
+        
+        protected const string Separator = "-";
 
         protected AddCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
@@ -37,5 +39,8 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
         }
 
         protected abstract TEntity ParseEntityModel(string command);
+        
+        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
+            => client.SendTextMessageAsync($"Successfully added new {typeof(TEntity).Name}.");
     }
 }

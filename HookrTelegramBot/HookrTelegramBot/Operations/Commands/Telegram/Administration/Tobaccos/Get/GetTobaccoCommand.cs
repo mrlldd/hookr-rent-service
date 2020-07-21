@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram;
-using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Delete;
+using HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Delete;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
@@ -17,11 +16,11 @@ using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Get
+namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Get
 {
-    public class GetHookahCommand : GetSingleCommandBase<Hookah>, IGetHookahCommand
+    public class GetTobaccoCommand : GetSingleCommandBase<Tobacco>, IGetTobaccoCommand
     {
-        public GetHookahCommand(IExtendedTelegramBotClient telegramBotClient,
+        public GetTobaccoCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
             IHookrRepository hookrRepository) 
             : base(telegramBotClient,
@@ -29,7 +28,15 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
                 hookrRepository)
         {
         }
-        
+
+        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Identified<Tobacco> response)
+            => client
+                .SendTextMessageAsync($"Here is your hookah {response.Entity.Name} - {response.Entity.Price}",
+                    replyMarkup: PrepareKeyboard(response));
+
+        protected override DbSet<Tobacco> EntityTableSelector(HookrContext context)
+            => context.Tobaccos;
+
         protected override int ExtractIndex(string command)
             => int
                 .TryParse(command
@@ -37,16 +44,8 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
                     .Substring(1), out var result)
                 ? result
                 : throw new InvalidOperationException("Wrong arguments.");
-
-        protected override DbSet<Hookah> EntityTableSelector(HookrContext context)
-            => context.Hookahs;
-
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Identified<Hookah> response)
-            => client
-                .SendTextMessageAsync($"Here is your hookah {response.Entity.Name} - {response.Entity.Price}",
-                    replyMarkup: PrepareKeyboard(response));
-
-        private InlineKeyboardMarkup PrepareKeyboard(Identified<Hookah> hookah)
+        
+        private InlineKeyboardMarkup PrepareKeyboard(Identified<Tobacco> hookah)
         {
             var buttons = new List<InlineKeyboardButton>
             {
@@ -64,13 +63,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
                     new InlineKeyboardButton
                     {
                         Text = "Delete",
-                        CallbackData = $"/{nameof(DeleteHookahCommand).ExtractCommandName()} {hookah.Index}"
+                        CallbackData = $"/{nameof(DeleteTobaccoCommand).ExtractCommandName()} {hookah.Index}"
                     },
                 });
             }
 
             return new InlineKeyboardMarkup(buttons);
         }
-
     }
 }

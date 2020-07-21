@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
-using HookrTelegramBot.Repository.Context.Entities.Base;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 
-namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Add
+namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Add
 {
-    public class AddHookahCommand : AddCommandBase<Hookah>, IAddHookahCommand
+    public class AddTobaccoCommand : AddCommandBase<Tobacco>, IAddTobaccoCommand
     {
-        public AddHookahCommand(IExtendedTelegramBotClient telegramBotClient,
+        public AddTobaccoCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserContextProvider userContextProvider)
             : base(telegramBotClient,
@@ -25,10 +23,11 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.A
         {
         }
 
-        protected override DbSet<Hookah> EntityTableSelector(HookrContext context)
-            => context.Hookahs;
+        protected override DbSet<Tobacco> EntityTableSelector(HookrContext context)
+            => context.Tobaccos;
 
-        protected override Hookah ParseEntityModel(string command)
+
+        protected override Tobacco ParseEntityModel(string command)
         {
             var subs = command
                 .Substring(command.IndexOf(" ", StringComparison.Ordinal))
@@ -40,7 +39,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.A
                 throw new InvalidOperationException("Wrongs arguments passed in.");
             }
 
-            return new Hookah
+            return new Tobacco
             {
                 Name = subs[0],
                 Price = price

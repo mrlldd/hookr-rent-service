@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Get;
+using HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Get;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Caches;
@@ -34,7 +35,8 @@ namespace HookrTelegramBot.Operations
             userResponseHandlers = new Dictionary<UserTemporaryStatus, Func<Task>>
             {
                 {UserTemporaryStatus.Default, ThrowDispatchingExceptionAsync},
-                {UserTemporaryStatus.WaitingForHookah, GetDetailedHookahInfo}
+                {UserTemporaryStatus.ChoosingHookah, GetDetailedHookahInfo},
+                {UserTemporaryStatus.ChoosingTobacco, GetDetailedTobaccoInfo}
             };
         }
 
@@ -73,6 +75,9 @@ namespace HookrTelegramBot.Operations
 
         private Task GetDetailedHookahInfo()
             => DispatchAndExecuteCommandAsync(nameof(GetHookahCommand).ExtractCommandName());
+
+        private Task GetDetailedTobaccoInfo()
+            => DispatchAndExecuteCommandAsync(nameof(GetTobaccoCommand).ExtractCommandName());
 
         private Task ThrowDispatchingExceptionAsync()
             => throw new InvalidOperationException("There is no such command :(");

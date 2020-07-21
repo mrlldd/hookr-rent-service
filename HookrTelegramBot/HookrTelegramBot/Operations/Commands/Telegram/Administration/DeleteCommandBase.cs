@@ -6,7 +6,9 @@ using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities.Base;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
+using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using Microsoft.EntityFrameworkCore;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
@@ -14,6 +16,8 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
     public abstract class DeleteCommandBase<TEntity> : AdministrationCommandBase<TEntity>
         where TEntity : Entity
     {
+        protected const string Space = " ";
+
         private readonly IUserContextProvider userContextProvider;
         private readonly IHookrRepository hookrRepository;
 
@@ -41,5 +45,9 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
         }
 
         protected abstract int ExtractIndex(string command);
+        
+        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
+            => client
+                .SendTextMessageAsync($"Successfully removed {typeof(TEntity).Name}.");
     }
 }
