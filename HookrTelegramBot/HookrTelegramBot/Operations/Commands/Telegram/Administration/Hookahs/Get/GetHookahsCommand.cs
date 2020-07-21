@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
+using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -12,34 +13,22 @@ using Telegram.Bot.Types;
 
 namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Get
 {
-    public class GetHookahsCommand : CommandWithResponse<Hookah[]>, IGetHookahsCommand
+    public class GetHookahsCommand : GetCommandBase<Hookah>, IGetHookahsCommand
     {
-        private readonly IHookrRepository hookrRepository;
-        private readonly IUserTemporaryStatusCache userTemporaryStatusCache;
-
         public GetHookahsCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
-            IUserTemporaryStatusCache userTemporaryStatusCache) : base(telegramBotClient)
+            IUserTemporaryStatusCache userTemporaryStatusCache)
+            : base(telegramBotClient,
+                hookrRepository,
+                userTemporaryStatusCache)
         {
-            this.hookrRepository = hookrRepository;
-            this.userTemporaryStatusCache = userTemporaryStatusCache;
         }
+        
+        protected override DbSet<Hookah> EntityTableSelector(HookrContext context)
+            => context.Hookahs;
 
-        protected override Task<Hookah[]> ProcessAsync()
-            => hookrRepository
-                .ReadAsync((context, token)
-                    => context.Hookahs.ToArrayAsync(token))
-                .ContinueWith(x =>
-                {
-                    if (x.IsCompletedSuccessfully)
-                    {
-                        userTemporaryStatusCache.Set(TelegramBotClient.WithCurrentUser.User.Id,
-                            UserTemporaryStatus.WaitingForHookah);
-                    }
-
-                    return x.Result;
-                });
-
+        protected override UserTemporaryStatus NextUserState => UserTemporaryStatus.WaitingForHookah;
+        
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Hookah[] response)
             => client
                 .SendTextMessageAsync(response.Any()

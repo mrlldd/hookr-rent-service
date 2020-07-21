@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HookrTelegramBot.Models.Telegram;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Delete;
 using HookrTelegramBot.Repository;
+using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
 using HookrTelegramBot.Utilities.Extensions;
@@ -16,37 +19,40 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Get
 {
-    public class GetHookahCommand : CommandWithResponse<GetHookahCommand.IdentifiedHookah>, IGetHookahCommand
+    public class GetHookahCommand : GetSingleCommandBase<Hookah>, IGetHookahCommand
     {
-        private readonly IUserContextProvider userContextProvider;
-        private readonly IHookrRepository hookrRepository;
-
         public GetHookahCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository) : base(telegramBotClient)
+            IHookrRepository hookrRepository) 
+            : base(telegramBotClient,
+                userContextProvider,
+                hookrRepository)
         {
-            this.userContextProvider = userContextProvider;
-            this.hookrRepository = hookrRepository;
         }
 
-        protected override async Task<IdentifiedHookah> ProcessAsync()
-        {
-            var id = ExtractArguments(userContextProvider.Update.RealMessage.Text);
-            var hookahs = await hookrRepository.ReadAsync((context, token)
-                => context.Hookahs.ToArrayAsync(token));
-            return new IdentifiedHookah
+        protected override Identified<Hookah> CastToResult(Hookah entity, int index)
+            => new Identified<Hookah>
             {
-                Hookah = hookahs.ElementAt(id - 1),
-                Index = id
+                Entity = entity,
+                Index = index
             };
-        }
+        protected override int ExtractIndex(string command)
+            => int
+                .TryParse(command
+                    .Trim()
+                    .Substring(1), out var result)
+                ? result
+                : throw new InvalidOperationException("Wrong arguments.");
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, IdentifiedHookah response)
+        protected override DbSet<Hookah> EntityTableSelector(HookrContext context)
+            => context.Hookahs;
+
+        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Identified<Hookah> response)
             => client
-                .SendTextMessageAsync($"Here is your hookah {response.Hookah.Name} - {response.Hookah.Price}",
+                .SendTextMessageAsync($"Here is your hookah {response.Entity.Name} - {response.Entity.Price}",
                     replyMarkup: PrepareKeyboard(response));
 
-        private InlineKeyboardMarkup PrepareKeyboard(IdentifiedHookah hookah)
+        private InlineKeyboardMarkup PrepareKeyboard(Identified<Hookah> hookah)
         {
             var buttons = new List<InlineKeyboardButton>
             {
@@ -56,7 +62,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
                     CallbackData = "/start"
                 }
             };
-            var dbUser = userContextProvider.DatabaseUser;
+            var dbUser = UserContextProvider.DatabaseUser;
             if (dbUser.State > TelegramUserStates.Default)
             {
                 buttons.AddRange(new[]
@@ -66,27 +72,11 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
                         Text = "Delete",
                         CallbackData = $"/{nameof(DeleteHookahCommand).ExtractCommandName()} {hookah.Index}"
                     },
-                    new InlineKeyboardButton
-                    {
-                        Text = "Edit",
-                        CallbackData = "/start"
-                    }, 
                 });
             }
 
             return new InlineKeyboardMarkup(buttons);
         }
 
-        private static int ExtractArguments(string messageText)
-            => int
-                .Parse(messageText
-                    .Trim()
-                    .Substring(1));
-
-        public class IdentifiedHookah
-        {
-            public Hookah Hookah { get; set; }
-            public int Index { get; set; }
-        }
     }
 }
