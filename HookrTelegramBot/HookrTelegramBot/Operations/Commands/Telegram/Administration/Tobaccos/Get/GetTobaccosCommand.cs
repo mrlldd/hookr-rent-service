@@ -4,6 +4,7 @@ using HookrTelegramBot.Models.Telegram;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
+using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches;
@@ -16,10 +17,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
     {
         public GetTobaccosCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
-            IUserTemporaryStatusCache userTemporaryStatusCache)
+            IUserTemporaryStatusCache userTemporaryStatusCache,
+            IUserContextProvider userContextProvider)
             : base(telegramBotClient,
                 hookrRepository,
-                userTemporaryStatusCache)
+                userTemporaryStatusCache,
+                userContextProvider)
         {
         }
 
@@ -35,5 +38,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
             => context.Tobaccos;
 
         protected override UserTemporaryStatus NextUserState => UserTemporaryStatus.ChoosingTobacco;
+
     }
 }

@@ -36,7 +36,7 @@ namespace HookrTelegramBot.Operations
             {
                 {UserTemporaryStatus.Default, ThrowDispatchingExceptionAsync},
                 {UserTemporaryStatus.ChoosingHookah, GetDetailedHookahInfo},
-                {UserTemporaryStatus.ChoosingTobacco, GetDetailedTobaccoInfo}
+                {UserTemporaryStatus.ChoosingTobacco, GetDetailedTobaccoInfo},
             };
         }
 
@@ -48,14 +48,16 @@ namespace HookrTelegramBot.Operations
                 ? update.CallbackQuery.Data
                 : update.RealMessage.Text;
             var commandName = data.ExtractCommand();
-            if (commandName.IsNumber())
+            if (!commandName.IsNumber())
             {
-                var userStatus = userTemporaryStatusCache.Get(update.RealMessage.From.Id);
-                Log.Information("Dispatching user with status {0} response {1}", userStatus, commandName);
-                return userResponseHandlers[userStatus]();
+                return DispatchAndExecuteCommandAsync(commandName);
             }
 
-            return DispatchAndExecuteCommandAsync(commandName);
+            var userStatus = userTemporaryStatusCache.Get(update.RealMessage.From.Id);
+            Log.Information("Dispatching user with status {0} response {1}", userStatus, commandName);
+            return userResponseHandlers.TryGetValue(userStatus, out var handler)
+                ? handler()
+                : DispatchAndExecuteCommandAsync(commandName);
         }
 
         private Task DispatchAndExecuteCommandAsync(string commandName)
@@ -79,7 +81,7 @@ namespace HookrTelegramBot.Operations
         private Task GetDetailedTobaccoInfo()
             => DispatchAndExecuteCommandAsync(nameof(GetTobaccoCommand).ExtractCommandName());
 
-        private Task ThrowDispatchingExceptionAsync()
+        private static Task ThrowDispatchingExceptionAsync()
             => throw new InvalidOperationException("There is no such command :(");
     }
 }

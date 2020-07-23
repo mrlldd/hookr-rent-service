@@ -30,18 +30,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Start
         protected override async Task ProcessAsync()
         {
             var user = userContextProvider.Update.RealMessage.From;
-            var dbUser = await hookrRepository.ReadAsync((context, token)
-                => context.TelegramUsers.FirstOrDefaultAsync(x => x.Id == user.Id, token));
+            var dbUser = userContextProvider.DatabaseUser;
             var now = DateTime.Now;
             if(dbUser != null)
             {
-                hookrRepository.Context.TelegramUsers.Update(new TelegramUser
-                {
-                    Id = user.Id,
-                    State = dbUser.State,
-                    Username = user.Username,
-                    LastUpdatedAt = now
-                });
+                dbUser.Username = user.Username;
+                dbUser.LastUpdatedAt = now;
             }
             else
             {

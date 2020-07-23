@@ -5,6 +5,7 @@ using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
+using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches;
@@ -17,13 +18,15 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
     {
         public GetHookahsCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
-            IUserTemporaryStatusCache userTemporaryStatusCache)
+            IUserTemporaryStatusCache userTemporaryStatusCache,
+            IUserContextProvider userContextProvider)
             : base(telegramBotClient,
                 hookrRepository,
-                userTemporaryStatusCache)
+                userTemporaryStatusCache,
+                userContextProvider)
         {
         }
-        
+
         protected override DbSet<Hookah> EntityTableSelector(HookrContext context)
             => context.Hookahs;
 
@@ -36,5 +39,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
                         .Select((x, index) => $"/{index + 1} {x.Name} - {x.Price}")
                         .Aggregate((prev, next) => prev + "\n" + next)
                     : "There is no hookahs at the moment :(");
+
     }
 }

@@ -4,6 +4,7 @@
     {
         Default = 0,
         ChoosingHookah,
-        ChoosingTobacco
+        ChoosingTobacco,
+        InOrder
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace HookrTelegramBot.Utilities.Telegram.Bot.Provider
 {
@@ -25,6 +26,7 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Provider
             this.appSettings = appSettings;
             this.httpClientFactory = httpClientFactory;
         }
+
         public ITelegramBotClient Instance { get; private set; }
         public User Info { get; private set; }
 
@@ -35,6 +37,7 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Provider
             {
                 throw new InvalidOperationException("Bot is already initialized.");
             }
+
             var bot = new TelegramBotClient(appSettings.TelegramBotToken, httpClientFactory.CreateClient());
             var info = await bot.GetMeAsync(token);
             var route = typeof(TelegramController).GetCustomAttribute<RouteAttribute>()?.Template;
@@ -42,11 +45,19 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Provider
             {
                 throw new InvalidOperationException("Webhook route is not initialized");
             }
+
             var finalWebhook = $"{appSettings.WebhookUrl}/{route}/update";
-            await bot.SetWebhookAsync(finalWebhook, cancellationToken: token);
+            await bot.SetWebhookAsync(finalWebhook,
+                cancellationToken: token,
+                allowedUpdates: new[]
+                {
+                    UpdateType.Message,
+                    UpdateType.CallbackQuery
+                });
             Instance = bot;
             Info = info;
-            Log.Information("Successfully initialized telegram bot instance (@{0}) with webhook {1}", info.Username, finalWebhook);
+            Log.Information("Successfully initialized telegram bot instance (@{0}) with webhook {1}", info.Username,
+                finalWebhook);
         }
     }
 }

@@ -5,6 +5,7 @@ namespace HookrTelegramBot.Repository.Context.Entities.Base
 {
     public class Entity
     {
+        public int Id { get; set; }
         public DateTime CreatedAt { get; set; }
         public TelegramUser CreatedBy { get; set; }
         [ForeignKey(nameof(CreatedBy))]

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using HookrTelegramBot.Repository.Context.Entities;
@@ -21,6 +23,12 @@ namespace HookrTelegramBot.Repository.Context
         public DbSet<Hookah> Hookahs { get; set; }
         
         public DbSet<Tobacco> Tobaccos { get; set; }
+        
+        public DbSet<Order> Orders { get; set; }
+        
+        public DbSet<OrderedTobacco> OrderedTobaccos { get; set; }
+        
+        public DbSet<OrderedHookah> OrderedHookahs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,13 +45,8 @@ namespace HookrTelegramBot.Repository.Context
                         .ValueGeneratedNever();
                 });
             modelBuilder
-                .Entity<Hookah>(hookah =>
+                .Entity<OrderedHookah>(hookah =>
                 {
-                    hookah
-                        .HasKey(x => x.Id);
-                    hookah
-                        .Property(x => x.Id)
-                        .ValueGeneratedOnAdd();
                     hookah
                         .HasOne(x => x.CreatedBy)
                         .WithMany()
@@ -54,26 +57,101 @@ namespace HookrTelegramBot.Repository.Context
                         .WithMany()
                         .HasForeignKey(x => x.UpdatedById)
                         .OnDelete(DeleteBehavior.NoAction);
+                    hookah
+                        .HasKey(x => x.Id);
+                    hookah
+                        .Property(x => x.Id)
+                        .ValueGeneratedOnAdd();
+                    hookah
+                        .HasOne<Order>()
+                        .WithMany(x => x.OrderedHookahs)
+                        .HasForeignKey(x => x.OrderId)
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder
+                .Entity<Tobacco>(tobacco =>
+                {
+                    tobacco
+                        .HasOne(x => x.CreatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.CreatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    tobacco
+                        .HasOne(x => x.UpdatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.UpdatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    tobacco
+                        .HasKey(x => x.Id);
+                    tobacco
+                        .Property(x => x.Id)
+                        .ValueGeneratedOnAdd();
                 });
             
             modelBuilder
-                .Entity<Tobacco>(hookah =>
+                .Entity<Hookah>(tobacco =>
                 {
-                    hookah
-                        .HasKey(x => x.Id);
-                    hookah
-                        .Property(x => x.Id)
-                        .ValueGeneratedOnAdd();
-                    hookah
+                    tobacco
                         .HasOne(x => x.CreatedBy)
                         .WithMany()
                         .HasForeignKey(x => x.CreatedById)
                         .OnDelete(DeleteBehavior.NoAction);
-                    hookah
+                    tobacco
                         .HasOne(x => x.UpdatedBy)
                         .WithMany()
                         .HasForeignKey(x => x.UpdatedById)
                         .OnDelete(DeleteBehavior.NoAction);
+                    tobacco
+                        .HasKey(x => x.Id);
+                    tobacco
+                        .Property(x => x.Id)
+                        .ValueGeneratedOnAdd();
+                });
+
+            modelBuilder
+                .Entity<OrderedTobacco>(orderedTobacco =>
+                {
+                    orderedTobacco
+                        .HasOne(x => x.CreatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.CreatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    orderedTobacco
+                        .HasOne(x => x.UpdatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.UpdatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    orderedTobacco
+                        .HasKey(x => x.Id);
+                    orderedTobacco
+                        .Property(x => x.Id)
+                        .ValueGeneratedOnAdd();
+                    orderedTobacco
+                        .HasOne<Order>()
+                        .WithMany(x => x.OrderedTobaccos)
+                        .HasForeignKey(x => x.OrderId)
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+            
+            modelBuilder
+                .Entity<Order>(order =>
+                {
+                    order
+                        .HasOne(x => x.CreatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.CreatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    order
+                        .HasOne(x => x.UpdatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.UpdatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    order
+                        .HasKey(x => x.Id);
+                    order
+                        .Property(x => x.Id)
+                        .ValueGeneratedOnAdd();
                 });
         }
 

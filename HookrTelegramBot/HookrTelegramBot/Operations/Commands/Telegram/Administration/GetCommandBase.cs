@@ -6,11 +6,13 @@ using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
 {
@@ -19,13 +21,16 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
     {
         private readonly IHookrRepository hookrRepository;
         private readonly IUserTemporaryStatusCache userTemporaryStatusCache;
+        private readonly IUserContextProvider userContextProvider;
 
-        public GetCommandBase(IExtendedTelegramBotClient telegramBotClient,
+        protected GetCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
-            IUserTemporaryStatusCache userTemporaryStatusCache) : base(telegramBotClient)
+            IUserTemporaryStatusCache userTemporaryStatusCache,
+            IUserContextProvider userContextProvider) : base(telegramBotClient)
         {
             this.hookrRepository = hookrRepository;
             this.userTemporaryStatusCache = userTemporaryStatusCache;
+            this.userContextProvider = userContextProvider;
         }
 
         protected override Task<TEntity[]> ProcessAsync()
@@ -36,7 +41,11 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
                 {
                     if (x.IsCompletedSuccessfully)
                     {
-                        userTemporaryStatusCache.Set(TelegramBotClient.WithCurrentUser.User.Id,
+                        var update = userContextProvider.Update;
+                        userTemporaryStatusCache.Set(
+                            update.Type == UpdateType.CallbackQuery
+                                ? update.CallbackQuery.From.Id
+                                : update.RealMessage.From.Id,
                             NextUserState);
                     }
 
