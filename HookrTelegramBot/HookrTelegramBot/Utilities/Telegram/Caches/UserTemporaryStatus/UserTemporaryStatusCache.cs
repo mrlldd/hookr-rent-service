@@ -1,8 +1,7 @@
 ﻿using System;
-using HookrTelegramBot.Models.Telegram;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace HookrTelegramBot.Utilities.Telegram.Caches
+namespace HookrTelegramBot.Utilities.Telegram.Caches.UserTemporaryStatus
 {
     public class UserTemporaryStatusCache : IUserTemporaryStatusCache
     {

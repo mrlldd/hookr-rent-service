@@ -1,6 +1,4 @@
-﻿using HookrTelegramBot.Models.Telegram;
-
-namespace HookrTelegramBot.Utilities.Telegram.Caches
+﻿namespace HookrTelegramBot.Utilities.Telegram.Caches.UserTemporaryStatus
 {
     public interface IUserTemporaryStatusCache
     {

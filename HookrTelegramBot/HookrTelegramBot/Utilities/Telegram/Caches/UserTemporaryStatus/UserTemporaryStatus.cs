@@ -1,4 +1,4 @@
-﻿namespace HookrTelegramBot.Models.Telegram
+﻿namespace HookrTelegramBot.Utilities.Telegram.Caches.UserTemporaryStatus
 {
     public enum UserTemporaryStatus
     {
