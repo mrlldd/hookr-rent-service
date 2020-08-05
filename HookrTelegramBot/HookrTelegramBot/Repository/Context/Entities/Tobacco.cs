@@ -4,6 +4,5 @@ namespace HookrTelegramBot.Repository.Context.Entities
 {
     public class Tobacco : Product
     {
-        public int Id { get; set; }
     }
 }

@@ -7,13 +7,22 @@ namespace HookrTelegramBot.Models.Telegram
     public class ExtendedUpdate : Update
     {
         private readonly Func<Update, Message> realMessageSelector;
+
         /// <summary>
         /// Override as original UpdateType is not constant
         /// </summary>
         public new UpdateType Type { get; }
 
-        public Message RealMessage => realMessageSelector(this);
-        public Chat Chat => RealMessage.Chat;
+        public Message RealMessage
+            => realMessageSelector(this);
+
+        public string Content
+            => Type == UpdateType.CallbackQuery
+                ? CallbackQuery.Data
+                : RealMessage.Text;
+
+        public Chat Chat 
+            => RealMessage.Chat;
 
         public ExtendedUpdate(Update update, Func<Update, Message> realMessageSelector)
         {

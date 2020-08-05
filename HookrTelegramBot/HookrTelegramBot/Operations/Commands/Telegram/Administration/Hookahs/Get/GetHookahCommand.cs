@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Delete;
+using HookrTelegramBot.Operations.Commands.Telegram.Orders;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
@@ -13,6 +14,7 @@ using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
+using HookrTelegramBot.Utilities.Telegram.Caches.CurrentOrder;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -21,13 +23,17 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
 {
     public class GetHookahCommand : GetSingleCommandBase<Hookah>, IGetHookahCommand
     {
+        private readonly ICurrentOrderCache currentOrderCache;
+
         public GetHookahCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository) 
+            IHookrRepository hookrRepository,
+            ICurrentOrderCache currentOrderCache) 
             : base(telegramBotClient,
                 userContextProvider,
                 hookrRepository)
         {
+            this.currentOrderCache = currentOrderCache;
         }
         
         protected override int ExtractIndex(string command)
@@ -48,15 +54,17 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
 
         private InlineKeyboardMarkup PrepareKeyboard(Identified<Hookah> hookah)
         {
-            var buttons = new List<InlineKeyboardButton>
-            {
-                new InlineKeyboardButton
-                {
-                    Text = "Order",
-                    CallbackData = "/start"
-                }
-            };
+            var buttons = new List<InlineKeyboardButton>();
             var dbUser = UserContextProvider.DatabaseUser;
+            var orderId = currentOrderCache.Get(dbUser.Id);
+            if (orderId.HasValue)
+            {
+                buttons.Add(new InlineKeyboardButton
+                {
+                    Text = "Add to order",
+                    CallbackData = $"/{nameof(AddToOrderCommand).ExtractCommandName()} {orderId} {nameof(Hookah)} {hookah.Index}"
+                });
+            }
             if (dbUser.State > TelegramUserStates.Default)
             {
                 buttons.AddRange(new[]

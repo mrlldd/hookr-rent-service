@@ -55,14 +55,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
 
         private InlineKeyboardMarkup PrepareKeyboard(Identified<Tobacco> tobacco)
         {
-            var buttons = new List<InlineKeyboardButton>
-            {
-                new InlineKeyboardButton
-                {
-                    Text = "Order",
-                    CallbackData = "/start"
-                }
-            };
+            var buttons = new List<InlineKeyboardButton>();
             var dbUser = UserContextProvider.DatabaseUser;
             var orderId = currentOrderCache.Get(dbUser.Id);
             if (orderId.HasValue)
@@ -70,20 +63,18 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
                 buttons.Add(new InlineKeyboardButton
                 {
                     Text = "Add to order",
-                    CallbackData = $"/{nameof(AddToOrderCommand).ExtractCommandName()} {orderId} {typeof(Tobacco).Name} {tobacco.Index}"
+                    CallbackData =
+                        $"/{nameof(AddToOrderCommand).ExtractCommandName()} {orderId} {nameof(Tobacco)} {tobacco.Index}"
                 });
             }
 
             if (dbUser.State > TelegramUserStates.Default)
             {
-                buttons.AddRange(new[]
-                {
-                    new InlineKeyboardButton
+                buttons.Add(new InlineKeyboardButton
                     {
                         Text = "Delete",
                         CallbackData = $"/{nameof(DeleteTobaccoCommand).ExtractCommandName()} {tobacco.Index}"
-                    },
-                });
+                    });
             }
 
             return new InlineKeyboardMarkup(buttons);

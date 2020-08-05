@@ -41,8 +41,8 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
                 UserTemporaryStatus.InOrder);
             var order = new Order();
             await hookrRepository.Context.Orders.AddAsync(order);
-            currentOrderCache.Set(userContextProvider.DatabaseUser.Id, order.Id);
             await hookrRepository.Context.SaveChangesAsync();
+            currentOrderCache.Set(userContextProvider.DatabaseUser.Id, order.Id);
         }
 
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
