@@ -6,7 +6,7 @@ namespace HookrTelegramBot.Utilities.Telegram.Caches.CurrentOrder
     public class CurrentOrderCache : ICurrentOrderCache
     {
         private readonly IMemoryCache memoryCache;
-        private const int TimeoutMinutes = 3;
+        private const int TimeoutMinutes = 33;
         private const string KeyFormat = "{0}co";
 
         public CurrentOrderCache(IMemoryCache memoryCache)
