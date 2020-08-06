@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Get;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Get;
@@ -15,7 +17,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
 {
-    public class OrderCommand : CommandWithResponse, IOrderCommand
+    public class OrderCommand : CommandWithResponse<InlineKeyboardButton[]>, IOrderCommand
     {
         private readonly IUserTemporaryStatusCache userTemporaryStatusCache;
         private readonly IHookrRepository hookrRepository;
@@ -35,30 +37,48 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
             this.userContextProvider = userContextProvider;
         }
 
-        protected override async Task ProcessAsync()
+        protected override async Task<InlineKeyboardButton[]> ProcessAsync()
         {
+            var cachedOrderId = currentOrderCache.Get(userContextProvider.DatabaseUser.Id);
+            if (cachedOrderId.HasValue)
+            {
+                return new[]
+                {
+                    new InlineKeyboardButton
+                    {
+                        Text = "View current order",
+                        CallbackData = "/getcurrentorder"
+                        //todo
+                    }
+                };
+            }
+
             userTemporaryStatusCache.Set(TelegramBotClient.WithCurrentUser.User.Id,
                 UserTemporaryStatus.InOrder);
             var order = new Order();
             await hookrRepository.Context.Orders.AddAsync(order);
             await hookrRepository.Context.SaveChangesAsync();
             currentOrderCache.Set(userContextProvider.DatabaseUser.Id, order.Id);
+            return Array.Empty<InlineKeyboardButton>();
         }
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
+        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
+            InlineKeyboardButton[] response)
             => client
                 .SendTextMessageAsync("Choose product", replyMarkup: new InlineKeyboardMarkup(new[]
-                {
-                    new InlineKeyboardButton
                     {
-                        Text = "Hookahs",
-                        CallbackData = $"/{nameof(GetHookahsCommand).ExtractCommandName()}"
-                    },
-                    new InlineKeyboardButton
-                    {
-                        Text = "Tobaccos",
-                        CallbackData = $"/{nameof(GetTobaccosCommand).ExtractCommandName()}"
-                    },
-                }));
+                        new InlineKeyboardButton
+                        {
+                            Text = "Hookahs",
+                            CallbackData = $"/{nameof(GetHookahsCommand).ExtractCommandName()}"
+                        },
+                        new InlineKeyboardButton
+                        {
+                            Text = "Tobaccos",
+                            CallbackData = $"/{nameof(GetTobaccosCommand).ExtractCommandName()}"
+                        },
+                    }
+                    .Concat(response)
+                    .ToArray()));
     }
 }
