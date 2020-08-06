@@ -39,27 +39,25 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
 
         protected override async Task<InlineKeyboardButton[]> ProcessAsync()
         {
+            userTemporaryStatusCache.Set(TelegramBotClient.WithCurrentUser.User.Id,
+                UserTemporaryStatus.InOrder);
             var cachedOrderId = currentOrderCache.Get(userContextProvider.DatabaseUser.Id);
             if (cachedOrderId.HasValue)
-            {
                 return new[]
                 {
                     new InlineKeyboardButton
                     {
                         Text = "View current order",
-                        CallbackData = "/getcurrentorder"
+                        CallbackData = $"/getorder {cachedOrderId}"
                         //todo
                     }
                 };
-            }
-
-            userTemporaryStatusCache.Set(TelegramBotClient.WithCurrentUser.User.Id,
-                UserTemporaryStatus.InOrder);
             var order = new Order();
             await hookrRepository.Context.Orders.AddAsync(order);
             await hookrRepository.Context.SaveChangesAsync();
             currentOrderCache.Set(userContextProvider.DatabaseUser.Id, order.Id);
             return Array.Empty<InlineKeyboardButton>();
+
         }
 
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,

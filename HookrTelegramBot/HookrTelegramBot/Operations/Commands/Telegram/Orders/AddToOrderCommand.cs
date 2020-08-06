@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
+using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
+using HookrTelegramBot.Repository.Context.Entities.Base;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -44,44 +48,48 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
             {
                 case nameof(Hookah):
                 {
-                    var hookahs = await hookrRepository.ReadAsync((context, token) => context.Hookahs
-                        .ToArrayAsync(token));
-                    var hookah = hookahs.ElementAt(productIndex);
-                    if (hookah == null)
-                    {
-                        throw new InvalidOperationException($"Missing hookah with index {productIndex}");
-                    }
-
-                    order.OrderedHookahs.Add(new OrderedHookah
-                    {
-                        Product = hookah
-                    });
+                    await AddProductToOrderAsync(order,
+                        productIndex,
+                        context => context.Hookahs,
+                        x => x.OrderedHookahs);
                     break;
                 }
                 case nameof(Tobacco):
                 {
-                    var tobaccos = await hookrRepository.ReadAsync((context, token) => context.Tobaccos
-                        .ToArrayAsync(token));
-                    var tobacco = tobaccos.ElementAt(productIndex);
-                    if (tobacco == null)
-                    {
-                        throw new InvalidOperationException($"Missing tobacco with index {productIndex}");
-                    }
-
-                    order.OrderedTobaccos.Add(new OrderedTobacco
-                    {
-                        Product = tobacco
-                    });
+                    await AddProductToOrderAsync(order,
+                        productIndex,
+                        context => context.Tobaccos,
+                        x => x.OrderedTobaccos);
                     break;
                 }
                 default:
                 {
                     throw new InvalidOperationException("Wrong product type " + productName);
                 }
-                // todo refactor into generic method executable
+            }
+            await hookrRepository.Context.SaveChangesAsync();
+        }
+
+        private async Task AddProductToOrderAsync<TProduct, TOrderedProduct>(
+            Order order,
+            int productIndex,
+            Func<HookrContext, DbSet<TProduct>> productTableSelector,
+            Func<Order, ICollection<TOrderedProduct>> orderedCollectionSelector)
+            where TProduct : Product
+            where TOrderedProduct : Ordered<TProduct>, new()
+        {
+            var products = await hookrRepository.ReadAsync((context, token) => productTableSelector(context)
+                .ToArrayAsync(token));
+            var product = products.ElementAt(productIndex);
+            if (product == null)
+            {
+                throw new InvalidOperationException($"Missing {typeof(TProduct)} with index {productIndex}");
             }
 
-            await hookrRepository.Context.SaveChangesAsync();
+            orderedCollectionSelector(order).Add(new TOrderedProduct
+            {
+                Product = product
+            });
         }
 
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
