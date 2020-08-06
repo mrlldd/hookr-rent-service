@@ -65,8 +65,8 @@ namespace HookrTelegramBot.Repository.Context
                     
                     hookah
                         .HasOne(x => x.Product)
-                        .WithOne()
-                        .HasForeignKey<OrderedHookah>(x => x.ProductId)
+                        .WithMany()
+                        .HasForeignKey(x => x.ProductId)
                         .OnDelete(DeleteBehavior.Restrict);
                     hookah
                         .HasOne(x => x.Order)
@@ -135,8 +135,8 @@ namespace HookrTelegramBot.Repository.Context
                         .ValueGeneratedOnAdd();
                     orderedTobacco
                         .HasOne(x => x.Product)
-                        .WithOne()
-                        .HasForeignKey<OrderedTobacco>(x => x.ProductId)
+                        .WithMany()
+                        .HasForeignKey(x => x.ProductId)
                         .OnDelete(DeleteBehavior.Restrict);
                     orderedTobacco
                         .HasOne(x => x.Order)
