@@ -4,14 +4,16 @@ using HookrTelegramBot.Repository.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HookrTelegramBot.Migrations
 {
     [DbContext(typeof(HookrContext))]
-    partial class HookrContextModelSnapshot : ModelSnapshot
+    [Migration("20200807100948_SoftDeletableOrders")]
+    partial class SoftDeletableOrders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

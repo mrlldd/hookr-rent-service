@@ -9,9 +9,9 @@ namespace HookrTelegramBot.Repository.Context.Entities
     {
         public ICollection<OrderedHookah> OrderedHookahs { get; set; }
         public ICollection<OrderedTobacco> OrderedTobaccos { get; set; }
-        public DateTime DeletedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public bool IsDeleted { get; set; }
         public TelegramUser DeletedBy { get; set; }
-        public int DeletedById { get; set; }
+        public int? DeletedById { get; set; }
     }
 }
