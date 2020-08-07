@@ -45,9 +45,11 @@ namespace HookrTelegramBot.ActionFilters
                     hookrContext.TelegramUsers
                         .Where(x => x.State == TelegramUserStates.Dev)
                         .ToArrayAsync(token));
-                await Task.WhenAll(devs
-                    .Select(x => telegramBotClient.SendTextMessageAsync(new ChatId(x.Id), result.Exception.ToString()))
-                    .Append(telegramBotClient.SendTextMessageAsync(extendedUpdate.Chat, "There is an error :("))
+                await Task.WhenAll(
+                    devs
+                        .Select(x => telegramBotClient
+                            .SendTextMessageAsync(new ChatId(x.Id), result.Exception.ToString())
+                        )
                 );
                 result.ExceptionHandled = true;
                 result.HttpContext.Response.StatusCode = 200;
