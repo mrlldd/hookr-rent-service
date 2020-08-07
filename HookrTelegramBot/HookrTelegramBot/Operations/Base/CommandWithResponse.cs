@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using HookrTelegramBot.Models.Telegram.Exceptions;
+using HookrTelegramBot.Models.Telegram.Exceptions.Base;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using Serilog;
@@ -8,7 +10,7 @@ using Telegram.Bot.Types;
 namespace HookrTelegramBot.Operations.Base
 {
 
-    public class Command : ICommand
+    public abstract class Command : ICommand
     {
         protected readonly IExtendedTelegramBotClient TelegramBotClient;
 
@@ -17,17 +19,41 @@ namespace HookrTelegramBot.Operations.Base
             TelegramBotClient = telegramBotClient;
         }
 
-        public virtual Task ExecuteAsync()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task ExecuteAsync();
 
         protected virtual Task<Message> SendErrorAsync(ICurrentTelegramUserClient client, Exception exception)
         {
             Log.Information(exception.ToString());
-            return client.SendTextMessageAsync("Not available at the moment, sorry :(");
+            var message = "Not available at the moment, sorry :(";
+            if (exception is TelegramException)
+            {
+                switch (exception)
+                {
+                    case InsufficientAccessRightsException rightsException:
+                    {
+                        message = rightsException.Message;
+                        break;
+                    }
+                    case InvalidArgumentsPassedInException passedInException:
+                    {
+                        message = passedInException.Message;
+                        break;
+                    }
+                    default:
+                    {
+                        var (success, anotherMessage) = HandleCustomException(exception);
+                        if (success)
+                        {
+                            message = anotherMessage;
+                        }
+                        break;
+                    }
+                }
+            }
+            return client.SendTextMessageAsync(message);
         }
 
+        protected virtual (bool, string) HandleCustomException(Exception exception) => (false, string.Empty);
     }
     public abstract class CommandWithResponse : Command
     {
@@ -66,7 +92,7 @@ namespace HookrTelegramBot.Operations.Base
 
         public override Task ExecuteAsync()
             => ProcessAsync()
-                .ContinueWith<Task>(task =>
+                .ContinueWith(task =>
                 {
                     if (task.IsCompletedSuccessfully)
                     {
@@ -75,7 +101,8 @@ namespace HookrTelegramBot.Operations.Base
 
                     if (task.IsFaulted || task.IsCanceled)
                     {
-                        throw task.Exception;
+                        return SendErrorAsync(TelegramBotClient.WithCurrentUser, task.Exception)
+                            .ContinueWith(_ => throw task.Exception);
                     }
 
                     return task;

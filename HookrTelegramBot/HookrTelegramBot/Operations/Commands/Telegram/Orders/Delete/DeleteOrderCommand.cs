@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using HookrTelegramBot.Models.Telegram.Exceptions;
+using HookrTelegramBot.Models.Telegram.Exceptions.Base;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
+using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
@@ -12,48 +15,30 @@ using Telegram.Bot.Types;
 
 namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Delete
 {
-    public class DeleteOrderCommand : CommandWithResponse, IDeleteOrderCommand
+    public class DeleteOrderCommand : OrderCommandBase, IDeleteOrderCommand
     {
-        private readonly IUserContextProvider userContextProvider;
-        private readonly IHookrRepository hookrRepository;
-        private const string Space = " ";
-
         public DeleteOrderCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository) : base(telegramBotClient)
+            IHookrRepository hookrRepository)
+            : base(telegramBotClient,
+                userContextProvider,
+                hookrRepository)
         {
-            this.userContextProvider = userContextProvider;
-            this.hookrRepository = hookrRepository;
         }
 
-        protected override async Task ProcessAsync()
+        protected override async Task<Order> ProcessAsync(Order order)
         {
-            var orderId = ExtractArguments(userContextProvider.Update.Content);
-            var order = await hookrRepository.ReadAsync((context, token) => context.Orders
-                .FirstOrDefaultAsync(x => x.Id == orderId, token));
-            var user = userContextProvider.DatabaseUser;
-            if (order == null || user.State == TelegramUserStates.Default && order.CreatedById != user.Id)
-            {
-                throw new InvalidOperationException("Seems like you have no access :(");
-            }
-            hookrRepository.Context.Orders.Remove(order);
-            await hookrRepository.Context.SaveChangesAsync();
+            HookrRepository.Context.Orders.Remove(order);
+            await HookrRepository.Context.SaveChangesAsync();
+            return order;
         }
 
-        private static int ExtractArguments(string command)
-        {
-            var subs = command.Split(Space);
-            if (subs.Length != 2)
-            {
-                throw new InvalidOperationException("Wrong arguments have been passed in.");
-            }
+        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Order response)
+            => client.SendTextMessageAsync($"Successfully deleted order {response.Id}.");
 
-            return int.TryParse(subs.Last(), out var result)
-                ? result
-                : throw new InvalidOperationException("Wrong arguments have been passed in.");
-        }
-
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
-            => client.SendTextMessageAsync("Successfully deleted order.");
+        protected override (bool, string) HandleCustomException(Exception exception)
+            => exception is OrderAlreadyDeletedException
+                ? (true, "Order not exist or has been already deleted.")
+                : base.HandleCustomException(exception);
     }
 }
