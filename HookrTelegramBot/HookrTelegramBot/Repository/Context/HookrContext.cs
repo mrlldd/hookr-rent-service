@@ -15,19 +15,19 @@ namespace HookrTelegramBot.Repository.Context
     {
         private readonly IUserContextProvider userContextProvider;
 
-        public HookrContext(DbContextOptions options, IUserContextProvider userContextProvider) : base(options) 
+        public HookrContext(DbContextOptions options, IUserContextProvider userContextProvider) : base(options)
             => this.userContextProvider = userContextProvider;
 
         public DbSet<TelegramUser> TelegramUsers { get; set; }
-        
+
         public DbSet<Hookah> Hookahs { get; set; }
-        
+
         public DbSet<Tobacco> Tobaccos { get; set; }
-        
+
         public DbSet<Order> Orders { get; set; }
-        
+
         public DbSet<OrderedTobacco> OrderedTobaccos { get; set; }
-        
+
         public DbSet<OrderedHookah> OrderedHookahs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -62,7 +62,7 @@ namespace HookrTelegramBot.Repository.Context
                     hookah
                         .Property(x => x.Id)
                         .ValueGeneratedOnAdd();
-                    
+
                     hookah
                         .HasOne(x => x.Product)
                         .WithMany()
@@ -94,7 +94,7 @@ namespace HookrTelegramBot.Repository.Context
                         .Property(x => x.Id)
                         .ValueGeneratedOnAdd();
                 });
-            
+
             modelBuilder
                 .Entity<Hookah>(tobacco =>
                 {
@@ -114,7 +114,7 @@ namespace HookrTelegramBot.Repository.Context
                         .Property(x => x.Id)
                         .ValueGeneratedOnAdd();
                 });
-            
+
             modelBuilder
                 .Entity<OrderedTobacco>(orderedTobacco =>
                 {
@@ -144,7 +144,7 @@ namespace HookrTelegramBot.Repository.Context
                         .HasForeignKey(x => x.OrderId)
                         .OnDelete(DeleteBehavior.Cascade);
                 });
-            
+
             modelBuilder
                 .Entity<Order>(order =>
                 {
@@ -163,6 +163,11 @@ namespace HookrTelegramBot.Repository.Context
                     order
                         .Property(x => x.Id)
                         .ValueGeneratedOnAdd();
+                    order
+                        .HasOne(x => x.DeletedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.DeletedById)
+                        .OnDelete(DeleteBehavior.NoAction);
                 });
         }
 
@@ -205,17 +210,26 @@ namespace HookrTelegramBot.Repository.Context
                 var now = DateTime.Now;
                 var userEntity = messageSource.ToDatabaseUser();
                 userEntity.LastUpdatedAt = now;
-                if (x.State == EntityState.Added)
+                switch (x.State)
                 {
-                    entity.CreatedAt = now;
-                    entity.CreatedBy = userContextProvider.DatabaseUser;
-                    return;
-                }
+                    case EntityState.Added:
+                        entity.CreatedAt = now;
+                        entity.CreatedBy = userContextProvider.DatabaseUser;
+                        return;
+                    case EntityState.Modified:
+                        entity.UpdatedAt = now;
+                        entity.UpdatedBy = userContextProvider.DatabaseUser;
+                        break;
+                    case EntityState.Deleted:
+                        if (entity is ISoftDeletable softDeletable)
+                        {
+                            x.State = EntityState.Modified;
+                            softDeletable.DeletedAt = now;
+                            softDeletable.DeletedBy = userContextProvider.DatabaseUser;
+                            softDeletable.IsDeleted = true;
+                        }
 
-                if (x.State == EntityState.Modified)
-                {
-                    entity.UpdatedAt = now;
-                    entity.UpdatedBy = userContextProvider.DatabaseUser;
+                        break;
                 }
             });
         }

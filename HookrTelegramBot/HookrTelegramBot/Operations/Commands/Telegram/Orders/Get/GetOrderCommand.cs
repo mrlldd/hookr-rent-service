@@ -13,10 +13,11 @@ using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches.CurrentOrder;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
 {
-    public class GetOrderCommand : CommandWithResponse<(OrderedTobacco[] Tobaccos, OrderedHookah[] Hookahs)>,
+    public class GetOrderCommand : CommandWithResponse<Order>,
         IGetOrderCommand
     {
         private readonly ICurrentOrderCache currentOrderCache;
@@ -36,46 +37,46 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
             this.hookrRepository = hookrRepository;
         }
 
-        protected override async Task<(OrderedTobacco[] Tobaccos, OrderedHookah[] Hookahs)> ProcessAsync()
+        protected override async Task<Order> ProcessAsync()
         {
             var orderId = ExtractArguments(userContextProvider.Update.Content);
             var order = await hookrRepository.ReadAsync((context, token) =>
-                context.Orders.FirstOrDefaultAsync(x => x.Id == orderId, token));
+                context.Orders
+                    .Include(x => x.OrderedHookahs)
+                    .ThenInclude(x => x.Product)
+                    .Include(x => x.OrderedTobaccos)
+                    .ThenInclude(x => x.Product)
+                    .FirstOrDefaultAsync(x => x.Id == orderId, token));
             if (order == null || order.CreatedById != userContextProvider.DatabaseUser.Id)
             {
                 throw new InvalidOperationException("Seems like you have no access :(");
             }
-
-            return await (
-                    hookrRepository.ReadAsync((context, token)
-                        => context.OrderedTobaccos
-                            .Include(x => x.Product)
-                            .Where(x => x.OrderId == orderId)
-                            .ToArrayAsync(token)),
-                    hookrRepository.ReadAsync((context, token)
-                        => context.OrderedHookahs
-                            .Include(x => x.Product)
-                            .Where(x => x.OrderId == orderId)
-                            .ToArrayAsync(token))
-                )
-                .CombineAsync();
+            return order;
         }
 
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
-            (OrderedTobacco[] Tobaccos, OrderedHookah[] Hookahs) response)
+            Order response)
             => client
-                .SendTextMessageAsync(response.Hookahs.Any() || response.Tobaccos.Any()
+                .SendTextMessageAsync(response.OrderedHookahs.Any() || response.OrderedTobaccos.Any()
                     ? StringifyResponse(response)
-                    : "seems like there is no any data in order");
+                    : "seems like there is no any data in order",
+                    replyMarkup: new InlineKeyboardMarkup(new[]
+                    {
+                        new InlineKeyboardButton
+                        {
+                            Text = "Delete",
+                            CallbackData = $"/deleteorder {response.Id}"
+                        }, 
+                    }));
 
-        private static string StringifyResponse((OrderedTobacco[] Tobaccos, OrderedHookah[] Hookahs) aggregatedOrder) =>
-            (aggregatedOrder.Tobaccos.Any()
+        private static string StringifyResponse(Order order) =>
+            (order.OrderedTobaccos.Any()
                 ? "Tobaccos:" +
-                  AggregateProducts(aggregatedOrder.Tobaccos)
+                  AggregateProducts(order.OrderedTobaccos)
                 : string.Empty) +
-            (aggregatedOrder.Hookahs.Any()
+            (order.OrderedHookahs.Any()
                 ? "\n\nHookahs:" +
-                  AggregateProducts(aggregatedOrder.Hookahs)
+                  AggregateProducts(order.OrderedHookahs)
                 : string.Empty);
 
         private static string AggregateProducts<TProduct>(IEnumerable<Ordered<TProduct>> products)
