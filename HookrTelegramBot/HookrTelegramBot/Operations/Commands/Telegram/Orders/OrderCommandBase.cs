@@ -19,7 +19,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
 
         private readonly IUserContextProvider userContextProvider;
         protected readonly IHookrRepository HookrRepository;
-
+        protected string[] ArgumentsLeft { get; private set; }
         protected OrderCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
             IHookrRepository hookrRepository) : base(telegramBotClient)
@@ -30,7 +30,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
 
         protected sealed override async Task<Order> ProcessAsync()
         {
-            var orderId = ExtractArguments(userContextProvider.Update.Content);
+            var orderId = ExtractOrderId(userContextProvider.Update.Content);
             var order = await HookrRepository.ReadAsync((context, token) => SideQuery(context.Orders)
                 .FirstOrDefaultAsync(x => x.Id == orderId, token));
             ValidateOrder(order, userContextProvider.DatabaseUser);
@@ -39,15 +39,18 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
 
         protected virtual Task<Order> ProcessAsync(Order order) => Task.FromResult(order);
 
-        private static int ExtractArguments(string command)
+        private int ExtractOrderId(string command)
         {
             var subs = command.Split(Space);
-            if (subs.Length != 2)
+            if (subs.Length < 2)
             {
                 throw new InvalidArgumentsPassedInException("Wrong arguments have been passed in.");
             }
 
-            return int.TryParse(subs.Last(), out var result)
+            ArgumentsLeft = subs
+                .Skip(2)
+                .ToArray();
+            return int.TryParse(subs[1], out var result)
                 ? result
                 : throw new InvalidArgumentsPassedInException("Wrong arguments have been passed in.");
         }

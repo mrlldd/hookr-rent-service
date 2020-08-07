@@ -36,9 +36,9 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Delete
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Order response)
             => client.SendTextMessageAsync($"Successfully deleted order {response.Id}.");
 
-        protected override (bool, string) HandleCustomException(Exception exception)
+        protected override (bool, string) ReadCustomException(Exception exception)
             => exception is OrderAlreadyDeletedException
                 ? (true, "Order not exist or has been already deleted.")
-                : base.HandleCustomException(exception);
+                : base.ReadCustomException(exception);
     }
 }

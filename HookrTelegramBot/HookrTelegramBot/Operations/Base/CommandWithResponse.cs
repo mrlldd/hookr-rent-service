@@ -9,7 +9,6 @@ using Telegram.Bot.Types;
 
 namespace HookrTelegramBot.Operations.Base
 {
-
     public abstract class Command : ICommand
     {
         protected readonly IExtendedTelegramBotClient TelegramBotClient;
@@ -25,9 +24,13 @@ namespace HookrTelegramBot.Operations.Base
         {
             Log.Information(exception.ToString());
             var message = "Not available at the moment, sorry :(";
-            if (exception is TelegramException)
+            var determinedException =
+                exception is AggregateException aggregated
+                    ? aggregated.InnerException
+                    : exception;
+            if (determinedException is TelegramException)
             {
-                switch (exception)
+                switch (determinedException)
                 {
                     case InsufficientAccessRightsException rightsException:
                     {
@@ -41,73 +44,67 @@ namespace HookrTelegramBot.Operations.Base
                     }
                     default:
                     {
-                        var (success, anotherMessage) = HandleCustomException(exception);
+                        var (success, anotherMessage) = ReadCustomException(determinedException);
                         if (success)
                         {
                             message = anotherMessage;
                         }
+
                         break;
                     }
                 }
             }
+
             return client.SendTextMessageAsync(message);
         }
 
-        protected virtual (bool, string) HandleCustomException(Exception exception) => (false, string.Empty);
+        protected virtual (bool, string) ReadCustomException(Exception exception) => (false, string.Empty);
     }
+
     public abstract class CommandWithResponse : Command
     {
         protected CommandWithResponse(IExtendedTelegramBotClient telegramBotClient) : base(telegramBotClient)
         {
         }
 
-        public override Task ExecuteAsync()
-            => ProcessAsync()
-                .ContinueWith(task =>
-                {
-                    if (task.IsCompletedSuccessfully)
-                    {
-                        return SendResponseAsync(TelegramBotClient.WithCurrentUser);
-                    }
-
-                    if (task.IsFaulted || task.IsCanceled)
-                    {
-                        return SendErrorAsync(TelegramBotClient.WithCurrentUser, task.Exception)
-                            .ContinueWith(_ => throw task.Exception);
-                    }
-
-                    return task;
-                });
+        public override async Task ExecuteAsync()
+        {
+            try
+            {
+                await ProcessAsync();
+                await SendResponseAsync(TelegramBotClient.WithCurrentUser);
+            }
+            catch (Exception e)
+            {
+                await SendErrorAsync(TelegramBotClient.WithCurrentUser, e);
+                throw;
+            }
+        } 
 
         protected abstract Task ProcessAsync();
-        
+
         protected abstract Task<Message> SendResponseAsync(ICurrentTelegramUserClient client);
     }
-    
+
     public abstract class CommandWithResponse<TResponse> : Command
     {
         protected CommandWithResponse(IExtendedTelegramBotClient telegramBotClient) : base(telegramBotClient)
         {
         }
 
-        public override Task ExecuteAsync()
-            => ProcessAsync()
-                .ContinueWith(task =>
-                {
-                    if (task.IsCompletedSuccessfully)
-                    {
-                        return SendResponseAsync(TelegramBotClient.WithCurrentUser, task.Result);
-                    }
+        public override async Task ExecuteAsync()
+        {
+            try
+            {
+                await SendResponseAsync(TelegramBotClient.WithCurrentUser, await ProcessAsync());
+            }
+            catch (Exception e)
+            {
+                await SendErrorAsync(TelegramBotClient.WithCurrentUser, e);
+                throw;
+            }
+        }
 
-                    if (task.IsFaulted || task.IsCanceled)
-                    {
-                        return SendErrorAsync(TelegramBotClient.WithCurrentUser, task.Exception)
-                            .ContinueWith(_ => throw task.Exception);
-                    }
-
-                    return task;
-                });
-        
         protected abstract Task<TResponse> ProcessAsync();
         protected abstract Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, TResponse response);
     }

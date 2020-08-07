@@ -5,6 +5,7 @@ using HookrTelegramBot.Models.Telegram;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Delete;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Delete;
 using HookrTelegramBot.Operations.Commands.Telegram.Orders;
+using HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.AddProduct;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
