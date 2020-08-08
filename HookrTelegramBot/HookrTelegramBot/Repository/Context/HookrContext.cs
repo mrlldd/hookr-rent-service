@@ -164,6 +164,9 @@ namespace HookrTelegramBot.Repository.Context
                         .Property(x => x.Id)
                         .ValueGeneratedOnAdd();
                     order
+                        .Property(x => x.State)
+                        .HasDefaultValue(OrderStates.Constructing);
+                    order
                         .HasOne(x => x.DeletedBy)
                         .WithMany()
                         .HasForeignKey(x => x.DeletedById)
@@ -215,7 +218,7 @@ namespace HookrTelegramBot.Repository.Context
                     case EntityState.Added:
                         entity.CreatedAt = now;
                         entity.CreatedBy = userContextProvider.DatabaseUser;
-                        return;
+                        break;
                     case EntityState.Modified:
                         entity.UpdatedAt = now;
                         entity.UpdatedBy = userContextProvider.DatabaseUser;
