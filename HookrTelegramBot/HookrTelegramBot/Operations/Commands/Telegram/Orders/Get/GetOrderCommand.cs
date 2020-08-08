@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HookrTelegramBot.Operations.Base;
+using HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Confirm;
+using HookrTelegramBot.Operations.Commands.Telegram.Orders.Delete;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
@@ -13,6 +15,7 @@ using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches.CurrentOrder;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
@@ -38,18 +41,41 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
 
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
             Order response)
-            => client
-                .SendTextMessageAsync(response.OrderedHookahs.Any() || response.OrderedTobaccos.Any()
-                        ? StringifyResponse(response)
-                        : "seems like there is no any data in order",
-                    replyMarkup: new InlineKeyboardMarkup(new[]
+        {
+            var buttons = new List<InlineKeyboardButton>();
+            string text;
+            if (response.OrderedHookahs.Any() || response.OrderedTobaccos.Any())
+            {
+                text = StringifyResponse(response);
+                if (response.State == OrderStates.Constructing)
+                {
+                    buttons.Add(new InlineKeyboardButton
                     {
-                        new InlineKeyboardButton
-                        {
-                            Text = "Delete",
-                            CallbackData = $"/deleteorder {response.Id}"
-                        },
-                    }));
+                        Text = "Confirm",
+                        CallbackData = $"/{nameof(ConfirmOrderCommand).ExtractCommandName()} {response.Id}"
+                    });
+                }
+            }
+            else
+            {
+                text = "seems like there is no any data in order";
+            }
+
+            text += $"\n\nStatus: *{response.State}*";
+            if (response.State == OrderStates.Constructing)
+            {
+                buttons.Add(new InlineKeyboardButton
+                {
+                    Text = "Delete",
+                    CallbackData = $"/{nameof(DeleteOrderCommand).ExtractCommandName()} {response.Id}"
+                });
+            }
+
+            return client
+                .SendTextMessageAsync(text,
+                    ParseMode.MarkdownV2,
+                    replyMarkup: new InlineKeyboardMarkup(buttons));
+        }
 
         private static string StringifyResponse(Order order) =>
             (order.OrderedTobaccos.Any()
@@ -65,7 +91,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
             where TProduct : Product
             => products
                 .Aggregate(string.Empty,
-                    (prev, next) => prev + $"\n{next.Product.Name} - {next.Count}");
+                    (prev, next) => prev + $"\n{next.Product.Name} \\- {next.Count}");
 
     }
 }

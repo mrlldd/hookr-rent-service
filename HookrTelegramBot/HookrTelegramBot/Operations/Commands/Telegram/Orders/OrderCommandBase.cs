@@ -62,9 +62,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
                 throw new OrderAlreadyDeletedException("Order not exist or has been already deleted.");
             }
 
-            if (user.State == TelegramUserStates.Default && order.CreatedById != user.Id)
+            switch (user.State)
             {
-                throw new InsufficientAccessRightsException("Seems like you have no access :(");
+                case TelegramUserStates.Dev:
+                    return;
+                case TelegramUserStates.Default when order.CreatedById != user.Id:
+                    throw new InsufficientAccessRightsException("Seems like you have no access :(");
             }
         }
 
