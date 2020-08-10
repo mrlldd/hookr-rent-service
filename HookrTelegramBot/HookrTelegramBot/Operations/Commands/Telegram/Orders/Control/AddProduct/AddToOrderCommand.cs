@@ -109,7 +109,5 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.AddProduc
 
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Order response)
             => client.SendTextMessageAsync($"Successfully added product to order {response.Id}.");
-
-
     }
 }
