@@ -6,6 +6,6 @@ namespace HookrTelegramBot.Utilities.Telegram.Translations
     {
         public static IServiceCollection AddTranslations(this IServiceCollection services)
             => services
-                .AddScoped<ITranslationsProvider, TranslationsProvider>();
+                .AddScoped<ITranslationsResolver, TranslationsResolver>();
     }
 }

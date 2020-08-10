@@ -3,8 +3,8 @@ using HookrTelegramBot.Repository.Context.Entities.Translations;
 
 namespace HookrTelegramBot.Utilities.Telegram.Translations
 {
-    public interface ITranslationsProvider
+    public interface ITranslationsResolver
     {
-        Task<string> GetAsync(LanguageCodes languageCode, TranslationKeys translationKey);
+        Task<string> GetAsync(TranslationKeys translationKey);
     }
 }
