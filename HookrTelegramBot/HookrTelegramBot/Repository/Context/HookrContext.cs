@@ -5,9 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HookrTelegramBot.Repository.Context
 {
@@ -29,6 +31,8 @@ namespace HookrTelegramBot.Repository.Context
         public DbSet<OrderedTobacco> OrderedTobaccos { get; set; }
 
         public DbSet<OrderedHookah> OrderedHookahs { get; set; }
+        
+        public DbSet<Translation> Translations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -171,6 +175,18 @@ namespace HookrTelegramBot.Repository.Context
                         .WithMany()
                         .HasForeignKey(x => x.DeletedById)
                         .OnDelete(DeleteBehavior.NoAction);
+                });
+
+            modelBuilder
+                .Entity<Translation>(translation =>
+                {
+                    translation
+                        .Property(x => x.Key)
+                        .HasConversion(new EnumToStringConverter<TranslationKeys>());
+                    translation
+                        .HasKey(x => x.Key);
+                    translation
+                        .HasDiscriminator(x => x.Language);
                 });
         }
 

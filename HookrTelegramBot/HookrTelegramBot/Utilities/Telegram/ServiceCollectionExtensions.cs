@@ -2,6 +2,7 @@
 using HookrTelegramBot.Utilities.Telegram.Caches;
 using HookrTelegramBot.Utilities.Telegram.Notifiers;
 using HookrTelegramBot.Utilities.Telegram.Selectors;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HookrTelegramBot.Utilities.Telegram
@@ -13,7 +14,8 @@ namespace HookrTelegramBot.Utilities.Telegram
                 .AddTelegramSelectors()
                 .AddTelegramBotServices()
                 .AddCaches()
-                .AddNotifiers();
+                .AddNotifiers()
+                .AddTranslations();
 
     }
 }
