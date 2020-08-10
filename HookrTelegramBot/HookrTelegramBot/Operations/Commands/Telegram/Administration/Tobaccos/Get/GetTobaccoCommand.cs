@@ -40,7 +40,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
             Identified<Tobacco> response)
             => client
-                .SendTextMessageAsync($"Here is your hookah {response.Entity.Name} - {response.Entity.Price}",
+                .SendTextMessageAsync($"Here is your tobacco {response.Entity.Name} - {response.Entity.Price} UAH per 1g",
                     replyMarkup: PrepareKeyboard(response));
 
         protected override DbSet<Tobacco> EntityTableSelector(HookrContext context)
@@ -56,26 +56,30 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
 
         private InlineKeyboardMarkup PrepareKeyboard(Identified<Tobacco> tobacco)
         {
+            const byte defaultCount = 5;
             var buttons = new List<InlineKeyboardButton>();
             var dbUser = UserContextProvider.DatabaseUser;
             var orderId = currentOrderCache.Get(dbUser.Id);
             if (orderId.HasValue)
             {
-                buttons.Add(new InlineKeyboardButton
+                for (var i = defaultCount; i < defaultCount * 4 + 1; i *= 2)
                 {
-                    Text = "Add to order",
-                    CallbackData =
-                        $"/{nameof(AddToOrderCommand).ExtractCommandName()} {orderId} {nameof(Tobacco)} {tobacco.Index}"
-                });
+                    buttons.Add(new InlineKeyboardButton
+                    {
+                        Text = $"Order {i}",
+                        CallbackData =
+                            $"/{nameof(AddToOrderCommand).ExtractCommandName()} {orderId} {nameof(Tobacco)} {tobacco.Index} {i}"
+                    });
+                }
             }
 
             if (dbUser.State > TelegramUserStates.Default)
             {
                 buttons.Add(new InlineKeyboardButton
-                    {
-                        Text = "Delete",
-                        CallbackData = $"/{nameof(DeleteTobaccoCommand).ExtractCommandName()} {tobacco.Index}"
-                    });
+                {
+                    Text = "Delete",
+                    CallbackData = $"/{nameof(DeleteTobaccoCommand).ExtractCommandName()} {tobacco.Index}"
+                });
             }
 
             return new InlineKeyboardMarkup(buttons);

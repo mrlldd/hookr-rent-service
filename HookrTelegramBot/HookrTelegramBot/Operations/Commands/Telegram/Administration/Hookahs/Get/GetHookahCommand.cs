@@ -50,11 +50,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
 
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Identified<Hookah> response)
             => client
-                .SendTextMessageAsync($"Here is your hookah {response.Entity.Name} - {response.Entity.Price}",
+                .SendTextMessageAsync($"Here is your hookah {response.Entity.Name} - {response.Entity.Price} UAH per 1pcs",
                     replyMarkup: PrepareKeyboard(response));
 
         private InlineKeyboardMarkup PrepareKeyboard(Identified<Hookah> hookah)
         {
+            const byte defaultCount = 1;
             var buttons = new List<InlineKeyboardButton>();
             var dbUser = UserContextProvider.DatabaseUser;
             var orderId = currentOrderCache.Get(dbUser.Id);
@@ -63,7 +64,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
                 buttons.Add(new InlineKeyboardButton
                 {
                     Text = "Add to order",
-                    CallbackData = $"/{nameof(AddToOrderCommand).ExtractCommandName()} {orderId} {nameof(Hookah)} {hookah.Index}"
+                    CallbackData = $"/{nameof(AddToOrderCommand).ExtractCommandName()} {orderId} {nameof(Hookah)} {hookah.Index} {defaultCount}"  
                 });
             }
             if (dbUser.State > TelegramUserStates.Default)

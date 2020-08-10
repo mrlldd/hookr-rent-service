@@ -57,7 +57,11 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
         
         private static void ValidateOrder(Order order, TelegramUser user)
         {
-            if (order == null || order.IsDeleted)
+            if (order == null)
+            {
+                throw new InsufficientAccessRightsException("Order not exist or you have no access.");
+            }
+            if (order.IsDeleted)
             {
                 throw new OrderAlreadyDeletedException("Order not exist or has been already deleted.");
             }
