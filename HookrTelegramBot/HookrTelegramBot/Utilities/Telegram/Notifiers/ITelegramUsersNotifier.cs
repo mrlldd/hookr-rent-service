@@ -10,6 +10,6 @@ namespace HookrTelegramBot.Utilities.Telegram.Notifiers
     public interface ITelegramUsersNotifier
     {
         Task<IEnumerable<Message>> SendAsync(Func<IExtendedTelegramBotClient, TelegramUser, Task<Message>> functor,
-            params TelegramUserStates[] usersTypes);
+            params TelegramUserStates[] userTypes);
     }
 }

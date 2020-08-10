@@ -24,16 +24,16 @@ namespace HookrTelegramBot.Utilities.Telegram.Notifiers
         }
 
         public async Task<IEnumerable<Message>> SendAsync(Func<IExtendedTelegramBotClient, TelegramUser, Task<Message>> functor,
-            params TelegramUserStates[] usersTypes)
+            params TelegramUserStates[] userTypes)
         {
-            if (usersTypes.Length == 0)
+            if (userTypes.Length == 0)
             {
-                throw new ArgumentException("Unknown users type to notify.", nameof(usersTypes));
+                throw new ArgumentException("Unknown user types to notify.", nameof(userTypes));
             }
             //todo caching for nondefault users.
             var users = await hookrRepository
                 .ReadAsync((context, token) => context.TelegramUsers
-                    .Where(x => usersTypes.Contains(x.State))
+                    .Where(x => userTypes.Contains(x.State))
                     .ToArrayAsync(token));
             return await users
                 .Select(x => new Func<Task<Message>>(() => functor(telegramBotClient, x)))
