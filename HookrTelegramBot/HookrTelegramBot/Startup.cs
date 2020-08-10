@@ -42,6 +42,7 @@ namespace HookrTelegramBot
                 appSettings = new AppSettings();
                 configuration.Bind(appSettings);
             }
+            //todo 
 
             services.AddSingleton<IAppSettings>(appSettings);
 
