@@ -66,7 +66,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
                 {
                     buttons.Add(new InlineKeyboardButton
                     {
-                        Text = $"Order {i}",
+                        Text = $"Order {i}g",
                         CallbackData =
                             $"/{nameof(AddToOrderCommand).ExtractCommandName()} {orderId} {nameof(Tobacco)} {tobacco.Index} {i}"
                     });

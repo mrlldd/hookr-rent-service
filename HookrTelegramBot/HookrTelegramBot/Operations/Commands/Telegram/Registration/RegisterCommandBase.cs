@@ -74,7 +74,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
 
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
             => client
-                .SendTextMessageAsync($"Successfully registered new {ExpectedState}");
+                .SendTextMessageAsync($"Successfully registered new {ExpectedState.ToString().ToLower()}");
 
         protected override Task<Message> SendErrorAsync(ICurrentTelegramUserClient client, Exception exception)
             => exception is AggregateException aggregated && aggregated.InnerException is InvalidOperationException
