@@ -10,14 +10,21 @@ namespace HookrTelegramBot.Migrations
                 name: "Translations",
                 columns: table => new
                 {
-                    Key = table.Column<string>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Language = table.Column<int>(nullable: false),
+                    Key = table.Column<int>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Translations", x => x.Key);
+                    table.PrimaryKey("PK_Translations", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Translations_Language",
+                table: "Translations",
+                column: "Language");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

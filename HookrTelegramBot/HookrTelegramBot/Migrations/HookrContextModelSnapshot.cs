@@ -236,8 +236,13 @@ namespace HookrTelegramBot.Migrations
 
             modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Translations.Translation", b =>
                 {
-                    b.Property<string>("Key")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Key")
+                        .HasColumnType("int");
 
                     b.Property<int>("Language")
                         .HasColumnType("int");
@@ -245,11 +250,11 @@ namespace HookrTelegramBot.Migrations
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Key");
+                    b.HasKey("Id");
+
+                    b.HasIndex("Language");
 
                     b.ToTable("Translations");
-
-                    b.HasDiscriminator<int>("Language");
                 });
 
             modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Hookah", b =>

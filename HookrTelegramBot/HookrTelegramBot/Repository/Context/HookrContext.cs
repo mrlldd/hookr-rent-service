@@ -181,12 +181,9 @@ namespace HookrTelegramBot.Repository.Context
                 .Entity<Translation>(translation =>
                 {
                     translation
-                        .Property(x => x.Key)
-                        .HasConversion(new EnumToStringConverter<TranslationKeys>());
+                        .HasKey(x => x.Id);
                     translation
-                        .HasKey(x => x.Key);
-                    translation
-                        .HasDiscriminator(x => x.Language);
+                        .HasIndex(x => x.Language);
                 });
         }
 
@@ -218,7 +215,11 @@ namespace HookrTelegramBot.Repository.Context
         private void OnPreSaving()
         {
             var entries = ChangeTracker.Entries();
-            var messageSource = userContextProvider.Update.RealMessage.From;
+            var messageSource = userContextProvider.Update?.RealMessage.From;
+            if (messageSource == null)
+            {
+                return;
+            }
             entries.ForEach(x =>
             {
                 if (!(x.Entity is Entity entity))
