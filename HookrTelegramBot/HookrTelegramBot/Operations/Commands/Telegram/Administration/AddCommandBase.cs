@@ -17,18 +17,18 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
     {
         private readonly IHookrRepository hookrRepository;
         private readonly IUserContextProvider userContextProvider;
-        private readonly ITranslationsResolver translationsResolver;
 
         protected const string Separator = "-";
 
         protected AddCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserContextProvider userContextProvider,
-            ITranslationsResolver translationsResolver) : base(telegramBotClient)
+            ITranslationsResolver translationsResolver)
+            : base(telegramBotClient,
+                translationsResolver)
         {
             this.hookrRepository = hookrRepository;
             this.userContextProvider = userContextProvider;
-            this.translationsResolver = translationsResolver;
         }
 
         protected override async Task ProcessAsync()
@@ -47,6 +47,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
             => await client.SendTextMessageAsync(
-                await translationsResolver.ResolveAsync(TranslationKeys.AddCommandResult, typeof(TEntity)));
+                await TranslationsResolver.ResolveAsync(TranslationKeys.AddCommandResult, typeof(TEntity)));
     }
 }

@@ -27,7 +27,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
     public class GetHookahCommand : GetSingleCommandBase<Hookah>, IGetHookahCommand
     {
         private readonly ICurrentOrderCache currentOrderCache;
-        private readonly ITranslationsResolver translationsResolver;
 
         public GetHookahCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
@@ -36,10 +35,10 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
             ITranslationsResolver translationsResolver) 
             : base(telegramBotClient,
                 userContextProvider,
-                hookrRepository)
+                hookrRepository,
+                translationsResolver)
         {
             this.currentOrderCache = currentOrderCache;
-            this.translationsResolver = translationsResolver;
         }
         
         protected override int ExtractIndex(string command)
@@ -55,7 +54,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Identified<Hookah> response)
         {
-            var (content, keyboard) = await (translationsResolver.ResolveAsync(TranslationKeys.GetHookahResult,
+            var (content, keyboard) = await (TranslationsResolver.ResolveAsync(TranslationKeys.GetHookahResult,
                     response.Entity.Name,
                     response.Entity.Price),
                 PrepareKeyboardAsync(response)).CombineAsync();
@@ -75,7 +74,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
             {
                 buttons.Add(new InlineKeyboardButton
                 {
-                    Text = await translationsResolver.ResolveAsync(TranslationKeys.OrderSomething),
+                    Text = await TranslationsResolver.ResolveAsync(TranslationKeys.OrderSomething),
                     CallbackData = $"/{nameof(AddToOrderCommand).ExtractCommandName()} {orderId} {nameof(Hookah)} {hookah.Index} {defaultCount}"  
                 });
             }
@@ -85,7 +84,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
                 {
                     new InlineKeyboardButton
                     {
-                        Text = await translationsResolver.ResolveAsync(TranslationKeys.Delete),
+                        Text = await TranslationsResolver.ResolveAsync(TranslationKeys.Delete),
                         CallbackData = $"/{nameof(DeleteHookahCommand).ExtractCommandName()} {hookah.Index}"
                     },
                 });

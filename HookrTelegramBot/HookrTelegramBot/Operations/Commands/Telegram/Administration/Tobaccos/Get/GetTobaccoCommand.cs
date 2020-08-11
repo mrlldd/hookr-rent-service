@@ -27,7 +27,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
     public class GetTobaccoCommand : GetSingleCommandBase<Tobacco>, IGetTobaccoCommand
     {
         private readonly ICurrentOrderCache currentOrderCache;
-        private readonly ITranslationsResolver translationsResolver;
 
         public GetTobaccoCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
@@ -36,17 +35,17 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 userContextProvider,
-                hookrRepository)
+                hookrRepository,
+                translationsResolver)
         {
             this.currentOrderCache = currentOrderCache;
-            this.translationsResolver = translationsResolver;
         }
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
             Identified<Tobacco> response)
         {
             var (content, keyboard) = await (
-                translationsResolver.ResolveAsync(TranslationKeys.GetTobaccoResult, response.Entity.Name,
+                TranslationsResolver.ResolveAsync(TranslationKeys.GetTobaccoResult, response.Entity.Name,
                     response.Entity.Price),
                 PrepareKeyboardAsync(response)
             ).CombineAsync();
@@ -73,7 +72,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
             var buttons = new List<InlineKeyboardButton>();
             var dbUser = UserContextProvider.DatabaseUser;
             var orderId = currentOrderCache.Get(dbUser.Id);
-            var orderSomeGramsFormat = await translationsResolver.ResolveAsync(TranslationKeys.OrderSomeGrams);
+            var orderSomeGramsFormat = await TranslationsResolver.ResolveAsync(TranslationKeys.OrderSomeGrams);
             if (orderId.HasValue)
             {
                 for (var i = defaultCount; i < defaultCount * 4 + 1; i *= 2)
@@ -91,7 +90,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
             {
                 buttons.Add(new InlineKeyboardButton
                 {
-                    Text = await translationsResolver.ResolveAsync(TranslationKeys.Delete),
+                    Text = await TranslationsResolver.ResolveAsync(TranslationKeys.Delete),
                     CallbackData = $"/{nameof(DeleteTobaccoCommand).ExtractCommandName()} {tobacco.Index}"
                 });
             }

@@ -45,9 +45,7 @@ namespace HookrTelegramBot.Operations
         public Task DispatchAsync()
         {
             var update = userContextProvider.Update;
-            var data = update.Type == UpdateType.CallbackQuery
-                ? update.CallbackQuery.Data
-                : update.RealMessage.Text;
+            var data = update.Content;
             var commandName = data.ExtractCommand();
             if (!commandName.IsNumber())
             {

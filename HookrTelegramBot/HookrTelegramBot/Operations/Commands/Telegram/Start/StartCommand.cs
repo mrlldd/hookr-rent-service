@@ -19,17 +19,16 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Start
     {
         private readonly IHookrRepository hookrRepository;
         private readonly IUserContextProvider userContextProvider;
-        private readonly ITranslationsResolver translationsResolver;
 
         public StartCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserContextProvider userContextProvider,
             ITranslationsResolver translationsResolver)
-            : base(telegramBotClient)
+            : base(telegramBotClient,
+                translationsResolver)
         {
             this.hookrRepository = hookrRepository;
             this.userContextProvider = userContextProvider;
-            this.translationsResolver = translationsResolver;
         }
 
         protected override Task ProcessAsync()
@@ -58,7 +57,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Start
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
             => await client
-                .SendTextMessageAsync(await translationsResolver.ResolveAsync(TranslationKeys.Welcome), replyMarkup: new ReplyKeyboardMarkup
+                .SendTextMessageAsync(await TranslationsResolver.ResolveAsync(TranslationKeys.Welcome), replyMarkup: new ReplyKeyboardMarkup
                 {
                     OneTimeKeyboard = true,
                     ResizeKeyboard = true,

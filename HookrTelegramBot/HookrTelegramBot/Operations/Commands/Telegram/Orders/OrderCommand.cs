@@ -25,7 +25,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
         private readonly IHookrRepository hookrRepository;
         private readonly ICurrentOrderCache currentOrderCache;
         private readonly IUserContextProvider userContextProvider;
-        private readonly ITranslationsResolver translationsResolver;
 
         public OrderCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserTemporaryStatusCache userTemporaryStatusCache,
@@ -33,13 +32,13 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
             ICurrentOrderCache currentOrderCache,
             IUserContextProvider userContextProvider,
             ITranslationsResolver translationsResolver)
-            : base(telegramBotClient)
+            : base(telegramBotClient,
+                translationsResolver)
         {
             this.userTemporaryStatusCache = userTemporaryStatusCache;
             this.hookrRepository = hookrRepository;
             this.currentOrderCache = currentOrderCache;
             this.userContextProvider = userContextProvider;
-            this.translationsResolver = translationsResolver;
         }
 
         protected override async Task<InlineKeyboardButton[]> ProcessAsync()
@@ -52,7 +51,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
                 {
                     new InlineKeyboardButton
                     {
-                        Text = await translationsResolver.ResolveAsync(TranslationKeys.ViewCurrentOrder),
+                        Text = await TranslationsResolver.ResolveAsync(TranslationKeys.ViewCurrentOrder),
                         CallbackData = $"/getorder {cachedOrderId}"
                         //todo
                     }
@@ -68,9 +67,9 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
             InlineKeyboardButton[] response)
         {
             var (product, hookahs, tobaccos) = await (
-                translationsResolver.ResolveAsync(TranslationKeys.ChooseProduct),
-                translationsResolver.ResolveAsync(TranslationKeys.Hookahs),
-                translationsResolver.ResolveAsync(TranslationKeys.Tobaccos)
+                TranslationsResolver.ResolveAsync(TranslationKeys.ChooseProduct),
+                TranslationsResolver.ResolveAsync(TranslationKeys.Hookahs),
+                TranslationsResolver.ResolveAsync(TranslationKeys.Tobaccos)
             ).CombineAsync();
             return await client
                 .SendTextMessageAsync(product,

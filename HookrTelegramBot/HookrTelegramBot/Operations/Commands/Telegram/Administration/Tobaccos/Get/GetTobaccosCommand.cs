@@ -18,7 +18,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
 {
     public class GetTobaccosCommand : GetCommandBase<Tobacco>, IGetTobaccosCommand
     {
-        private readonly ITranslationsResolver translationsResolver;
 
         public GetTobaccosCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
@@ -28,9 +27,9 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
             : base(telegramBotClient,
                 hookrRepository,
                 userTemporaryStatusCache,
-                userContextProvider)
+                userContextProvider,
+                translationsResolver)
         {
-            this.translationsResolver = translationsResolver;
         }
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Tobacco[] response)
@@ -39,7 +38,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
                     ? response
                         .Select((x, index) => $"/{index + 1} {x.Name} - {x.Price}")
                         .Aggregate((prev, next) => prev + "\n" + next)
-                    : await translationsResolver.ResolveAsync(TranslationKeys.NoTobaccos));
+                    : await TranslationsResolver.ResolveAsync(TranslationKeys.NoTobaccos));
 
         protected override DbSet<Tobacco> EntityTableSelector(HookrContext context)
             => context.Tobaccos;

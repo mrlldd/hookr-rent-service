@@ -8,19 +8,24 @@ using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 
 namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
 {
-    public abstract class GetSingleCommandBase<TEntity> : AdministrationCommandBase<TEntity, Identified<TEntity>> where TEntity : Entity
+    public abstract class GetSingleCommandBase<TEntity> : AdministrationCommandBase<TEntity, Identified<TEntity>>
+        where TEntity : Entity
     {
         protected readonly IUserContextProvider UserContextProvider;
         private readonly IHookrRepository hookrRepository;
 
         protected GetSingleCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository) : base(telegramBotClient)
+            IHookrRepository hookrRepository,
+            ITranslationsResolver translationsResolver)
+            : base(telegramBotClient,
+                translationsResolver)
         {
             UserContextProvider = userContextProvider;
             this.hookrRepository = hookrRepository;
@@ -41,6 +46,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
                 });
 
 
-        protected abstract int ExtractIndex(string command); 
+        protected abstract int ExtractIndex(string command);
     }
 }

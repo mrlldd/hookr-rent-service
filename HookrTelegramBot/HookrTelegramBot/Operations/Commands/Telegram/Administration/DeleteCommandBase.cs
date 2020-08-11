@@ -22,16 +22,14 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
 
         private readonly IUserContextProvider userContextProvider;
         private readonly IHookrRepository hookrRepository;
-        protected readonly ITranslationsResolver TranslationsResolver;
 
         protected DeleteCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
             IHookrRepository hookrRepository,
-            ITranslationsResolver translationsResolver) : base(telegramBotClient)
+            ITranslationsResolver translationsResolver) : base(telegramBotClient, translationsResolver)
         {
             this.userContextProvider = userContextProvider;
             this.hookrRepository = hookrRepository;
-            this.TranslationsResolver = translationsResolver;
         }
 
         protected override async Task ProcessAsync()

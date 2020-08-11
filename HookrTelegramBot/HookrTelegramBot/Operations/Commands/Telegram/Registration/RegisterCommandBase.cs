@@ -25,7 +25,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
         private readonly IHookrRepository hookrRepository;
         private readonly IUserContextProvider userContextProvider;
         private readonly IAppSettings appSettings;
-        private readonly ITranslationsResolver translationsResolver;
         private readonly DateTime now = DateTime.Now;
 
         protected RegisterCommandBase(IExtendedTelegramBotClient telegramBotClient,
@@ -33,12 +32,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
             IUserContextProvider userContextProvider,
             IAppSettings appSettings,
             ITranslationsResolver translationsResolver) :
-            base(telegramBotClient)
+            base(telegramBotClient,
+                translationsResolver)
         {
             this.hookrRepository = hookrRepository;
             this.userContextProvider = userContextProvider;
             this.appSettings = appSettings;
-            this.translationsResolver = translationsResolver;
         }
 
         protected override async Task ProcessAsync()
@@ -80,7 +79,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
             => await client
                 .SendTextMessageAsync(
-                    await translationsResolver.ResolveAsync(TranslationKeys.UserStateRegistrationSuccess,
+                    await TranslationsResolver.ResolveAsync(TranslationKeys.UserStateRegistrationSuccess,
                         ExpectedState.ToString().ToLower())
                 );
 

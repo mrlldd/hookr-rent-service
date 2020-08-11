@@ -19,7 +19,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
 {
     public class GetHookahsCommand : GetCommandBase<Hookah>, IGetHookahsCommand
     {
-        private readonly ITranslationsResolver translationsResolver;
 
         public GetHookahsCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
@@ -29,9 +28,9 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
             : base(telegramBotClient,
                 hookrRepository,
                 userTemporaryStatusCache,
-                userContextProvider)
+                userContextProvider,
+                translationsResolver)
         {
-            this.translationsResolver = translationsResolver;
         }
 
         protected override DbSet<Hookah> EntityTableSelector(HookrContext context)
@@ -45,7 +44,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
                     ? response
                         .Select((x, index) => $"/{index + 1} {x.Name} - {x.Price}")
                         .Aggregate((prev, next) => prev + "\n" + next)
-                    : await translationsResolver.ResolveAsync(TranslationKeys.NoHookahs));
+                    : await TranslationsResolver.ResolveAsync(TranslationKeys.NoHookahs));
 
     }
 }

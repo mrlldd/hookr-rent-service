@@ -6,11 +6,13 @@ using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches;
 using HookrTelegramBot.Utilities.Telegram.Caches.UserTemporaryStatus;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -27,7 +29,10 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
         protected GetCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserTemporaryStatusCache userTemporaryStatusCache,
-            IUserContextProvider userContextProvider) : base(telegramBotClient)
+            IUserContextProvider userContextProvider,
+            ITranslationsResolver translationsResolver)
+            : base(telegramBotClient,
+                translationsResolver)
         {
             this.hookrRepository = hookrRepository;
             this.userTemporaryStatusCache = userTemporaryStatusCache;

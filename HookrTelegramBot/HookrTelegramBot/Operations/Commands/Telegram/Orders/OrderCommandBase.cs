@@ -21,16 +21,16 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
 
         private readonly IUserContextProvider userContextProvider;
         protected readonly IHookrRepository HookrRepository;
-        protected readonly ITranslationsResolver TranslationsResolver;
         protected string[] ArgumentsLeft { get; private set; }
         protected OrderCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
             IHookrRepository hookrRepository,
-            ITranslationsResolver translationsResolver) : base(telegramBotClient)
+            ITranslationsResolver translationsResolver) 
+            : base(telegramBotClient,
+            translationsResolver)
         {
             this.userContextProvider = userContextProvider;
             HookrRepository = hookrRepository;
-            this.TranslationsResolver = translationsResolver;
         }
 
         protected sealed override async Task<Order> ProcessAsync()
