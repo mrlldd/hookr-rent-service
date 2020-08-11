@@ -4,6 +4,7 @@ using HookrTelegramBot.Repository.Context.Entities.Base;
 using HookrTelegramBot.Utilities.App.Settings;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 
 namespace HookrTelegramBot.Operations.Commands.Telegram.Registration.Service
 {
@@ -17,8 +18,13 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration.Service
         public RegisterServiceCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserContextProvider userContextProvider,
-            IAppSettings appSettings)
-            : base(telegramBotClient, hookrRepository, userContextProvider, appSettings)
+            IAppSettings appSettings,
+            ITranslationsResolver translationsResolver)
+            : base(telegramBotClient,
+                hookrRepository,
+                userContextProvider, 
+                appSettings,
+                translationsResolver)
         {
         }
     }

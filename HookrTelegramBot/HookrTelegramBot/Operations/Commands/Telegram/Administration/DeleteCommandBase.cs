@@ -4,9 +4,11 @@ using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -20,13 +22,16 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
 
         private readonly IUserContextProvider userContextProvider;
         private readonly IHookrRepository hookrRepository;
+        protected readonly ITranslationsResolver TranslationsResolver;
 
         protected DeleteCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository) : base(telegramBotClient)
+            IHookrRepository hookrRepository,
+            ITranslationsResolver translationsResolver) : base(telegramBotClient)
         {
             this.userContextProvider = userContextProvider;
             this.hookrRepository = hookrRepository;
+            this.TranslationsResolver = translationsResolver;
         }
 
         protected override async Task ProcessAsync()
@@ -46,8 +51,8 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
 
         protected abstract int ExtractIndex(string command);
         
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
-            => client
-                .SendTextMessageAsync($"Successfully removed {typeof(TEntity).Name}.");
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
+            => await client
+                .SendTextMessageAsync(await TranslationsResolver.ResolveAsync(TranslationKeys.DeleteCommandSuccess, typeof(TEntity).Name));
     }
 }

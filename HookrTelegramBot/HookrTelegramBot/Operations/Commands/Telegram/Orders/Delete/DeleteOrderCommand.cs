@@ -7,9 +7,11 @@ using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 
@@ -19,10 +21,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Delete
     {
         public DeleteOrderCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository)
+            IHookrRepository hookrRepository,
+            ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 userContextProvider,
-                hookrRepository)
+                hookrRepository,
+                translationsResolver)
         {
         }
 
@@ -33,12 +37,13 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Delete
             return order;
         }
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Order response)
-            => client.SendTextMessageAsync($"Successfully deleted order {response.Id}.");
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Order response)
+            => await client.SendTextMessageAsync(
+                await TranslationsResolver.ResolveAsync(TranslationKeys.OrderDeleteSuccess, response.Id));
 
-        protected override (bool, string) ReadCustomException(Exception exception)
+        protected override async Task<(bool, string)> ReadCustomExceptionAsync(Exception exception)
             => exception is OrderAlreadyDeletedException
-                ? (true, "Order not exist or has been already deleted.")
-                : base.ReadCustomException(exception);
+                ? (true, await TranslationsResolver.ResolveAsync(TranslationKeys.OrderAlreadyDeleted))
+                : await base.ReadCustomExceptionAsync(exception);
     }
 }

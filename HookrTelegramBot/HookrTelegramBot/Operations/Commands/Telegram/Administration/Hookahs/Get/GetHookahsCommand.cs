@@ -5,11 +5,13 @@ using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches;
 using HookrTelegramBot.Utilities.Telegram.Caches.UserTemporaryStatus;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 
@@ -17,15 +19,19 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
 {
     public class GetHookahsCommand : GetCommandBase<Hookah>, IGetHookahsCommand
     {
+        private readonly ITranslationsResolver translationsResolver;
+
         public GetHookahsCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserTemporaryStatusCache userTemporaryStatusCache,
-            IUserContextProvider userContextProvider)
+            IUserContextProvider userContextProvider,
+            ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 hookrRepository,
                 userTemporaryStatusCache,
                 userContextProvider)
         {
+            this.translationsResolver = translationsResolver;
         }
 
         protected override DbSet<Hookah> EntityTableSelector(HookrContext context)
@@ -33,13 +39,13 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
 
         protected override UserTemporaryStatus NextUserState => UserTemporaryStatus.ChoosingHookah;
         
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Hookah[] response)
-            => client
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Hookah[] response)
+            => await client
                 .SendTextMessageAsync(response.Any()
                     ? response
                         .Select((x, index) => $"/{index + 1} {x.Name} - {x.Price}")
                         .Aggregate((prev, next) => prev + "\n" + next)
-                    : "There is no hookahs at the moment :(");
+                    : await translationsResolver.ResolveAsync(TranslationKeys.NoHookahs));
 
     }
 }

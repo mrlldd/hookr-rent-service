@@ -7,6 +7,7 @@ using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 
@@ -14,15 +15,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
 {
     public class AddTobaccoCommand : AddCommandBase<Tobacco>, IAddTobaccoCommand
     {
-        public AddTobaccoCommand(IExtendedTelegramBotClient telegramBotClient,
-            IHookrRepository hookrRepository,
-            IUserContextProvider userContextProvider)
-            : base(telegramBotClient,
-                hookrRepository,
-                userContextProvider)
-        {
-        }
-
         protected override DbSet<Tobacco> EntityTableSelector(HookrContext context)
             => context.Tobaccos;
 
@@ -44,6 +36,17 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
                 Name = subs[0],
                 Price = price
             };
+        }
+
+        public AddTobaccoCommand(IExtendedTelegramBotClient telegramBotClient,
+            IHookrRepository hookrRepository,
+            IUserContextProvider userContextProvider,
+            ITranslationsResolver translationsResolver)
+            : base(telegramBotClient,
+                hookrRepository,
+                userContextProvider,
+                translationsResolver)
+        {
         }
     }
 }

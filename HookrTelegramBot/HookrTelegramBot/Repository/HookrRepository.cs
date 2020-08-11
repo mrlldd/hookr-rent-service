@@ -49,11 +49,16 @@ namespace HookrTelegramBot.Repository
                     .FirstOrDefaultAsync(x
                         => x.Language == languageCode
                            && x.Key == translationKey));
-            memoryCache.Set(key, translation.Value, new MemoryCacheEntryOptions
+            var value = translation?.Value;
+            if (!string.IsNullOrEmpty(value))
             {
-                SlidingExpiration = TimeSpan.FromDays(timeoutDays)
-            });
-            return translation.Value;
+                memoryCache.Set(key, value, new MemoryCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromDays(timeoutDays)
+                });
+            }
+
+            return value;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HookrTelegramBot.ActionFilters;
@@ -7,6 +8,7 @@ using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 
 namespace HookrTelegramBot.Controllers
@@ -30,30 +32,50 @@ namespace HookrTelegramBot.Controllers
         public Task Update([FromBody] Update _) => dispatcher.DispatchAsync();
 
         [HttpPost("translations")]
-        public Task UpdateTranslations(
+        public async Task UpdateTranslations(
             [FromBody] Dictionary<LanguageCodes, Dictionary<TranslationKeys, string>> newTranslations)
         {
-            if (newTranslations == null 
+            // todo password key validation
+            if (newTranslations == null
                 || !newTranslations.Any()
                 || newTranslations.Values
-                    .Any(x => x.Count == 0))
+                    .Any(x => !x.Any()))
             {
-                HttpContext.Response.StatusCode = 403;
-                return Task.CompletedTask;
+                HttpContext.Response.StatusCode = 400;
+                return;
             }
 
             var table = hookrRepository.Context.Translations;
-            newTranslations.ForEach(pair =>
-            {
-                var (language, inner) = pair;
-                inner.ForEach(x => table.Add(new Translation
+            await newTranslations
+                .Select(pair => new Func<Task>(async () =>
                 {
-                    Key = x.Key,
-                    Value = x.Value,
-                    Language = language
-                }));
-            });
-            return hookrRepository.Context.SaveChangesAsync();
+                    var (language, inner) = pair;
+                    var languageTranslations = await hookrRepository.ReadAsync((context, token) => context.Translations
+                        .Where(x => x.Language == language)
+                        .ToArrayAsync(token));
+                    inner.ForEach(x =>
+                    {
+                        var (key, value) = x;
+                        var existing = languageTranslations
+                            .FirstOrDefault(y => y.Key == key);
+                        if (existing == null)
+                        {
+                            table.Add(new Translation
+                            {
+                                Key = key,
+                                Value = value,
+                                Language = language
+                            });
+                        }
+                        else
+                        {
+                            existing.Value = value;
+                            table.Update(existing);
+                        }
+                    });
+                }))
+                .ExecuteMultipleAsync();
+            await hookrRepository.Context.SaveChangesAsync();
         }
     }
 }

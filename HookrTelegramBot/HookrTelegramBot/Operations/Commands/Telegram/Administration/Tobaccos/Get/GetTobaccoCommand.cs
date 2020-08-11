@@ -10,12 +10,14 @@ using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches.CurrentOrder;
 using HookrTelegramBot.Utilities.Telegram.Caches.UserTemporaryStatus;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -25,23 +27,34 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
     public class GetTobaccoCommand : GetSingleCommandBase<Tobacco>, IGetTobaccoCommand
     {
         private readonly ICurrentOrderCache currentOrderCache;
+        private readonly ITranslationsResolver translationsResolver;
 
         public GetTobaccoCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
             IHookrRepository hookrRepository,
-            ICurrentOrderCache currentOrderCache)
+            ICurrentOrderCache currentOrderCache,
+            ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 userContextProvider,
                 hookrRepository)
         {
             this.currentOrderCache = currentOrderCache;
+            this.translationsResolver = translationsResolver;
         }
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
             Identified<Tobacco> response)
-            => client
-                .SendTextMessageAsync($"Here is your tobacco {response.Entity.Name} - {response.Entity.Price} UAH per 1g",
-                    replyMarkup: PrepareKeyboard(response));
+        {
+            var (content, keyboard) = await (
+                translationsResolver.ResolveAsync(TranslationKeys.GetTobaccoResult, response.Entity.Name,
+                    response.Entity.Price),
+                PrepareKeyboardAsync(response)
+            ).CombineAsync();
+            return await client
+                .SendTextMessageAsync(
+                    content,
+                    replyMarkup: keyboard);
+        }
 
         protected override DbSet<Tobacco> EntityTableSelector(HookrContext context)
             => context.Tobaccos;
@@ -54,19 +67,20 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
                 ? result
                 : throw new InvalidOperationException("Wrong arguments.");
 
-        private InlineKeyboardMarkup PrepareKeyboard(Identified<Tobacco> tobacco)
+        private async Task<InlineKeyboardMarkup> PrepareKeyboardAsync(Identified<Tobacco> tobacco)
         {
             const byte defaultCount = 5;
             var buttons = new List<InlineKeyboardButton>();
             var dbUser = UserContextProvider.DatabaseUser;
             var orderId = currentOrderCache.Get(dbUser.Id);
+            var orderSomeGramsFormat = await translationsResolver.ResolveAsync(TranslationKeys.OrderSomeGrams);
             if (orderId.HasValue)
             {
                 for (var i = defaultCount; i < defaultCount * 4 + 1; i *= 2)
                 {
                     buttons.Add(new InlineKeyboardButton
                     {
-                        Text = $"Order {i}g",
+                        Text = string.Format(orderSomeGramsFormat, i),
                         CallbackData =
                             $"/{nameof(AddToOrderCommand).ExtractCommandName()} {orderId} {nameof(Tobacco)} {tobacco.Index} {i}"
                     });
@@ -77,7 +91,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
             {
                 buttons.Add(new InlineKeyboardButton
                 {
-                    Text = "Delete",
+                    Text = await translationsResolver.ResolveAsync(TranslationKeys.Delete),
                     CallbackData = $"/{nameof(DeleteTobaccoCommand).ExtractCommandName()} {tobacco.Index}"
                 });
             }

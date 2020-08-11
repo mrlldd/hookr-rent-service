@@ -20,7 +20,7 @@ namespace HookrTelegramBot.Operations.Base
 
         public abstract Task ExecuteAsync();
 
-        protected virtual Task<Message> SendErrorAsync(ICurrentTelegramUserClient client, Exception exception)
+        protected virtual async Task<Message> SendErrorAsync(ICurrentTelegramUserClient client, Exception exception)
         {
             Log.Information(exception.ToString());
             var message = "Not available at the moment, sorry :(";
@@ -44,7 +44,7 @@ namespace HookrTelegramBot.Operations.Base
                     }
                     default:
                     {
-                        var (success, anotherMessage) = ReadCustomException(determinedException);
+                        var (success, anotherMessage) = await ReadCustomExceptionAsync(determinedException);
                         if (success)
                         {
                             message = anotherMessage;
@@ -55,10 +55,10 @@ namespace HookrTelegramBot.Operations.Base
                 }
             }
 
-            return client.SendTextMessageAsync(message);
+            return await client.SendTextMessageAsync(message);
         }
 
-        protected virtual (bool, string) ReadCustomException(Exception exception) => (false, string.Empty);
+        protected virtual Task<(bool, string)> ReadCustomExceptionAsync(Exception exception) => Task.FromResult((false, string.Empty));
     }
 
     public abstract class CommandWithResponse : Command

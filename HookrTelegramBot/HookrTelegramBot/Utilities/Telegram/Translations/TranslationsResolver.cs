@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities.Translations;
@@ -20,15 +21,20 @@ namespace HookrTelegramBot.Utilities.Telegram.Translations
             this.userContextProvider = userContextProvider;
         }
 
-        public Task<string> GetAsync(TranslationKeys translationKey)
+        public async Task<string> ResolveAsync(TranslationKeys translationKey, params object[] args)
         {
             var update = userContextProvider.Update;
             var languageCode = Enum.TryParse<LanguageCodes>(update.Type == UpdateType.CallbackQuery
                 ? update.CallbackQuery.From.LanguageCode
-                : update.RealMessage.From.LanguageCode, out var parsedCode)
+                : update.RealMessage.From.LanguageCode, true, out var parsedCode)
                 ? parsedCode
                 : DefaultLanguage;
-            return hookrRepository.GetTranslationAsync(languageCode, translationKey);
+            var result = await hookrRepository.GetTranslationAsync(languageCode, translationKey);
+            return string.IsNullOrEmpty(result)
+                ? $"[{translationKey}] [{string.Join(',', args)}]"
+                : args.Any()
+                    ? string.Format(result, args)
+                    : result;
         }
     }
 }

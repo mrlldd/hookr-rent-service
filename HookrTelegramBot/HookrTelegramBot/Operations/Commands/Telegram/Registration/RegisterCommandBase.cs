@@ -4,10 +4,12 @@ using System.Threading.Tasks;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.App.Settings;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 
@@ -23,17 +25,20 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
         private readonly IHookrRepository hookrRepository;
         private readonly IUserContextProvider userContextProvider;
         private readonly IAppSettings appSettings;
+        private readonly ITranslationsResolver translationsResolver;
         private readonly DateTime now = DateTime.Now;
 
         protected RegisterCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserContextProvider userContextProvider,
-            IAppSettings appSettings) :
+            IAppSettings appSettings,
+            ITranslationsResolver translationsResolver) :
             base(telegramBotClient)
         {
             this.hookrRepository = hookrRepository;
             this.userContextProvider = userContextProvider;
             this.appSettings = appSettings;
+            this.translationsResolver = translationsResolver;
         }
 
         protected override async Task ProcessAsync()
@@ -72,9 +77,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
             await hookrRepository.Context.SaveChangesAsync();
         }
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
-            => client
-                .SendTextMessageAsync($"Successfully registered new {ExpectedState.ToString().ToLower()}");
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
+            => await client
+                .SendTextMessageAsync(
+                    await translationsResolver.ResolveAsync(TranslationKeys.UserStateRegistrationSuccess,
+                        ExpectedState.ToString().ToLower())
+                );
 
         protected override Task<Message> SendErrorAsync(ICurrentTelegramUserClient client, Exception exception)
             => exception is AggregateException aggregated && aggregated.InnerException is InvalidOperationException

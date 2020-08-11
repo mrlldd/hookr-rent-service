@@ -5,6 +5,6 @@ namespace HookrTelegramBot.Utilities.Telegram.Translations
 {
     public interface ITranslationsResolver
     {
-        Task<string> GetAsync(TranslationKeys translationKey);
+        Task<string> ResolveAsync(TranslationKeys translationKey, params object[] args);
     }
 }

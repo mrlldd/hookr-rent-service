@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram;
 using Telegram.Bot;
@@ -31,6 +32,23 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser
             => botClient
                 .SendTextMessageAsync(userContextProvider.Update.Chat,
                     text,
+                    parseMode,
+                    disableWebPagePreview,
+                    disableNotification,
+                    replyToMessageId,
+                    replyMarkup,
+                    cancellationToken);
+        
+        public async Task<Message> SendTextMessageAsync(Func<Task<string>> contentProducer,
+            ParseMode parseMode = default,
+            bool disableWebPagePreview = false,
+            bool disableNotification = false,
+            int replyToMessageId = 0,
+            IReplyMarkup replyMarkup = null,
+            CancellationToken cancellationToken = default)
+            => await botClient
+                .SendTextMessageAsync(userContextProvider.Update.Chat,
+                    await contentProducer(),
                     parseMode,
                     disableWebPagePreview,
                     disableNotification,

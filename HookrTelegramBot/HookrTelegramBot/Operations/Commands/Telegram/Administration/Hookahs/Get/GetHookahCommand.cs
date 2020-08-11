@@ -11,11 +11,13 @@ using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches.CurrentOrder;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -25,16 +27,19 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
     public class GetHookahCommand : GetSingleCommandBase<Hookah>, IGetHookahCommand
     {
         private readonly ICurrentOrderCache currentOrderCache;
+        private readonly ITranslationsResolver translationsResolver;
 
         public GetHookahCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
             IHookrRepository hookrRepository,
-            ICurrentOrderCache currentOrderCache) 
+            ICurrentOrderCache currentOrderCache,
+            ITranslationsResolver translationsResolver) 
             : base(telegramBotClient,
                 userContextProvider,
                 hookrRepository)
         {
             this.currentOrderCache = currentOrderCache;
+            this.translationsResolver = translationsResolver;
         }
         
         protected override int ExtractIndex(string command)
@@ -48,12 +53,19 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
         protected override DbSet<Hookah> EntityTableSelector(HookrContext context)
             => context.Hookahs;
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Identified<Hookah> response)
-            => client
-                .SendTextMessageAsync($"Here is your hookah {response.Entity.Name} - {response.Entity.Price} UAH per 1pcs",
-                    replyMarkup: PrepareKeyboard(response));
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Identified<Hookah> response)
+        {
+            var (content, keyboard) = await (translationsResolver.ResolveAsync(TranslationKeys.GetHookahResult,
+                    response.Entity.Name,
+                    response.Entity.Price),
+                PrepareKeyboardAsync(response)).CombineAsync();
+            return await client
+                .SendTextMessageAsync(
+                    content,
+                    replyMarkup: keyboard);
+        }
 
-        private InlineKeyboardMarkup PrepareKeyboard(Identified<Hookah> hookah)
+        private async Task<InlineKeyboardMarkup> PrepareKeyboardAsync(Identified<Hookah> hookah)
         {
             const byte defaultCount = 1;
             var buttons = new List<InlineKeyboardButton>();
@@ -63,7 +75,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
             {
                 buttons.Add(new InlineKeyboardButton
                 {
-                    Text = "Order",
+                    Text = await translationsResolver.ResolveAsync(TranslationKeys.OrderSomething),
                     CallbackData = $"/{nameof(AddToOrderCommand).ExtractCommandName()} {orderId} {nameof(Hookah)} {hookah.Index} {defaultCount}"  
                 });
             }
@@ -73,7 +85,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
                 {
                     new InlineKeyboardButton
                     {
-                        Text = "Delete",
+                        Text = await translationsResolver.ResolveAsync(TranslationKeys.Delete),
                         CallbackData = $"/{nameof(DeleteHookahCommand).ExtractCommandName()} {hookah.Index}"
                     },
                 });

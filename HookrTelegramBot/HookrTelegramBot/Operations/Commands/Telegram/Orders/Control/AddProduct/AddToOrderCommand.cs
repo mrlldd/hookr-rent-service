@@ -8,9 +8,11 @@ using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 
@@ -20,10 +22,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.AddProduc
     {
         public AddToOrderCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository)
+            IHookrRepository hookrRepository,
+            ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 userContextProvider,
-                hookrRepository)
+                hookrRepository,
+                translationsResolver)
         {
         }
 
@@ -39,6 +43,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.AddProduc
             {
                 throw new InvalidOperationException("Seems like there is no real count.");
             }
+
             switch (productName)
             {
                 case nameof(Hookah):
@@ -119,6 +124,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.AddProduc
                 existingProduct.Count += count;
                 return;
             }
+
             collection.Add(new TOrderedProduct
             {
                 Product = product,
@@ -126,7 +132,8 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.AddProduc
             });
         }
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Order response)
-            => client.SendTextMessageAsync($"Successfully added product to order {response.Id}.");
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Order response)
+            => await client.SendTextMessageAsync(
+                await TranslationsResolver.ResolveAsync(TranslationKeys.AddProductToOrderSuccess, response.Id));
     }
 }

@@ -8,11 +8,13 @@ using HookrTelegramBot.Operations.Commands.Telegram.Orders.Delete;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches.CurrentOrder;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -25,10 +27,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
     {
         public GetOrderCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository)
+            IHookrRepository hookrRepository,
+            ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 userContextProvider,
-                hookrRepository)
+                hookrRepository,
+                translationsResolver)
         {
         }
 
@@ -39,7 +43,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
                 .Include(x => x.OrderedTobaccos)
                 .ThenInclude(x => x.Product);
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
             Order response)
         {
             var buttons = new List<InlineKeyboardButton>();
@@ -51,7 +55,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
                 {
                     buttons.Add(new InlineKeyboardButton
                     {
-                        Text = "Confirm",
+                        Text = await TranslationsResolver.ResolveAsync(TranslationKeys.Confirm),
                         CallbackData = $"/{nameof(ConfirmOrderCommand).ExtractCommandName()} {response.Id}"
                     });
                 }
@@ -66,12 +70,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
             {
                 buttons.Add(new InlineKeyboardButton
                 {
-                    Text = "Delete",
+                    Text = await TranslationsResolver.ResolveAsync(TranslationKeys.Delete),
                     CallbackData = $"/{nameof(DeleteOrderCommand).ExtractCommandName()} {response.Id}"
                 });
             }
 
-            return client
+            return await client
                 .SendTextMessageAsync(text,
                     ParseMode.MarkdownV2,
                     replyMarkup: new InlineKeyboardMarkup(buttons));
