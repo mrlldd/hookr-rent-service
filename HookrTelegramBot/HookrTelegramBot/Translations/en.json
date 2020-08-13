@@ -20,5 +20,10 @@
   "Welcome": "Hey!",
   "OrderSomething": "Order",
   "OrderSomeGrams": "Order {0}g",
-  "NotAvailable": "Not available at the moment, sorry :("
+  "NotAvailable": "Not available at the moment, sorry :(",
+  "NewOrderNotification": "New order:\nId: *{0}*\n\nHookahs:\n{1}\n\nTobaccos:\n{2}\n\nFrom:\n{3}",
+  "From": "Username: {0}\nFirst Name: {1}\nLast Name: {2}",
+  "OrderNotificationHookahRow": "{0}. {1} - {2} UAH per 1pcs. - {3}pcs. => {4} UAH.",
+  "OrderNotificationTobaccoRow": "{0}. {1} - {2} UAH per 1g. - {3}g. => {4} UAH.",
+  "Unknown": "Unknown"
 }

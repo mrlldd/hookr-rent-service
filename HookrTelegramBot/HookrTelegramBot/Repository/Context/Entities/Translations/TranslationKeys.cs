@@ -23,6 +23,11 @@
         Welcome,
         OrderSomething,
         OrderSomeGrams,
-        NotAvailable
+        NotAvailable,
+        NewOrderNotification,
+        From,
+        OrderNotificationHookahRow,
+        OrderNotificationTobaccoRow,
+        Unknown
     }
 }

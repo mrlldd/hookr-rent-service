@@ -20,5 +20,10 @@
   "Welcome": "Привет!",
   "OrderSomething": "Заказать",
   "OrderSomeGrams": "Заказать {0}г",
-  "NotAvailable": "Недоступно на данный момент :("
+  "NotAvailable": "Недоступно на данный момент :(",
+  "NewOrderNotification": "Новый заказ:\nId: *{0}*\n\nКальяны:\n{1}\n\nТабаки:\n{2}\n\nОт:\n{3}",
+  "From": "Ник: {0}\nИмя: {1}\nФамилия: {2}",
+  "OrderNotificationHookahRow": "{0}. {1} - {2} грн за 1 шт. - *{3}* шт. => *{4}* грн.",
+  "OrderNotificationTobaccoRow": "{0}. {1} - {2} грн за 1 г. - *{3}* г. => *{4}* грн.",
+  "Unknown": "Неизвестно"
 }
