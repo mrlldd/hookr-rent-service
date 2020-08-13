@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using HookrTelegramBot.Repository.Context;
@@ -15,5 +16,9 @@ namespace HookrTelegramBot.Repository
         Task<string> GetTranslationAsync(LanguageCodes languageCode,
             TranslationKeys translationKey,
             bool omitCache = false);
+
+        Task<IDictionary<TranslationKeys, string>> GetTranslationsAsync(LanguageCodes languageCode,
+            bool omitCache = false,
+            params TranslationKeys[] translationKeys);
     }
 }
