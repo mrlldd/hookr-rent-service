@@ -19,7 +19,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
     {
         private const string Space = " ";
 
-        private readonly IUserContextProvider userContextProvider;
+        protected readonly IUserContextProvider UserContextProvider;
         protected readonly IHookrRepository HookrRepository;
         protected string[] ArgumentsLeft { get; private set; }
         protected OrderCommandBase(IExtendedTelegramBotClient telegramBotClient,
@@ -29,16 +29,16 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
             : base(telegramBotClient,
             translationsResolver)
         {
-            this.userContextProvider = userContextProvider;
+            this.UserContextProvider = userContextProvider;
             HookrRepository = hookrRepository;
         }
 
         protected sealed override async Task<Order> ProcessAsync()
         {
-            var orderId = ExtractOrderId(userContextProvider.Update.Content);
+            var orderId = ExtractOrderId(UserContextProvider.Update.Content);
             var order = await HookrRepository.ReadAsync((context, token) => SideQuery(context.Orders)
                 .FirstOrDefaultAsync(x => x.Id == orderId, token));
-            await ValidateOrderAsync(order, userContextProvider.DatabaseUser);
+            await ValidateOrderAsync(order, UserContextProvider.DatabaseUser);
             return await ProcessAsync(order);
         }
 
