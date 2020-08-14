@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Products;
+using HookrTelegramBot.Repository.Context.Entities.Products.Ordered;
 
 namespace HookrTelegramBot.Utilities.Extensions
 {
