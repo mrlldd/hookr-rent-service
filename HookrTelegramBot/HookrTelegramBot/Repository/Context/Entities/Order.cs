@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Products.Ordered;
 
 namespace HookrTelegramBot.Repository.Context.Entities
 {

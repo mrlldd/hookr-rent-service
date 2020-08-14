@@ -5,6 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Products;
+using HookrTelegramBot.Repository.Context.Entities.Products.Ordered;
+using HookrTelegramBot.Repository.Context.Entities.Products.Photo;
 using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
@@ -33,6 +36,10 @@ namespace HookrTelegramBot.Repository.Context
         public DbSet<OrderedHookah> OrderedHookahs { get; set; }
         
         public DbSet<Translation> Translations { get; set; }
+        
+        public DbSet<HookahPhoto> HookahPhotos { get; set; }
+        
+        public DbSet<TobaccoPhoto> TobaccoPhotos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -184,6 +191,55 @@ namespace HookrTelegramBot.Repository.Context
                         .HasKey(x => x.Id);
                     translation
                         .HasIndex(x => x.Language);
+                });
+
+            modelBuilder
+                .Entity<HookahPhoto>(photo =>
+                {
+                    photo
+                        .HasOne(x => x.CreatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.CreatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    photo
+                        .HasOne(x => x.UpdatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.UpdatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    photo
+                        .HasOne(x => x.DeletedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.DeletedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    photo
+                        .HasOne(x => x.Hookah)
+                        .WithMany(x => x.Photos)
+                        .HasForeignKey(x => x.HookahId)
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+            modelBuilder
+                .Entity<TobaccoPhoto>(photo =>
+                {
+                    photo
+                        .HasOne(x => x.CreatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.CreatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    photo
+                        .HasOne(x => x.UpdatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.UpdatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    photo
+                        .HasOne(x => x.DeletedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.DeletedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    photo
+                        .HasOne(x => x.Tobacco)
+                        .WithMany(x => x.Photos)
+                        .HasForeignKey(x => x.TobaccoId)
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
 
