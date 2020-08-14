@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
@@ -33,7 +34,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
 
         protected override Task<Identified<TEntity>> ProcessAsync() =>
             hookrRepository
-                .ReadAsync((context, token) => EntityTableSelector(context)
+                .ReadAsync((context, token) => SideQuery(EntityTableSelector(context))
                     .ToArrayAsync(token))
                 .ContinueWith(task =>
                 {
@@ -44,6 +45,8 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
                         Index = id
                     };
                 });
+
+        protected virtual IQueryable<TEntity> SideQuery(IQueryable<TEntity> query) => query;
 
 
         protected abstract int ExtractIndex(string command);

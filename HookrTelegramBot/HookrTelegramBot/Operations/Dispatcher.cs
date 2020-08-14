@@ -5,6 +5,7 @@ using HookrTelegramBot.Models.Telegram;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Get;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Get;
+using HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Photos;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Caches;
@@ -38,6 +39,7 @@ namespace HookrTelegramBot.Operations
                 {UserTemporaryStatus.Default, ThrowDispatchingExceptionAsync},
                 {UserTemporaryStatus.ChoosingHookah, GetDetailedHookahInfo},
                 {UserTemporaryStatus.ChoosingTobacco, GetDetailedTobaccoInfo},
+                {UserTemporaryStatus.AskedForTobaccoPhotos, SetTobaccoPhotos}
             };
         }
 
@@ -45,18 +47,19 @@ namespace HookrTelegramBot.Operations
         public Task DispatchAsync()
         {
             var update = userContextProvider.Update;
+            var userStatus = userTemporaryStatusCache.Get(update.RealMessage.From.Id);
             var data = update.Content;
-            var commandName = data.ExtractCommand();
-            if (!commandName.IsNumber())
+            if (string.IsNullOrEmpty(data) || data.ExtractCommand().IsNumber())
             {
-                return DispatchAndExecuteCommandAsync(commandName);
+                if (userStatus != UserTemporaryStatus.Default
+                    && userResponseHandlers.TryGetValue(userStatus, out var handler))
+                {
+                    Log.Information("Dispatching user with status {0} response {1}", userStatus, data);
+                    return handler();
+                }
             }
 
-            var userStatus = userTemporaryStatusCache.Get(update.RealMessage.From.Id);
-            Log.Information("Dispatching user with status {0} response {1}", userStatus, commandName);
-            return userResponseHandlers.TryGetValue(userStatus, out var handler)
-                ? handler()
-                : DispatchAndExecuteCommandAsync(commandName);
+            return DispatchAndExecuteCommandAsync(data.ExtractCommand());
         }
 
         private Task DispatchAndExecuteCommandAsync(string commandName)
@@ -79,6 +82,9 @@ namespace HookrTelegramBot.Operations
 
         private Task GetDetailedTobaccoInfo()
             => DispatchAndExecuteCommandAsync(nameof(GetTobaccoCommand).ExtractCommandName());
+
+        private Task SetTobaccoPhotos()
+            => DispatchAndExecuteCommandAsync(nameof(SetTobaccoPhotosCommand).ExtractCommandName());
 
         private static Task ThrowDispatchingExceptionAsync()
             => throw new InvalidOperationException("There is no such command :(");

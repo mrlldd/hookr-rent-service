@@ -84,7 +84,7 @@ namespace HookrTelegramBot.Operations.Base
         {
         }
 
-        public override async Task ExecuteAsync()
+        public sealed override async Task ExecuteAsync()
         {
             try
             {
@@ -113,7 +113,7 @@ namespace HookrTelegramBot.Operations.Base
         {
         }
 
-        public override async Task ExecuteAsync()
+        public sealed override async Task ExecuteAsync()
         {
             try
             {

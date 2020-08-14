@@ -5,6 +5,7 @@ using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
+using HookrTelegramBot.Repository.Context.Entities.Products;
 using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;

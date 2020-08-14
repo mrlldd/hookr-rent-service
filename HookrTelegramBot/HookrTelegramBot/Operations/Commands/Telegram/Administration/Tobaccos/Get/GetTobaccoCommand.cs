@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Delete;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Delete;
+using HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Photos;
 using HookrTelegramBot.Operations.Commands.Telegram.Orders;
 using HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.AddProduct;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Products;
 using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
@@ -49,14 +52,26 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
                     response.Entity.Price),
                 PrepareKeyboardAsync(response)
             ).CombineAsync();
+
+            if (response.Entity.Photos.Any())
+            {
+                await client.SendMediaGroupAsync(
+                    response.Entity.Photos
+                        .Select(x => new InputMediaPhoto(new InputMedia(x.TelegramFileId)))
+                );
+            }
             return await client
-                .SendTextMessageAsync(
-                    content,
-                    replyMarkup: keyboard);
+                    .SendTextMessageAsync(
+                        content,
+                        replyMarkup: keyboard);
         }
 
         protected override DbSet<Tobacco> EntityTableSelector(HookrContext context)
             => context.Tobaccos;
+
+        protected override IQueryable<Tobacco> SideQuery(IQueryable<Tobacco> query)
+            => query
+                .Include(x => x.Photos);
 
         protected override int ExtractIndex(string command)
             => int
@@ -69,29 +84,47 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
         private async Task<InlineKeyboardMarkup> PrepareKeyboardAsync(Identified<Tobacco> tobacco)
         {
             const byte defaultCount = 5;
-            var buttons = new List<InlineKeyboardButton>();
+            var buttons = new List<IEnumerable<InlineKeyboardButton>>();
             var dbUser = UserContextProvider.DatabaseUser;
             var orderId = currentOrderCache.Get(dbUser.Id);
             var orderSomeGramsFormat = await TranslationsResolver.ResolveAsync(TranslationKeys.OrderSomeGrams);
             if (orderId.HasValue)
             {
+                var innerButtons = new List<InlineKeyboardButton>();
                 for (var i = defaultCount; i < defaultCount * 4 + 1; i *= 2)
                 {
-                    buttons.Add(new InlineKeyboardButton
+                    innerButtons.Add(new InlineKeyboardButton
                     {
                         Text = string.Format(orderSomeGramsFormat, i),
                         CallbackData =
                             $"/{nameof(AddToOrderCommand).ExtractCommandName()} {orderId} {nameof(Tobacco)} {tobacco.Index} {i}"
                     });
                 }
+
+                buttons.Add(innerButtons);
             }
 
             if (dbUser.State > TelegramUserStates.Default)
             {
-                buttons.Add(new InlineKeyboardButton
+                buttons.AddRange(new[]
                 {
-                    Text = await TranslationsResolver.ResolveAsync(TranslationKeys.Delete),
-                    CallbackData = $"/{nameof(DeleteTobaccoCommand).ExtractCommandName()} {tobacco.Index}"
+                    new[]
+                    {
+                        new InlineKeyboardButton
+                        {
+                            Text = await TranslationsResolver.ResolveAsync(TranslationKeys.Delete),
+                            CallbackData = $"/{nameof(DeleteTobaccoCommand).ExtractCommandName()} {tobacco.Index}"
+                        }
+                    },
+                    new[]
+                    {
+                        new InlineKeyboardButton
+                        {
+                            Text = "Set photos",
+                            CallbackData =
+                                $"/{nameof(AskForTobaccoPhotosCommand).ExtractCommandName()} {tobacco.Entity.Id}"
+                        }
+                    }
                 });
             }
 
