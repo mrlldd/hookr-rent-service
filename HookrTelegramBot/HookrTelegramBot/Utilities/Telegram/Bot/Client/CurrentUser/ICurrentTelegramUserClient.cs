@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
@@ -24,6 +25,12 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser
             bool disableNotification = false,
             int replyToMessageId = 0,
             IReplyMarkup replyMarkup = null,
+            CancellationToken cancellationToken = default);
+
+        Task<Message[]> SendMediaGroupAsync(
+            IEnumerable<IAlbumInputMedia> inputMedia,
+            bool disableNotification = default,
+            int replyToMessageId = default,
             CancellationToken cancellationToken = default);
     }
 }

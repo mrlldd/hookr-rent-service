@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram;
@@ -54,6 +55,18 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser
                     disableNotification,
                     replyToMessageId,
                     replyMarkup,
+                    cancellationToken);
+
+        public Task<Message[]> SendMediaGroupAsync(
+            IEnumerable<IAlbumInputMedia> inputMedia,
+            bool disableNotification = default,
+            int replyToMessageId = default,
+            CancellationToken cancellationToken = default)
+            => botClient
+                .SendMediaGroupAsync(inputMedia,
+                    userContextProvider.Update.Chat,
+                    disableNotification,
+                    replyToMessageId,
                     cancellationToken);
     }
 }
