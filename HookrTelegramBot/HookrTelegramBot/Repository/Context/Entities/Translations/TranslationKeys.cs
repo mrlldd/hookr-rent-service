@@ -28,6 +28,8 @@
         From,
         OrderNotificationHookahRow,
         OrderNotificationTobaccoRow,
-        Unknown
+        Unknown,
+        SetPhotos,
+        SendPhotosAsGroup
     }
 }
