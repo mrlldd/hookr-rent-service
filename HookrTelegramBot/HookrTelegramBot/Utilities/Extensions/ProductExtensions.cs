@@ -12,7 +12,7 @@ namespace HookrTelegramBot.Utilities.Extensions
         public static string AggregateListString(this IEnumerable<Product> products, string format,
             params Func<Product, object>[] argsSelectors)
             => products
-                .Select((x, index) => string.Format(format, new List<object>
+                .Select((x, index) => string.Format(format, new object[]
                     {
                         index + 1
                     }

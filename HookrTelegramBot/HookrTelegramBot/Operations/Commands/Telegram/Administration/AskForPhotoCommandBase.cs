@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram.Exceptions;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -58,8 +59,8 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
                         new PostEvictionCallbackRegistration
                         {
                             EvictionCallback =
-                                (o, value, reason, state) 
-                                    => userTemporaryStatusCache.Set(user.Id, UserTemporaryStatus.Default) 
+                                (o, value, reason, state)
+                                    => userTemporaryStatusCache.Set(user.Id, UserTemporaryStatus.Default)
                         }
                     }
                 }
@@ -68,8 +69,10 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
             return Task.CompletedTask;
         }
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
-            => client.SendTextMessageAsync("Please send photos as group for this product.");
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
+            => await client.SendTextMessageAsync(
+                await TranslationsResolver.ResolveAsync(TranslationKeys.SendPhotosAsGroup)
+            );
 
         protected abstract UserTemporaryStatus NextUserState { get; }
 

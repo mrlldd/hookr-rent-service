@@ -60,10 +60,11 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
                         .Select(x => new InputMediaPhoto(new InputMedia(x.TelegramFileId)))
                 );
             }
+
             return await client
-                    .SendTextMessageAsync(
-                        content,
-                        replyMarkup: keyboard);
+                .SendTextMessageAsync(
+                    content,
+                    replyMarkup: keyboard);
         }
 
         protected override DbSet<Tobacco> EntityTableSelector(HookrContext context)
@@ -87,9 +88,10 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
             var buttons = new List<IEnumerable<InlineKeyboardButton>>();
             var dbUser = UserContextProvider.DatabaseUser;
             var orderId = currentOrderCache.Get(dbUser.Id);
-            var orderSomeGramsFormat = await TranslationsResolver.ResolveAsync(TranslationKeys.OrderSomeGrams);
             if (orderId.HasValue)
             {
+                var orderSomeGramsFormat = await TranslationsResolver
+                    .ResolveAsync(TranslationKeys.OrderSomeGrams);
                 var innerButtons = new List<InlineKeyboardButton>();
                 for (var i = defaultCount; i < defaultCount * 4 + 1; i *= 2)
                 {
@@ -106,13 +108,18 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
 
             if (dbUser.State > TelegramUserStates.Default)
             {
+                var (deleteTranslation, setPhotosTranslation) = await TranslationsResolver
+                    .ResolveAsync(
+                        TranslationKeys.Delete,
+                        TranslationKeys.SetPhotos
+                    );
                 buttons.AddRange(new[]
                 {
                     new[]
                     {
                         new InlineKeyboardButton
                         {
-                            Text = await TranslationsResolver.ResolveAsync(TranslationKeys.Delete),
+                            Text = deleteTranslation,
                             CallbackData = $"/{nameof(DeleteTobaccoCommand).ExtractCommandName()} {tobacco.Index}"
                         }
                     },
@@ -120,7 +127,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
                     {
                         new InlineKeyboardButton
                         {
-                            Text = "Set photos",
+                            Text = setPhotosTranslation,
                             CallbackData =
                                 $"/{nameof(AskForTobaccoPhotosCommand).ExtractCommandName()} {tobacco.Entity.Id}"
                         }

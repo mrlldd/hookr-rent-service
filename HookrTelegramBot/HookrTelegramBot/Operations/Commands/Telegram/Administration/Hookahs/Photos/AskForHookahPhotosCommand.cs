@@ -4,11 +4,11 @@ using HookrTelegramBot.Utilities.Telegram.Caches.UserTemporaryStatus;
 using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Photos
+namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Photos
 {
-    public class AskForTobaccoPhotosCommand : AskForPhotoCommandBase, IAskForTobaccoPhotosCommand
+    public class AskForHookahPhotosCommand : AskForPhotoCommandBase, IAskForHookahPhotosCommand 
     {
-        public AskForTobaccoPhotosCommand(IExtendedTelegramBotClient telegramBotClient,
+        public AskForHookahPhotosCommand(IExtendedTelegramBotClient telegramBotClient,
             ITranslationsResolver translationsResolver,
             IUserTemporaryStatusCache userTemporaryStatusCache,
             IUserContextProvider userContextProvider,
@@ -21,8 +21,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
         {
         }
 
-        protected override UserTemporaryStatus NextUserState => UserTemporaryStatus.AskedForTobaccoPhotos;
+        protected override UserTemporaryStatus NextUserState => UserTemporaryStatus.AskedForHookahPhotos;
         protected override string ProductCacheKeyFormat => Constants.ProductCacheKeyFormat;
-
     }
 }

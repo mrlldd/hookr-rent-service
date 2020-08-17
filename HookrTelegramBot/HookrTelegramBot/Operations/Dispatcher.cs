@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Get;
+using HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Photos;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Get;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Photos;
 using HookrTelegramBot.Utilities.Extensions;
@@ -39,7 +40,8 @@ namespace HookrTelegramBot.Operations
                 {UserTemporaryStatus.Default, ThrowDispatchingExceptionAsync},
                 {UserTemporaryStatus.ChoosingHookah, GetDetailedHookahInfo},
                 {UserTemporaryStatus.ChoosingTobacco, GetDetailedTobaccoInfo},
-                {UserTemporaryStatus.AskedForTobaccoPhotos, SetTobaccoPhotos}
+                {UserTemporaryStatus.AskedForTobaccoPhotos, SetTobaccoPhotos},
+                {UserTemporaryStatus.AskedForHookahPhotos, SetHookahPhotos}
             };
         }
 
@@ -71,10 +73,9 @@ namespace HookrTelegramBot.Operations
                 return ThrowDispatchingExceptionAsync();
             }
 
-            var service = (ICommand) serviceProvider.GetService(commandType);
-            return service == null
-                ? ThrowDispatchingExceptionAsync()
-                : service.ExecuteAsync();
+            return serviceProvider.GetService(commandType) is ICommand command
+                ? command.ExecuteAsync()
+                : ThrowDispatchingExceptionAsync();
         }
 
         private Task GetDetailedHookahInfo()
@@ -85,6 +86,9 @@ namespace HookrTelegramBot.Operations
 
         private Task SetTobaccoPhotos()
             => DispatchAndExecuteCommandAsync(nameof(SetTobaccoPhotosCommand).ExtractCommandName());
+
+        private Task SetHookahPhotos()
+            => DispatchAndExecuteCommandAsync(nameof(SetHookahPhotosCommand).ExtractCommandName());
 
         private static Task ThrowDispatchingExceptionAsync()
             => throw new InvalidOperationException("There is no such command :(");

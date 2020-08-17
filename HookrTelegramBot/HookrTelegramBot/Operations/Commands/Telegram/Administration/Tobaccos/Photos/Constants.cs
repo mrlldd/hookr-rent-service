@@ -2,6 +2,6 @@
 {
     public static class Constants
     {
-        public const string TobaccoProductCacheKey = "stp{0}";
+        public const string ProductCacheKeyFormat = "stp{0}";
     }
 }

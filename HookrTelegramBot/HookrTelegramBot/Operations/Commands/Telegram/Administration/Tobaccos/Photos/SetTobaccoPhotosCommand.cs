@@ -26,7 +26,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
         {
         }
 
-        protected override string ProductCacheKeyFormat => Constants.TobaccoProductCacheKey;
+        protected override string ProductCacheKeyFormat => Constants.ProductCacheKeyFormat;
 
         protected override DbSet<Tobacco> EntityTableSelector(HookrContext context)
             => context.Tobaccos;

@@ -26,7 +26,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.P
         {
         }
 
-        protected override string ProductCacheKeyFormat => "shp{0}";
+        protected override string ProductCacheKeyFormat => Constants.ProductCacheKeyFormat;
 
         protected override DbSet<Hookah> EntityTableSelector(HookrContext context)
             => context.Hookahs;

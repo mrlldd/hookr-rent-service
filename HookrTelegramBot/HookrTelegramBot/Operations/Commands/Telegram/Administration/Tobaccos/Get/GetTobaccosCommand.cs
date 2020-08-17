@@ -6,6 +6,7 @@ using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Products;
 using HookrTelegramBot.Repository.Context.Entities.Translations;
+using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -37,8 +38,9 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
             => await client
                 .SendTextMessageAsync(response.Any()
                     ? response
-                        .Select((x, index) => $"/{index + 1} {x.Name} - {x.Price}")
-                        .Aggregate((prev, next) => prev + "\n" + next)
+                        .AggregateListString("/{0} {1} - {2}",
+                            x => x.Name,
+                            x => x.Price)
                     : await TranslationsResolver.ResolveAsync(TranslationKeys.NoTobaccos));
 
         protected override DbSet<Tobacco> EntityTableSelector(HookrContext context)
