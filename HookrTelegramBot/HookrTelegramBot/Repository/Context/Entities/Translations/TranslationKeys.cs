@@ -30,6 +30,7 @@
         OrderNotificationTobaccoRow,
         Unknown,
         SetPhotos,
-        SendPhotosAsGroup
+        SendPhotosAsGroup,
+        DeletePhotos
     }
 }

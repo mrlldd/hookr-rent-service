@@ -27,5 +27,6 @@
   "OrderNotificationTobaccoRow": "{0}. {1} - {2} UAH per 1g. - {3}g. => {4} UAH.",
   "Unknown": "Unknown",
   "SetPhotos": "Set photo(s)",
-  "SendPhotosAsGroup": "Please send photos as group for this product."
+  "SendPhotosAsGroup": "Please send photos as group for this product.",
+  "DeletePhotos": "Delete photo(s)"
 }
