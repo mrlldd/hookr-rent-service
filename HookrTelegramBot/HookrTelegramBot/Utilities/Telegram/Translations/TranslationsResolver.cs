@@ -39,48 +39,58 @@ namespace HookrTelegramBot.Utilities.Telegram.Translations
             var languageCode = ResolveLanguage(update);
             var result = await hookrRepository.GetTranslationsAsync(languageCode, false, first.Key, second.Key);
             return (
-                FormatResult(result[first.Key], first.Key, first.Args),
-                FormatResult(result[second.Key], second.Key, second.Args)
+                FormatResult(ExtractResult(result, first.Key), first.Key, first.Args),
+                FormatResult(ExtractResult(result, second.Key), second.Key, second.Args)
             );
         }
-        
-        public async Task<(string First, string Second, string Third)> ResolveAsync((TranslationKeys Key, object[] Args) first,
+
+        public Task<(string First, string Second)> ResolveAsync(TranslationKeys first, TranslationKeys second)
+            => ResolveAsync(
+                (first, Array.Empty<object>()),
+                (second, Array.Empty<object>())
+            );
+
+        public async Task<(string First, string Second, string Third)> ResolveAsync(
+            (TranslationKeys Key, object[] Args) first,
             (TranslationKeys Key, object[] Args) second,
             (TranslationKeys Key, object[] Args) third)
         {
             var update = userContextProvider.Update;
             var languageCode = ResolveLanguage(update);
-            var result = await hookrRepository.GetTranslationsAsync(languageCode, false, 
+            var result = await hookrRepository.GetTranslationsAsync(languageCode, false,
                 first.Key,
                 second.Key,
                 third.Key);
             return (
-                FormatResult(result[first.Key], first.Key, first.Args),
-                FormatResult(result[second.Key], second.Key, second.Args),
-                FormatResult(result[third.Key], third.Key, third.Args)
+                FormatResult(ExtractResult(result, first.Key), first.Key, first.Args),
+                FormatResult(ExtractResult(result, second.Key), second.Key, second.Args),
+                FormatResult(ExtractResult(result, third.Key), third.Key, third.Args)
             );
         }
-        
-        public async Task<(string First, string Second, string Third, string Fourth)> ResolveAsync((TranslationKeys Key, object[] Args) first,
+
+        public async Task<(string First, string Second, string Third, string Fourth)> ResolveAsync(
+            (TranslationKeys Key, object[] Args) first,
             (TranslationKeys Key, object[] Args) second,
             (TranslationKeys Key, object[] Args) third,
             (TranslationKeys Key, object[] Args) fourth)
         {
             var update = userContextProvider.Update;
             var languageCode = ResolveLanguage(update);
-            var result = await hookrRepository.GetTranslationsAsync(languageCode, false, 
+            var result = await hookrRepository.GetTranslationsAsync(languageCode, false,
                 first.Key,
                 second.Key,
                 third.Key,
                 fourth.Key);
             return (
-                FormatResult(result[first.Key], first.Key, first.Args),
-                FormatResult(result[second.Key], second.Key, second.Args),
-                FormatResult(result[third.Key], third.Key, third.Args),
-                FormatResult(result[fourth.Key], fourth.Key, fourth.Args)
+                FormatResult(ExtractResult(result, first.Key), first.Key, first.Args),
+                FormatResult(ExtractResult(result, second.Key), second.Key, second.Args),
+                FormatResult(ExtractResult(result, third.Key), third.Key, third.Args),
+                FormatResult(ExtractResult(result, fourth.Key), fourth.Key, fourth.Args)
             );
         }
-        public async Task<(string First, string Second, string Third, string Fourth, string Fifth)> ResolveAsync((TranslationKeys Key, object[] Args) first,
+
+        public async Task<(string First, string Second, string Third, string Fourth, string Fifth)> ResolveAsync(
+            (TranslationKeys Key, object[] Args) first,
             (TranslationKeys Key, object[] Args) second,
             (TranslationKeys Key, object[] Args) third,
             (TranslationKeys Key, object[] Args) fourth,
@@ -88,21 +98,26 @@ namespace HookrTelegramBot.Utilities.Telegram.Translations
         {
             var update = userContextProvider.Update;
             var languageCode = ResolveLanguage(update);
-            var result = await hookrRepository.GetTranslationsAsync(languageCode, false, 
+            var result = await hookrRepository.GetTranslationsAsync(languageCode, false,
                 first.Key,
                 second.Key,
                 third.Key,
                 fourth.Key,
                 fifth.Key);
             return (
-                FormatResult(result[first.Key], first.Key, first.Args),
-                FormatResult(result[second.Key], second.Key, second.Args),
-                FormatResult(result[third.Key], third.Key, third.Args),
-                FormatResult(result[fourth.Key], fourth.Key, fourth.Args),
-                FormatResult(result[fifth.Key], fifth.Key, fifth.Args)
+                FormatResult(ExtractResult(result, first.Key), first.Key, first.Args),
+                FormatResult(ExtractResult(result, second.Key), second.Key, second.Args),
+                FormatResult(ExtractResult(result, third.Key), third.Key, third.Args),
+                FormatResult(ExtractResult(result, fourth.Key), fourth.Key, fourth.Args),
+                FormatResult(ExtractResult(result, fifth.Key), fifth.Key, fifth.Args)
             );
         }
-        
+
+        private static string ExtractResult(IDictionary<TranslationKeys, string> dictionary, TranslationKeys key)
+            => dictionary.TryGetValue(key, out var result)
+                ? result
+                : string.Empty;
+
         private static string FormatResult(string result, TranslationKeys key, params object[] args)
             => string.IsNullOrEmpty(result)
                 ? string.Format(NotFoundFormat, key, string.Join(',', args))

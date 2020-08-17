@@ -12,6 +12,11 @@ namespace HookrTelegramBot.Utilities.Telegram.Translations
             (TranslationKeys Key, object[] Args) second
         );
 
+        Task<(string First, string Second)> ResolveAsync(
+            TranslationKeys first,
+            TranslationKeys second
+        );
+
         Task<(string First, string Second, string Third)> ResolveAsync(
             (TranslationKeys Key, object[] Args) first,
             (TranslationKeys Key, object[] Args) second,
