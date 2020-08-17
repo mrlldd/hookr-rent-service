@@ -53,16 +53,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
                 ExtractProductId(content),
                 new MemoryCacheEntryOptions
                 {
-                    AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(ExpirationMinutes),
-                    PostEvictionCallbacks =
-                    {
-                        new PostEvictionCallbackRegistration
-                        {
-                            EvictionCallback =
-                                (o, value, reason, state)
-                                    => userTemporaryStatusCache.Set(user.Id, UserTemporaryStatus.Default)
-                        }
-                    }
+                    AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(ExpirationMinutes)
                 }
             );
             userTemporaryStatusCache.Set(user.Id, NextUserState);

@@ -108,10 +108,13 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
 
             if (dbUser.State > TelegramUserStates.Default)
             {
-                var (deleteTranslation, setPhotosTranslation) = await TranslationsResolver
+                var (key, command) = tobacco.Entity.Photos.Any()
+                    ? (TranslationKeys.DeletePhotos, nameof(DeleteTobaccoPhotosCommand))
+                    : (TranslationKeys.SetPhotos, nameof(AskForTobaccoPhotosCommand));
+                var (deleteTranslation, secondTranslation) = await TranslationsResolver
                     .ResolveAsync(
                         TranslationKeys.Delete,
-                        TranslationKeys.SetPhotos
+                        key
                     );
                 buttons.AddRange(new[]
                 {
@@ -127,9 +130,9 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.
                     {
                         new InlineKeyboardButton
                         {
-                            Text = setPhotosTranslation,
+                            Text = secondTranslation,
                             CallbackData =
-                                $"/{nameof(AskForTobaccoPhotosCommand).ExtractCommandName()} {tobacco.Entity.Id}"
+                                $"/{command.ExtractCommandName()} {tobacco.Entity.Id}"
                         }
                     }
                 });

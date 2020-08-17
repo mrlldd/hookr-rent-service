@@ -21,6 +21,7 @@ using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches.CurrentOrder;
 using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -102,10 +103,14 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
 
             if (dbUser.State > TelegramUserStates.Default)
             {
-                var (deleteTranslation, setPhotosTranslation) = await TranslationsResolver
+                var (key, command) = hookah.Entity.Photos.Any()
+                    ? (TranslationKeys.DeletePhotos, nameof(DeleteHookahPhotosCommand))
+                    : (TranslationKeys.SetPhotos, nameof(AskForHookahPhotosCommand));
+
+                var (deleteTranslation, secondTranslation) = await TranslationsResolver
                     .ResolveAsync(
                         TranslationKeys.Delete,
-                        TranslationKeys.SetPhotos
+                        key
                     );
                 buttons.AddRange(new[]
                 {
@@ -121,9 +126,9 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.G
                     {
                         new InlineKeyboardButton
                         {
-                            Text = setPhotosTranslation,
+                            Text = secondTranslation,
                             CallbackData =
-                                $"/{nameof(AskForHookahPhotosCommand).ExtractCommandName()} {hookah.Entity.Id}"
+                                $"/{command.ExtractCommandName()} {hookah.Entity.Id}"
                         },
                     }
                 });
