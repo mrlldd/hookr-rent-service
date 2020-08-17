@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using HookrTelegramBot.Repository.Context.Entities;
@@ -12,8 +11,7 @@ using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-
+using static System.Linq.Expressions.Expression;
 namespace HookrTelegramBot.Repository.Context
 {
     public class HookrContext : DbContext
@@ -43,6 +41,14 @@ namespace HookrTelegramBot.Repository.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes()
+                .Where(x => typeof(ISoftDeletable).IsAssignableFrom(x.ClrType)))
+            {
+                var pe = Parameter(entityType.ClrType, "y");
+                var propertyInfo = entityType.ClrType.GetProperty(nameof(ISoftDeletable.IsDeleted));
+                var lambda = Lambda(Not(Property(pe, propertyInfo)), pe);
+                entityType.SetQueryFilter(lambda);
+            }
             modelBuilder
                 .Entity<TelegramUser>(user =>
                 {
