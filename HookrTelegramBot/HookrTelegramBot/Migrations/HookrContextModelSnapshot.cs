@@ -40,40 +40,6 @@ namespace HookrTelegramBot.Migrations
                     b.ToTable("TelegramUsers");
                 });
 
-            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Hookah", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("Hookahs");
-                });
-
             modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -118,7 +84,41 @@ namespace HookrTelegramBot.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.OrderedHookah", b =>
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Products.Hookah", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("Hookahs");
+                });
+
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Products.Ordered.OrderedHookah", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -159,7 +159,7 @@ namespace HookrTelegramBot.Migrations
                     b.ToTable("OrderedHookahs");
                 });
 
-            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.OrderedTobacco", b =>
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Products.Ordered.OrderedTobacco", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -200,7 +200,101 @@ namespace HookrTelegramBot.Migrations
                     b.ToTable("OrderedTobaccos");
                 });
 
-            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Tobacco", b =>
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Products.Photo.HookahPhoto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedById")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HookahId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("TelegramFileId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("DeletedById");
+
+                    b.HasIndex("HookahId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("HookahPhotos");
+                });
+
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Products.Photo.TobaccoPhoto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedById")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("TelegramFileId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TobaccoId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("DeletedById");
+
+                    b.HasIndex("TobaccoId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("TobaccoPhotos");
+                });
+
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Products.Tobacco", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -234,17 +328,27 @@ namespace HookrTelegramBot.Migrations
                     b.ToTable("Tobaccos");
                 });
 
-            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Hookah", b =>
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Translations.Translation", b =>
                 {
-                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.NoAction);
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById")
-                        .OnDelete(DeleteBehavior.NoAction);
+                    b.Property<int>("Key")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Language")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Language");
+
+                    b.ToTable("Translations");
                 });
 
             modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Order", b =>
@@ -265,7 +369,20 @@ namespace HookrTelegramBot.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
                 });
 
-            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.OrderedHookah", b =>
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Products.Hookah", b =>
+                {
+                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+                });
+
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Products.Ordered.OrderedHookah", b =>
                 {
                     b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
                         .WithMany()
@@ -278,7 +395,7 @@ namespace HookrTelegramBot.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Hookah", "Product")
+                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Products.Hookah", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -290,7 +407,7 @@ namespace HookrTelegramBot.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
                 });
 
-            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.OrderedTobacco", b =>
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Products.Ordered.OrderedTobacco", b =>
                 {
                     b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
                         .WithMany()
@@ -303,7 +420,7 @@ namespace HookrTelegramBot.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Tobacco", "Product")
+                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Products.Tobacco", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -315,7 +432,55 @@ namespace HookrTelegramBot.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
                 });
 
-            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Tobacco", b =>
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Products.Photo.HookahPhoto", b =>
+                {
+                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "DeletedBy")
+                        .WithMany()
+                        .HasForeignKey("DeletedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Products.Hookah", "Hookah")
+                        .WithMany("Photos")
+                        .HasForeignKey("HookahId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+                });
+
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Products.Photo.TobaccoPhoto", b =>
+                {
+                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "DeletedBy")
+                        .WithMany()
+                        .HasForeignKey("DeletedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Products.Tobacco", "Tobacco")
+                        .WithMany("Photos")
+                        .HasForeignKey("TobaccoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+                });
+
+            modelBuilder.Entity("HookrTelegramBot.Repository.Context.Entities.Products.Tobacco", b =>
                 {
                     b.HasOne("HookrTelegramBot.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
                         .WithMany()

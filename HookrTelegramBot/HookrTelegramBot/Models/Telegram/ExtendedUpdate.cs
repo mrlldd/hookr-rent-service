@@ -21,6 +21,11 @@ namespace HookrTelegramBot.Models.Telegram
                 ? CallbackQuery.Data
                 : RealMessage.Text;
 
+        public User From
+            => Type == UpdateType.CallbackQuery
+                ? CallbackQuery.From
+                : RealMessage.From;
+
         public Chat Chat 
             => RealMessage.Chat;
 

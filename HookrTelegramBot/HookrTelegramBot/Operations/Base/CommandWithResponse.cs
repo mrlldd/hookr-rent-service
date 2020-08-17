@@ -2,8 +2,10 @@
 using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram.Exceptions;
 using HookrTelegramBot.Models.Telegram.Exceptions.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Serilog;
 using Telegram.Bot.Types;
 
@@ -12,25 +14,29 @@ namespace HookrTelegramBot.Operations.Base
     public abstract class Command : ICommand
     {
         protected readonly IExtendedTelegramBotClient TelegramBotClient;
+        protected readonly ITranslationsResolver TranslationsResolver;
 
-        protected Command(IExtendedTelegramBotClient telegramBotClient)
+        protected Command(IExtendedTelegramBotClient telegramBotClient,
+            ITranslationsResolver translationsResolver)
         {
             TelegramBotClient = telegramBotClient;
+            TranslationsResolver = translationsResolver;
         }
 
         public abstract Task ExecuteAsync();
 
-        protected virtual Task<Message> SendErrorAsync(ICurrentTelegramUserClient client, Exception exception)
+        protected virtual async Task<Message> SendErrorAsync(ICurrentTelegramUserClient client, Exception exception)
         {
             Log.Information(exception.ToString());
-            var message = "Not available at the moment, sorry :(";
-            var determinedException =
-                exception is AggregateException aggregated
-                    ? aggregated.InnerException
-                    : exception;
-            if (determinedException is TelegramException)
+            string message;
+            var innerException = exception;
+            while (innerException is AggregateException aggregate)
             {
-                switch (determinedException)
+                innerException = aggregate.InnerException;
+            }
+            if (innerException is TelegramException)
+            {
+                switch (innerException)
                 {
                     case InsufficientAccessRightsException rightsException:
                     {
@@ -44,30 +50,41 @@ namespace HookrTelegramBot.Operations.Base
                     }
                     default:
                     {
-                        var (success, anotherMessage) = ReadCustomException(determinedException);
+                        var (success, anotherMessage) = await ReadCustomExceptionAsync(innerException);
                         if (success)
                         {
                             message = anotherMessage;
+                        }
+                        else
+                        {
+                            message = await TranslationsResolver.ResolveAsync(TranslationKeys.NotAvailable);
                         }
 
                         break;
                     }
                 }
             }
+            else
+            {
+                message = await TranslationsResolver.ResolveAsync(TranslationKeys.NotAvailable);
+            }
 
-            return client.SendTextMessageAsync(message);
+            return await client.SendTextMessageAsync(message);
         }
 
-        protected virtual (bool, string) ReadCustomException(Exception exception) => (false, string.Empty);
+        protected virtual Task<(bool, string)> ReadCustomExceptionAsync(Exception exception) => Task.FromResult((false, string.Empty));
     }
 
     public abstract class CommandWithResponse : Command
     {
-        protected CommandWithResponse(IExtendedTelegramBotClient telegramBotClient) : base(telegramBotClient)
+        protected CommandWithResponse(IExtendedTelegramBotClient telegramBotClient,
+            ITranslationsResolver translationsResolver)
+            : base(telegramBotClient,
+                translationsResolver)
         {
         }
 
-        public override async Task ExecuteAsync()
+        public sealed override async Task ExecuteAsync()
         {
             try
             {
@@ -84,15 +101,19 @@ namespace HookrTelegramBot.Operations.Base
         protected abstract Task ProcessAsync();
 
         protected abstract Task<Message> SendResponseAsync(ICurrentTelegramUserClient client);
+
     }
 
     public abstract class CommandWithResponse<TResponse> : Command
     {
-        protected CommandWithResponse(IExtendedTelegramBotClient telegramBotClient) : base(telegramBotClient)
+        protected CommandWithResponse(IExtendedTelegramBotClient telegramBotClient,
+            ITranslationsResolver translationsResolver)
+            : base(telegramBotClient,
+                translationsResolver)
         {
         }
 
-        public override async Task ExecuteAsync()
+        public sealed override async Task ExecuteAsync()
         {
             try
             {
@@ -107,5 +128,6 @@ namespace HookrTelegramBot.Operations.Base
 
         protected abstract Task<TResponse> ProcessAsync();
         protected abstract Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, TResponse response);
+
     }
 }

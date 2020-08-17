@@ -5,9 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Products;
+using HookrTelegramBot.Repository.Context.Entities.Products.Ordered;
+using HookrTelegramBot.Repository.Context.Entities.Products.Photo;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HookrTelegramBot.Repository.Context
 {
@@ -29,6 +34,12 @@ namespace HookrTelegramBot.Repository.Context
         public DbSet<OrderedTobacco> OrderedTobaccos { get; set; }
 
         public DbSet<OrderedHookah> OrderedHookahs { get; set; }
+        
+        public DbSet<Translation> Translations { get; set; }
+        
+        public DbSet<HookahPhoto> HookahPhotos { get; set; }
+        
+        public DbSet<TobaccoPhoto> TobaccoPhotos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -172,6 +183,64 @@ namespace HookrTelegramBot.Repository.Context
                         .HasForeignKey(x => x.DeletedById)
                         .OnDelete(DeleteBehavior.NoAction);
                 });
+
+            modelBuilder
+                .Entity<Translation>(translation =>
+                {
+                    translation
+                        .HasKey(x => x.Id);
+                    translation
+                        .HasIndex(x => x.Language);
+                });
+
+            modelBuilder
+                .Entity<HookahPhoto>(photo =>
+                {
+                    photo
+                        .HasOne(x => x.CreatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.CreatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    photo
+                        .HasOne(x => x.UpdatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.UpdatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    photo
+                        .HasOne(x => x.DeletedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.DeletedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    photo
+                        .HasOne(x => x.Hookah)
+                        .WithMany(x => x.Photos)
+                        .HasForeignKey(x => x.HookahId)
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+            modelBuilder
+                .Entity<TobaccoPhoto>(photo =>
+                {
+                    photo
+                        .HasOne(x => x.CreatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.CreatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    photo
+                        .HasOne(x => x.UpdatedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.UpdatedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    photo
+                        .HasOne(x => x.DeletedBy)
+                        .WithMany()
+                        .HasForeignKey(x => x.DeletedById)
+                        .OnDelete(DeleteBehavior.NoAction);
+                    photo
+                        .HasOne(x => x.Tobacco)
+                        .WithMany(x => x.Photos)
+                        .HasForeignKey(x => x.TobaccoId)
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
         }
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
@@ -202,7 +271,11 @@ namespace HookrTelegramBot.Repository.Context
         private void OnPreSaving()
         {
             var entries = ChangeTracker.Entries();
-            var messageSource = userContextProvider.Update.RealMessage.From;
+            var messageSource = userContextProvider.Update?.RealMessage.From;
+            if (messageSource == null)
+            {
+                return;
+            }
             entries.ForEach(x =>
             {
                 if (!(x.Entity is Entity entity))

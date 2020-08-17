@@ -5,9 +5,11 @@ using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 
@@ -17,23 +19,26 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
     {
         private const string Space = " ";
 
-        private readonly IUserContextProvider userContextProvider;
+        protected readonly IUserContextProvider UserContextProvider;
         protected readonly IHookrRepository HookrRepository;
         protected string[] ArgumentsLeft { get; private set; }
         protected OrderCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository) : base(telegramBotClient)
+            IHookrRepository hookrRepository,
+            ITranslationsResolver translationsResolver) 
+            : base(telegramBotClient,
+            translationsResolver)
         {
-            this.userContextProvider = userContextProvider;
+            this.UserContextProvider = userContextProvider;
             HookrRepository = hookrRepository;
         }
 
         protected sealed override async Task<Order> ProcessAsync()
         {
-            var orderId = ExtractOrderId(userContextProvider.Update.Content);
+            var orderId = ExtractOrderId(UserContextProvider.Update.Content);
             var order = await HookrRepository.ReadAsync((context, token) => SideQuery(context.Orders)
                 .FirstOrDefaultAsync(x => x.Id == orderId, token));
-            ValidateOrder(order, userContextProvider.DatabaseUser);
+            await ValidateOrderAsync(order, UserContextProvider.DatabaseUser);
             return await ProcessAsync(order);
         }
 
@@ -55,7 +60,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
                 : throw new InvalidArgumentsPassedInException("Wrong arguments have been passed in.");
         }
         
-        private static void ValidateOrder(Order order, TelegramUser user)
+        private async Task ValidateOrderAsync(Order order, TelegramUser user)
         {
             if (order == null)
             {
@@ -63,7 +68,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
             }
             if (order.IsDeleted)
             {
-                throw new OrderAlreadyDeletedException("Order not exist or has been already deleted.");
+                throw new OrderAlreadyDeletedException(await TranslationsResolver.ResolveAsync(TranslationKeys.OrderAlreadyDeleted));
             }
 
             switch (user.State)

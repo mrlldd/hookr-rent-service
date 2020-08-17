@@ -4,10 +4,12 @@ using System.Threading.Tasks;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.App.Settings;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 
@@ -28,8 +30,10 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
         protected RegisterCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserContextProvider userContextProvider,
-            IAppSettings appSettings) :
-            base(telegramBotClient)
+            IAppSettings appSettings,
+            ITranslationsResolver translationsResolver) :
+            base(telegramBotClient,
+                translationsResolver)
         {
             this.hookrRepository = hookrRepository;
             this.userContextProvider = userContextProvider;
@@ -72,9 +76,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
             await hookrRepository.Context.SaveChangesAsync();
         }
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
-            => client
-                .SendTextMessageAsync($"Successfully registered new {ExpectedState}");
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
+            => await client
+                .SendTextMessageAsync(
+                    await TranslationsResolver.ResolveAsync(TranslationKeys.UserStateRegistrationSuccess,
+                        ExpectedState.ToString().ToLower())
+                );
 
         protected override Task<Message> SendErrorAsync(ICurrentTelegramUserClient client, Exception exception)
             => exception is AggregateException aggregated && aggregated.InnerException is InvalidOperationException

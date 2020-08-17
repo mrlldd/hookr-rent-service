@@ -5,6 +5,8 @@
         Default = 0,
         ChoosingHookah,
         ChoosingTobacco,
-        InOrder
+        InOrder,
+        AskedForHookahPhotos,
+        AskedForTobaccoPhotos,
     }
 }

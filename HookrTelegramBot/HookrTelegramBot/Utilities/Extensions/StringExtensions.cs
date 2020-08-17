@@ -1,10 +1,12 @@
 ﻿using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace HookrTelegramBot.Utilities.Extensions
 {
     public static class StringExtensions
     {
         private const string Space = " ";
+        private const string PreservedCharacters = @"[][.=>\-]";
         public static string ExtractCommandName(this string s)
             => s
                    .Replace("Command", Space)
@@ -21,5 +23,8 @@ namespace HookrTelegramBot.Utilities.Extensions
 
         public static bool IsNumber(this string s)
             => int.TryParse(s, out _);
+        
+        public static string FilterPreservedCharacters(this string target)
+            => Regex.Replace(target,PreservedCharacters, "\\$&", RegexOptions.Compiled);
     }
 }

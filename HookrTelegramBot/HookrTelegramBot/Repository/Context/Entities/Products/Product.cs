@@ -1,4 +1,6 @@
-﻿namespace HookrTelegramBot.Repository.Context.Entities.Base
+﻿using HookrTelegramBot.Repository.Context.Entities.Base;
+
+namespace HookrTelegramBot.Repository.Context.Entities.Products
 {
     public class Product : Entity
     {

@@ -6,12 +6,14 @@ using HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Get;
 using HookrTelegramBot.Operations.Commands.Telegram.Administration.Tobaccos.Get;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
 using HookrTelegramBot.Utilities.Telegram.Caches.CurrentOrder;
 using HookrTelegramBot.Utilities.Telegram.Caches.UserTemporaryStatus;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -28,8 +30,10 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
             IUserTemporaryStatusCache userTemporaryStatusCache,
             IHookrRepository hookrRepository,
             ICurrentOrderCache currentOrderCache,
-            IUserContextProvider userContextProvider)
-            : base(telegramBotClient)
+            IUserContextProvider userContextProvider,
+            ITranslationsResolver translationsResolver)
+            : base(telegramBotClient,
+                translationsResolver)
         {
             this.userTemporaryStatusCache = userTemporaryStatusCache;
             this.hookrRepository = hookrRepository;
@@ -47,36 +51,46 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
                 {
                     new InlineKeyboardButton
                     {
-                        Text = "View current order",
+                        Text = await TranslationsResolver.ResolveAsync(TranslationKeys.ViewCurrentOrder),
                         CallbackData = $"/getorder {cachedOrderId}"
                         //todo
                     }
                 };
             var order = new Order();
-            await hookrRepository.Context.Orders.AddAsync(order);
+            hookrRepository.Context.Orders.Add(order);
             await hookrRepository.Context.SaveChangesAsync();
             currentOrderCache.Set(userContextProvider.DatabaseUser.Id, order.Id);
             return Array.Empty<InlineKeyboardButton>();
-
         }
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
             InlineKeyboardButton[] response)
-            => client
-                .SendTextMessageAsync("Choose product", replyMarkup: new InlineKeyboardMarkup(new[]
-                    {
-                        new InlineKeyboardButton
+        {
+            var (product, hookahs, tobaccos) = await (
+                TranslationsResolver.ResolveAsync(TranslationKeys.ChooseProduct),
+                TranslationsResolver.ResolveAsync(TranslationKeys.Hookahs),
+                TranslationsResolver.ResolveAsync(TranslationKeys.Tobaccos)
+            ).CombineAsync();
+            return await client
+                .SendTextMessageAsync(product,
+                    replyMarkup: new InlineKeyboardMarkup(new[]
                         {
-                            Text = "Hookahs",
-                            CallbackData = $"/{nameof(GetHookahsCommand).ExtractCommandName()}"
-                        },
-                        new InlineKeyboardButton
-                        {
-                            Text = "Tobaccos",
-                            CallbackData = $"/{nameof(GetTobaccosCommand).ExtractCommandName()}"
-                        },
-                    }
-                    .Concat(response)
-                    .ToArray()));
+                            new[]
+                            {
+                                new InlineKeyboardButton
+                                {
+                                    Text = hookahs,
+                                    CallbackData = $"/{nameof(GetHookahsCommand).ExtractCommandName()}"
+                                },
+                                new InlineKeyboardButton
+                                {
+                                    Text = tobaccos,
+                                    CallbackData = $"/{nameof(GetTobaccosCommand).ExtractCommandName()}"
+                                }
+                            },
+                            response
+                        }
+                        .ToArray()));
+        }
     }
 }

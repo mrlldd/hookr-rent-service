@@ -6,9 +6,11 @@ using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Products;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
+using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 
@@ -18,10 +20,12 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.A
     {
         public AddHookahCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
-            IUserContextProvider userContextProvider)
+            IUserContextProvider userContextProvider,
+            ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 hookrRepository,
-                userContextProvider)
+                userContextProvider,
+                translationsResolver)
         {
         }
 
@@ -46,5 +50,6 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.A
                 Price = price
             };
         }
+
     }
 }
