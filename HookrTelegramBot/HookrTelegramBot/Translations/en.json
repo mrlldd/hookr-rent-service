@@ -28,5 +28,7 @@
   "Unknown": "Unknown",
   "SetPhotos": "Set photo(s)",
   "SendPhotosAsGroup": "Please send photos as group for this product.",
-  "DeletePhotos": "Delete photo(s)"
+  "DeletePhotos": "Delete photo(s)",
+  "AddPhotoSuccess": "Photo added.",
+  "DeletePhotosSuccess": "Successfully deleted photos."
 }

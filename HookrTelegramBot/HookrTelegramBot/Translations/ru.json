@@ -28,5 +28,7 @@
   "Unknown": "Неизвестно",
   "SetPhotos": "Прикрепить фото",
   "SendPhotosAsGroup": "Пожалуйста, отправьте фотографии для этого продукта как группу",
-  "DeletePhotos": "Удалить фото"
+  "DeletePhotos": "Удалить фото",
+  "AddPhotoSuccess": "Фото приклеплено.",
+  "DeletePhotosSuccess": "Фото были успешно удалены."
 }

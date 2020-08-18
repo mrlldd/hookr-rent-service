@@ -31,6 +31,8 @@
         Unknown,
         SetPhotos,
         SendPhotosAsGroup,
-        DeletePhotos
+        DeletePhotos,
+        AddPhotoSuccess,
+        DeletePhotosSuccess
     }
 }
