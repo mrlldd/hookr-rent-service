@@ -10,6 +10,7 @@ using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities.Base;
 using HookrTelegramBot.Repository.Context.Entities.Products;
 using HookrTelegramBot.Repository.Context.Entities.Products.Photo;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -77,13 +78,14 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
             await hookrRepository.Context.SaveChangesAsync();
         }
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
-            => client.SendTextMessageAsync("Photo added.");
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
+            => await client.SendTextMessageAsync(
+                await TranslationsResolver
+                    .ResolveAsync(TranslationKeys.AddPhotoSuccess)
+                );
 
         protected abstract DbSet<TPhoto> PhotoTableSelector(HookrContext context);
 
         protected abstract EntityEntry<TPhoto> AddPhotoToTable(DbSet<TPhoto> table, string fileId, int productId);
-
-        
     }
 }

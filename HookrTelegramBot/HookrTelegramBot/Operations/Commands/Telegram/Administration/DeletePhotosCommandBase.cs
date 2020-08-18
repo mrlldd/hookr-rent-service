@@ -9,6 +9,7 @@ using HookrTelegramBot.Repository.Context;
 using HookrTelegramBot.Repository.Context.Entities.Base;
 using HookrTelegramBot.Repository.Context.Entities.Products;
 using HookrTelegramBot.Repository.Context.Entities.Products.Photo;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -54,12 +55,16 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Administration
             {
                 throw new InvalidArgumentsPassedInException("Product does not exist.");
             }
+
             PhotoTableSelector(hookrRepository.Context).RemoveRange(PhotosSelector(product));
             await hookrRepository.Context.SaveChangesAsync();
         }
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
-            => client.SendTextMessageAsync("Successfully deleted photos.");
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
+            => await client.SendTextMessageAsync(
+                await TranslationsResolver
+                    .ResolveAsync(TranslationKeys.DeletePhotosSuccess)
+            );
 
         protected abstract DbSet<TProduct> EntityTableSelector(HookrContext context);
 
