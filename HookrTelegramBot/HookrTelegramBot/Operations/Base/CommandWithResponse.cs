@@ -25,18 +25,19 @@ namespace HookrTelegramBot.Operations.Base
 
         public abstract Task ExecuteAsync();
 
+        private Exception GetNetherException(Exception exception)
+            => exception is AggregateException aggregateException
+                ? GetNetherException(aggregateException.InnerException)
+                : exception;
+        
         protected virtual async Task<Message> SendErrorAsync(ICurrentTelegramUserClient client, Exception exception)
         {
             Log.Information(exception.ToString());
             string message;
-            var innerException = exception;
-            while (innerException is AggregateException aggregate)
+            var netherException = GetNetherException(exception);
+            if (netherException is TelegramException)
             {
-                innerException = aggregate.InnerException;
-            }
-            if (innerException is TelegramException)
-            {
-                switch (innerException)
+                switch (netherException)
                 {
                     case InsufficientAccessRightsException rightsException:
                     {
@@ -50,7 +51,7 @@ namespace HookrTelegramBot.Operations.Base
                     }
                     default:
                     {
-                        var (success, anotherMessage) = await ReadCustomExceptionAsync(innerException);
+                        var (success, anotherMessage) = await ReadCustomExceptionAsync(netherException);
                         if (success)
                         {
                             message = anotherMessage;

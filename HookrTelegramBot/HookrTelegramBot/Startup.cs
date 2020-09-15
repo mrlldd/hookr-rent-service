@@ -17,12 +17,15 @@ namespace HookrTelegramBot
 {
     public class Startup
     {
-        private readonly IConfiguration configuration;
+        private readonly IConfigurationRoot configurationRoot;
         private readonly IHostEnvironment hostEnvironment;
 
         public Startup(IConfiguration configuration, IHostEnvironment hostEnvironment)
         {
-            this.configuration = configuration;
+            configurationRoot = new ConfigurationBuilder()
+                .AddConfiguration(configuration)
+                .AddEnvironmentVariables()
+                .Build();
             this.hostEnvironment = hostEnvironment;
         }
 
@@ -36,13 +39,8 @@ namespace HookrTelegramBot
                 .Console()
                 .CreateLogger();
             Log.Logger = log;
-            AppSettings appSettings = null;
-            if (hostEnvironment.IsDevelopment())
-            {
-                appSettings = new AppSettings();
-                configuration.Bind(appSettings);
-            }
-            //todo 
+            var appSettings = new AppSettings();
+            configurationRoot.Bind(appSettings);
 
             services.AddSingleton<IAppSettings>(appSettings);
 
