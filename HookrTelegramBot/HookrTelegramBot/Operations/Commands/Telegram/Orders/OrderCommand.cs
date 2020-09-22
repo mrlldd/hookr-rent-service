@@ -66,11 +66,11 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
             InlineKeyboardButton[] response)
         {
-            var (product, hookahs, tobaccos) = await (
-                TranslationsResolver.ResolveAsync(TranslationKeys.ChooseProduct),
-                TranslationsResolver.ResolveAsync(TranslationKeys.Hookahs),
-                TranslationsResolver.ResolveAsync(TranslationKeys.Tobaccos)
-            ).CombineAsync();
+            var (product, hookahs, tobaccos) = await TranslationsResolver.ResolveAsync(
+                (TranslationKeys.ChooseProduct, Array.Empty<object>()),
+                (TranslationKeys.Hookahs, Array.Empty<object>()),
+                (TranslationKeys.Tobaccos, Array.Empty<object>())
+            );
             return await client
                 .SendTextMessageAsync(product,
                     replyMarkup: new InlineKeyboardMarkup(new[]

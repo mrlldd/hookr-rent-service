@@ -13,6 +13,10 @@ namespace HookrTelegramBot.Repository
         Task<TResult> ReadAsync<TResult>(Func<HookrContext, CancellationToken, Task<TResult>> functor);
         Task WriteAsync(Func<HookrContext, CancellationToken, Task> functor);
 
+        Task<TResult> WriteAsync<TResult>(Func<HookrContext, CancellationToken, Task<TResult>> functor);
+
+        Task<int> SaveChangesAsync();
+
         Task<string> GetTranslationAsync(LanguageCodes languageCode,
             TranslationKeys translationKey,
             bool omitCache = false);

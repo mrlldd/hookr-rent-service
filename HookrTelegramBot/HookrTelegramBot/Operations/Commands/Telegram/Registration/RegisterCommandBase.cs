@@ -64,7 +64,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
             }
             else
             {
-                await hookrRepository.Context.TelegramUsers.AddAsync(new TelegramUser
+                hookrRepository.Context.TelegramUsers.Add(new TelegramUser
                 {
                     Id = user.Id,
                     State = ExpectedState,

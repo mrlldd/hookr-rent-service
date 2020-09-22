@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HookrTelegramBot.Utilities.Extensions
 {
@@ -12,5 +13,9 @@ namespace HookrTelegramBot.Utilities.Extensions
                 action(item);
             }
         }
+
+        public static IEnumerable<T> Linear<T>(this IEnumerable<IEnumerable<T>> dimensional)
+            => dimensional
+                .SelectMany(x => x);
     }
 }

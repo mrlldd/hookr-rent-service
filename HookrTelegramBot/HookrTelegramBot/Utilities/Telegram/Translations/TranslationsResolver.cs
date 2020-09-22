@@ -127,8 +127,10 @@ namespace HookrTelegramBot.Utilities.Telegram.Translations
 
         private static LanguageCodes ResolveLanguage(ExtendedUpdate update)
             => Enum.TryParse<LanguageCodes>(update.Type == UpdateType.CallbackQuery
-                ? update.CallbackQuery.From.LanguageCode
-                : update.RealMessage.From.LanguageCode, true, out var parsedCode)
+                    ? update.CallbackQuery.From.LanguageCode
+                    : update.RealMessage.From.LanguageCode,
+                true,
+                out var parsedCode)
                 ? parsedCode
                 : DefaultLanguage;
     }

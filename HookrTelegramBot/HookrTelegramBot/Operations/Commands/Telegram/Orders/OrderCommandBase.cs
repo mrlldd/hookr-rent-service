@@ -29,7 +29,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
             : base(telegramBotClient,
             translationsResolver)
         {
-            this.UserContextProvider = userContextProvider;
+            UserContextProvider = userContextProvider;
             HookrRepository = hookrRepository;
         }
 
@@ -73,12 +73,16 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders
 
             switch (user.State)
             {
-                case TelegramUserStates.Dev:
-                    return;
+                /*case TelegramUserStates.Dev:
+                    return;*/
                 case TelegramUserStates.Default when order.CreatedById != user.Id:
                     throw new InsufficientAccessRightsException("Seems like you have no access :(");
             }
+
+            await CustomOrderAsyncValidator(order, user);
         }
+
+        protected virtual Task CustomOrderAsyncValidator(Order order, TelegramUser user) => Task.CompletedTask;
 
         protected virtual IQueryable<Order> SideQuery(IQueryable<Order> query) => query;
     }

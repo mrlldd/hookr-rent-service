@@ -33,6 +33,12 @@ namespace HookrTelegramBot.Repository
 
         public Task WriteAsync(Func<HookrContext, CancellationToken, Task> functor)
             => policySet.WritePolicy.ExecuteAsync(() => functor(Context, default));
+        
+        public Task<TResult> WriteAsync<TResult>(Func<HookrContext, CancellationToken, Task<TResult>> functor)
+            => policySet.WritePolicy.ExecuteAsync(() => functor(Context, default));
+
+        public Task<int> SaveChangesAsync()
+            => WriteAsync((context, token) => context.SaveChangesAsync(token));
 
         public async Task<string> GetTranslationAsync(LanguageCodes languageCode,
             TranslationKeys translationKey,

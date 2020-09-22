@@ -4,6 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Confirm;
+using HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Service.Review.Confirmed.Approve;
+using HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Service.Review.Confirmed.Reject;
+using HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Service.Review.Finish;
+using HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Service.Review.Process;
 using HookrTelegramBot.Operations.Commands.Telegram.Orders.Delete;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities;
@@ -48,14 +52,15 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
             Order response)
         {
-            var buttons = new List<InlineKeyboardButton>();
+            var buttons = new List<IEnumerable<InlineKeyboardButton>>();
+            var firstLayerButtons = new List<InlineKeyboardButton>();
             string text;
             if (response.OrderedHookahs.Any() || response.OrderedTobaccos.Any())
             {
                 text = StringifyResponse(response);
                 if (response.State == OrderStates.Constructing)
                 {
-                    buttons.Add(new InlineKeyboardButton
+                    firstLayerButtons.Add(new InlineKeyboardButton
                     {
                         Text = await TranslationsResolver.ResolveAsync(TranslationKeys.Confirm),
                         CallbackData = $"/{nameof(ConfirmOrderCommand).ExtractCommandName()} {response.Id}"
@@ -68,19 +73,68 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
             }
 
             text += $"\n\nStatus: *{response.State}*";
+
             if (response.State == OrderStates.Constructing)
             {
-                buttons.Add(new InlineKeyboardButton
+                firstLayerButtons.Add(new InlineKeyboardButton
                 {
                     Text = await TranslationsResolver.ResolveAsync(TranslationKeys.Delete),
                     CallbackData = $"/{nameof(DeleteOrderCommand).ExtractCommandName()} {response.Id}"
                 });
             }
 
+            buttons.Add(firstLayerButtons);
+            if (UserContextProvider.DatabaseUser.State > TelegramUserStates.Default)
+            {
+                buttons.Add(GetServiceButtons(response));
+            }
+
             return await client
                 .SendTextMessageAsync(text,
                     ParseMode.MarkdownV2,
                     replyMarkup: new InlineKeyboardMarkup(buttons));
+        }
+
+        private IEnumerable<InlineKeyboardButton> GetServiceButtons(Order order)
+        {
+            return order.State switch
+            {
+                //todo translations
+                OrderStates.Confirmed => new[]
+                {
+                    new InlineKeyboardButton
+                    {
+                        Text = "Approve",
+                        CallbackData = $"/{nameof(ApproveOrderCommand).ExtractCommandName()} {order.Id}"
+                    },
+                    new InlineKeyboardButton
+                    {
+                        Text = "Reject",
+                        CallbackData = $"/{nameof(RejectOrderCommand).ExtractCommandName()} {order.Id}"
+                    },
+                },
+                OrderStates.Approved => new[]
+                {
+                    new InlineKeyboardButton
+                    {
+                        Text = "Process",
+                        CallbackData = $"/{nameof(ProcessOrderCommand).ExtractCommandName()} {order.Id}"
+                    },
+                },
+                OrderStates.Processing => new[]
+                {
+                    new InlineKeyboardButton
+                    {
+                        Text = "Finish",
+                        CallbackData = $"/{nameof(FinishOrderCommand).ExtractCommandName()} {order.Id}"
+                    },
+                },
+                OrderStates.Constructing => Array.Empty<InlineKeyboardButton>(),
+                OrderStates.Rejected => Array.Empty<InlineKeyboardButton>(),
+                OrderStates.Finished => Array.Empty<InlineKeyboardButton>(),
+                OrderStates.Unknown => throw new ArgumentOutOfRangeException(nameof(order.State), order.State, null),
+                _ => throw new ArgumentOutOfRangeException(nameof(order.State), order.State, null)
+            };
         }
 
         private static string StringifyResponse(Order order) =>
@@ -98,6 +152,5 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
             => products
                 .Aggregate(string.Empty,
                     (prev, next) => prev + $"\n{next.Product.Name} \\- {next.Count}");
-
     }
 }
