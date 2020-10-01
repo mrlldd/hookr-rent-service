@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using HookrTelegramBot.Operations.Base;
 using HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Confirm;
 using HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Service.Review.Confirmed.Approve;
 using HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Service.Review.Confirmed.Reject;
@@ -19,7 +20,6 @@ using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client.CurrentUser;
-using HookrTelegramBot.Utilities.Telegram.Caches.CurrentOrder;
 using HookrTelegramBot.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
@@ -54,10 +54,10 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
         {
             var buttons = new List<IEnumerable<InlineKeyboardButton>>();
             var firstLayerButtons = new List<InlineKeyboardButton>();
-            string text;
+            var builder = new StringBuilder();
             if (response.OrderedHookahs.Any() || response.OrderedTobaccos.Any())
             {
-                text = StringifyResponse(response);
+                builder.Append(StringifyResponse(response));
                 if (response.State == OrderStates.Constructing)
                 {
                     firstLayerButtons.Add(new InlineKeyboardButton
@@ -69,10 +69,10 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
             }
             else
             {
-                text = "seems like there is no any data in order";
+                builder.Append("seems like there is no any data in order");
             }
 
-            text += $"\n\nStatus: *{response.State}*";
+            builder.Append($"\n\nStatus: *{response.State}*");
 
             if (response.State == OrderStates.Constructing)
             {
@@ -90,14 +90,13 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
             }
 
             return await client
-                .SendTextMessageAsync(text,
+                .SendTextMessageAsync(builder.ToString(),
                     ParseMode.MarkdownV2,
                     replyMarkup: new InlineKeyboardMarkup(buttons));
         }
 
         private IEnumerable<InlineKeyboardButton> GetServiceButtons(Order order)
-        {
-            return order.State switch
+            => order.State switch
             {
                 //todo translations
                 OrderStates.Confirmed => new[]
@@ -135,22 +134,23 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
                 OrderStates.Unknown => throw new ArgumentOutOfRangeException(nameof(order.State), order.State, null),
                 _ => throw new ArgumentOutOfRangeException(nameof(order.State), order.State, null)
             };
-        }
 
-        private static string StringifyResponse(Order order) =>
-            (order.OrderedTobaccos.Any()
-                ? "Tobaccos:" +
-                  AggregateProducts(order.OrderedTobaccos)
-                : string.Empty) +
-            (order.OrderedHookahs.Any()
-                ? "\n\nHookahs:" +
-                  AggregateProducts(order.OrderedHookahs)
-                : string.Empty);
+        private static string StringifyResponse(Order order)
+            => (order.OrderedTobaccos.Any()
+                   ? "Tobaccos:" +
+                     AggregateProducts(order.OrderedTobaccos)
+                   : string.Empty) +
+               (order.OrderedHookahs.Any()
+                   ? "\n\nHookahs:" +
+                     AggregateProducts(order.OrderedHookahs)
+                   : string.Empty);
 
         private static string AggregateProducts<TProduct>(IEnumerable<Ordered<TProduct>> products)
             where TProduct : Product
-            => products
-                .Aggregate(string.Empty,
-                    (prev, next) => prev + $"\n{next.Product.Name} \\- {next.Count}");
+            => new StringBuilder()
+                .SideEffect(builder => products
+                    .ForEach(x => builder.Append($"\n{x.Product.Name} \\- {x.Count}"))
+                )
+                .ToString();
     }
 }

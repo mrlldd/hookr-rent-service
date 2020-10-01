@@ -33,7 +33,7 @@ namespace HookrTelegramBot.Repository
 
         public Task WriteAsync(Func<HookrContext, CancellationToken, Task> functor)
             => policySet.WritePolicy.ExecuteAsync(() => functor(Context, default));
-        
+
         public Task<TResult> WriteAsync<TResult>(Func<HookrContext, CancellationToken, Task<TResult>> functor)
             => policySet.WritePolicy.ExecuteAsync(() => functor(Context, default));
 
@@ -108,9 +108,9 @@ namespace HookrTelegramBot.Repository
                 .ForEach(x =>
                 {
                     var (key, value) = x;
-                    var cacheKey = string.Format(TranslationCacheKeyFormat, languageCode, key);
                     if (!string.IsNullOrEmpty(value))
                     {
+                        var cacheKey = string.Format(TranslationCacheKeyFormat, languageCode, key);
                         memoryCache.Set(cacheKey, value, new MemoryCacheEntryOptions
                         {
                             SlidingExpiration = TimeSpan.FromDays(timeoutDays)

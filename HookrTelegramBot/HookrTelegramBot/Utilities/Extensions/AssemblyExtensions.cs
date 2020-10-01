@@ -14,7 +14,7 @@ namespace HookrTelegramBot.Utilities.Extensions
             return assembly
                 .GetTypes()
                 .Where(x => x != commandType && !x.IsAbstract && commandType.IsAssignableFrom(x))
-                .Select<Type, (Type Interface, Type Implementation)>(x => (x.GetInterfaces().FirstOrDefault(y => y != commandType && y != typeof(ICommand)), x));
+                .Select(x => (x.GetInterfaces().FirstOrDefault(y => y != commandType && y != typeof(ICommand)), x));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using HookrTelegramBot.Models.Telegram;
 using HookrTelegramBot.Operations.Base;
@@ -37,11 +38,11 @@ namespace HookrTelegramBot.Operations
 
             userResponseHandlers = new Dictionary<UserTemporaryStatus, Func<Task>>
             {
-                {UserTemporaryStatus.Default, ThrowDispatchingExceptionAsync},
-                {UserTemporaryStatus.ChoosingHookah, GetDetailedHookahInfo},
-                {UserTemporaryStatus.ChoosingTobacco, GetDetailedTobaccoInfo},
-                {UserTemporaryStatus.AskedForTobaccoPhotos, SetTobaccoPhotos},
-                {UserTemporaryStatus.AskedForHookahPhotos, SetHookahPhotos}
+                {UserTemporaryStatus.Default, ThrowCommandExecutingExceptionAsync},
+                {UserTemporaryStatus.ChoosingHookah, ExecuteCommandAsync<GetHookahCommand>},
+                {UserTemporaryStatus.ChoosingTobacco, ExecuteCommandAsync<GetTobaccoCommand>},
+                {UserTemporaryStatus.AskedForTobaccoPhotos, ExecuteCommandAsync<SetTobaccoPhotosCommand>},
+                {UserTemporaryStatus.AskedForHookahPhotos, ExecuteCommandAsync<SetHookahPhotosCommand>}
             };
         }
 
@@ -61,36 +62,30 @@ namespace HookrTelegramBot.Operations
                 }
             }
 
-            return DispatchAndExecuteCommandAsync(data.ExtractCommand());
+            return ExecuteCommandAsync(data.ExtractCommand());
         }
 
-        private Task DispatchAndExecuteCommandAsync(string commandName)
+        private Task ExecuteCommandAsync(string commandName)
         {
             Log.Information("Dispatching command {0}", commandName);
             var commandType = commandsContainer.TryGetByCommandName(commandName);
-            if (commandType == null)
+            return commandType.Has && serviceProvider.GetService(commandType) is ICommand command
+                ? command.ExecuteAsync()
+                : ThrowCommandExecutingExceptionAsync(); 
+            /*if (commandType == null)
             {
-                return ThrowDispatchingExceptionAsync();
+                return ThrowCommandExecutingExceptionAsync();
             }
 
             return serviceProvider.GetService(commandType) is ICommand command
                 ? command.ExecuteAsync()
-                : ThrowDispatchingExceptionAsync();
+                : ThrowCommandExecutingExceptionAsync();*/
         }
 
-        private Task GetDetailedHookahInfo()
-            => DispatchAndExecuteCommandAsync(nameof(GetHookahCommand).ExtractCommandName());
+        private Task ExecuteCommandAsync<TCommand>() where TCommand : Command
+            => ExecuteCommandAsync(typeof(TCommand).Name.ExtractCommandName());
 
-        private Task GetDetailedTobaccoInfo()
-            => DispatchAndExecuteCommandAsync(nameof(GetTobaccoCommand).ExtractCommandName());
-
-        private Task SetTobaccoPhotos()
-            => DispatchAndExecuteCommandAsync(nameof(SetTobaccoPhotosCommand).ExtractCommandName());
-
-        private Task SetHookahPhotos()
-            => DispatchAndExecuteCommandAsync(nameof(SetHookahPhotosCommand).ExtractCommandName());
-
-        private static Task ThrowDispatchingExceptionAsync()
+        private static Task ThrowCommandExecutingExceptionAsync()
             => throw new InvalidOperationException("There is no such command :(");
     }
 }

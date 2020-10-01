@@ -22,7 +22,7 @@ namespace HookrTelegramBot.Operations
             Log.Information("Collected {0} commands: {1}", nameToInterfaceType.Count, nameToInterfaceType.Keys.ToJson());
         }
 
-        public Type TryGetByCommandName(string commandName)
+        public Type? TryGetByCommandName(string commandName)
         {
             nameToInterfaceType.TryGetValue(commandName, out var result);
             return result;

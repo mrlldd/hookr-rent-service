@@ -11,7 +11,6 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client
 {
     public class ExtendedTelegramBotClient : DecoratedTelegramBotClientBase, IExtendedTelegramBotClient
     {
-
         public ExtendedTelegramBotClient(
             IUserContextProvider userContextProvider,
             ITelegramBotProvider provider,
@@ -31,21 +30,16 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client
             int replyToMessageId = 0,
             IReplyMarkup replyMarkup = null,
             CancellationToken cancellationToken = default)
-        {
-            var content = text;
-            if (parseMode == ParseMode.MarkdownV2)
-            {
-                content = content.FilterPreservedCharacters();
-            }
-            return base
+            => base
                 .SendTextMessageAsync(chatId,
-                    content,
+                    parseMode == ParseMode.MarkdownV2
+                        ? text.FilterPreservedCharacters()
+                        : text,
                     parseMode,
                     disableWebPagePreview,
                     disableNotification,
                     replyToMessageId,
                     replyMarkup,
                     cancellationToken);
-        }
     }
 }

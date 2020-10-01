@@ -16,6 +16,7 @@ namespace HookrTelegramBot.Repository.Context
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()))
                 .AddJsonFile($"appsettings.json", optional: false)
+                .AddEnvironmentVariables()
                 .Build();
 
             var optionsBuilder = new DbContextOptionsBuilder<HookrContext>();

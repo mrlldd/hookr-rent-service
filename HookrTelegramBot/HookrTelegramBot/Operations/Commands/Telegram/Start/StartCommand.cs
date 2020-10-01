@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HookrTelegramBot.Operations.Base;
@@ -61,20 +62,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Start
                 {
                     OneTimeKeyboard = true,
                     ResizeKeyboard = true,
-                    Keyboard = new[]
-                    {
-                        new[]
-                        {
-                            new KeyboardButton
-                            {
-                                Text = "hi"
-                            },
-                            new KeyboardButton
-                            {
-                                Text = "Order some"
-                            },
-                        }
-                    }
+                    Keyboard = Array.Empty<IEnumerable<KeyboardButton>>()
                 });
     }
 }

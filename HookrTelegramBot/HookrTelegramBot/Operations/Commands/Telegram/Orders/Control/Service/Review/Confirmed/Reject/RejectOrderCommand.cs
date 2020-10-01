@@ -32,7 +32,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Service.R
 
         protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Order response)
             => client
-                .SendTextMessageAsync($"Order with id {response.Id} has been approved.");
+                .SendTextMessageAsync($"Order with id {response.Id} has been rejected.");
 
         protected override OrderStates NextOrderState => OrderStates.Rejected;
         protected override async Task<IEnumerable<Message>> NotifyAsync(Order order, TelegramUser user)

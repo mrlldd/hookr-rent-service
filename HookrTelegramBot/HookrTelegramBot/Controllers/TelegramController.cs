@@ -45,36 +45,39 @@ namespace HookrTelegramBot.Controllers
                 return;
             }
 
+            var languages = newTranslations.Keys;
+            var translations = await hookrRepository
+                .ReadAsync((context, token) => context.Translations
+                    .Where(x => languages.Contains(x.Language))
+                    .GroupBy(x => x.Language)
+                    .ToArrayAsync(token)
+                );
             var table = hookrRepository.Context.Translations;
-            await newTranslations
-                .Select(pair => new Func<Task>(async () =>
+            translations
+                .ForEach(grouping =>
                 {
-                    var (language, inner) = pair;
-                    var languageTranslations = await hookrRepository.ReadAsync((context, token) => context.Translations
-                        .Where(x => x.Language == language)
-                        .ToArrayAsync(token));
-                    inner.ForEach(x =>
-                    {
-                        var (key, value) = x;
-                        var existing = languageTranslations
-                            .FirstOrDefault(y => y.Key == key);
-                        if (existing == null)
+                    newTranslations[grouping.Key]
+                        .ForEach(x =>
                         {
-                            table.Add(new Translation
+                            var (key, value) = x;
+                            var existing = grouping
+                                .FirstOrDefault(y => y.Key == key);
+                            if (existing == null)
                             {
-                                Key = key,
-                                Value = value,
-                                Language = language
-                            });
-                        }
-                        else
-                        {
-                            existing.Value = value;
-                            table.Update(existing);
-                        }
-                    });
-                }))
-                .ExecuteMultipleAsync();
+                                table.Add(new Translation
+                                {
+                                    Key = key,
+                                    Value = value,
+                                    Language = grouping.Key
+                                });
+                            }
+                            else
+                            {
+                                existing.Value = value;
+                                table.Update(existing);
+                            }
+                        });
+                });
             await hookrRepository.Context.SaveChangesAsync();
         }
     }
