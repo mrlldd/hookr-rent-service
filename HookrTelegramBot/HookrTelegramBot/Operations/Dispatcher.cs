@@ -69,7 +69,7 @@ namespace HookrTelegramBot.Operations
         {
             Log.Information("Dispatching command {0}", commandName);
             var commandType = commandsContainer.TryGetByCommandName(commandName);
-            return commandType.Has && serviceProvider.GetService(commandType) is ICommand command
+            return commandType != null && serviceProvider.GetService(commandType) is ICommand command
                 ? command.ExecuteAsync()
                 : ThrowCommandExecutingExceptionAsync(); 
             /*if (commandType == null)
