@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
@@ -30,27 +31,41 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Service.R
         {
         }
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Order response)
-            => client
-                .SendTextMessageAsync($"Order with id {response.Id} has been finished.");
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Order response)
+            => await client
+                .SendTextMessageAsync(await TranslationsResolver.ResolveAsync(TranslationKeys.OrderHasBeenFinished, response.Id));
 
         protected override OrderStates AllowedState => OrderStates.Processing;
         protected override OrderStates NextOrderState => OrderStates.Finished;
         protected override async Task<IEnumerable<Message>> NotifyAsync(Order order, TelegramUser user)
         {
+            var (notificationTranslated, orderHasBeenFinishedByTranslated, yourOrderHasBeenFinishedTranslated) =
+                await TranslationsResolver.ResolveAsync(
+                    (TranslationKeys.Notification, Array.Empty<object>()),
+                    (TranslationKeys.OrderHasBeenFinishedBy, new object[]
+                    {
+                        order.Id,
+                        user.Username,
+                        UserContextProvider.DatabaseUser.Username
+                    }),
+                    (TranslationKeys.YourOrderHasBeenFinished, new object[]
+                    {
+                        order.Id
+                    }));
+            // todo translations
             var result = await new Func<Task<IEnumerable<Message>>>[]
                 {
                     () => TelegramUsersNotifier
                         .SendAsync(
                             (client, telegramUser) => client
                                 .SendTextMessageAsync(telegramUser.Id,
-                                    $"[Notification] Order with id {order.Id} by user @{user.Username} has been finished by @{UserContextProvider.DatabaseUser.Username}."),
+                                    $"[{notificationTranslated}] {orderHasBeenFinishedByTranslated}"),
                             TelegramUserStates.Service,
                             TelegramUserStates.Dev),
                     () => TelegramUsersNotifier
                         .SendAsync((client, telegramUser) => client
                                 .SendTextMessageAsync(telegramUser.Id,
-                                    $"Your order with id {order.Id} has been finished."),
+                                    yourOrderHasBeenFinishedTranslated),
                             user)
                 }
                 .ExecuteMultipleAsync();

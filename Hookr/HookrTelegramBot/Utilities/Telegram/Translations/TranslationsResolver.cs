@@ -113,6 +113,66 @@ namespace HookrTelegramBot.Utilities.Telegram.Translations
             );
         }
 
+        public async Task<(string First, string Second, string Third, string Fourth, string Fifth, string Sixth)>
+            ResolveAsync(
+                (TranslationKeys Key, object[] Args) first,
+                (TranslationKeys Key, object[] Args) second,
+                (TranslationKeys Key, object[] Args) third,
+                (TranslationKeys Key, object[] Args) fourth,
+                (TranslationKeys Key, object[] Args) fifth,
+                (TranslationKeys Key, object[] Args) sixth
+                )
+        {
+            var update = userContextProvider.Update;
+            var languageCode = ResolveLanguage(update);
+            var result = await hookrRepository.GetTranslationsAsync(languageCode, false,
+                first.Key,
+                second.Key,
+                third.Key,
+                fourth.Key,
+                fifth.Key,
+                sixth.Key);
+            return (
+                FormatResult(ExtractResult(result, first.Key), first.Key, first.Args),
+                FormatResult(ExtractResult(result, second.Key), second.Key, second.Args),
+                FormatResult(ExtractResult(result, third.Key), third.Key, third.Args),
+                FormatResult(ExtractResult(result, fourth.Key), fourth.Key, fourth.Args),
+                FormatResult(ExtractResult(result, fifth.Key), fifth.Key, fifth.Args),
+                FormatResult(ExtractResult(result, sixth.Key), sixth.Key, sixth.Args)
+            );
+        }
+        
+        public async Task<(string First, string Second, string Third, string Fourth, string Fifth, string Sixth, string Seventh)>
+            ResolveAsync(
+                (TranslationKeys Key, object[] Args) first,
+                (TranslationKeys Key, object[] Args) second,
+                (TranslationKeys Key, object[] Args) third,
+                (TranslationKeys Key, object[] Args) fourth,
+                (TranslationKeys Key, object[] Args) fifth,
+                (TranslationKeys Key, object[] Args) sixth,
+                (TranslationKeys Key, object[] Args) seventh
+            )
+        {
+            var update = userContextProvider.Update;
+            var languageCode = ResolveLanguage(update);
+            var result = await hookrRepository.GetTranslationsAsync(languageCode, false,
+                first.Key,
+                second.Key,
+                third.Key,
+                fourth.Key,
+                fifth.Key,
+                sixth.Key);
+            return (
+                FormatResult(ExtractResult(result, first.Key), first.Key, first.Args),
+                FormatResult(ExtractResult(result, second.Key), second.Key, second.Args),
+                FormatResult(ExtractResult(result, third.Key), third.Key, third.Args),
+                FormatResult(ExtractResult(result, fourth.Key), fourth.Key, fourth.Args),
+                FormatResult(ExtractResult(result, fifth.Key), fifth.Key, fifth.Args),
+                FormatResult(ExtractResult(result, sixth.Key), sixth.Key, sixth.Args),
+                FormatResult(ExtractResult(result, seventh.Key), seventh.Key, seventh.Args)
+            );
+        }
+
         private static string ExtractResult(IDictionary<TranslationKeys, string> dictionary, TranslationKeys key)
             => dictionary.TryGetValue(key, out var result)
                 ? result

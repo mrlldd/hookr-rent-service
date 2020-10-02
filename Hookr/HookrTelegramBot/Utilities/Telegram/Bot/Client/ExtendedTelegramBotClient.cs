@@ -14,6 +14,7 @@ namespace HookrTelegramBot.Utilities.Telegram.Bot.Client
         public ExtendedTelegramBotClient(
             IUserContextProvider userContextProvider,
             ITelegramBotProvider provider,
+            
             bool omitEventProxies = true)
             : base(provider, omitEventProxies)
         {

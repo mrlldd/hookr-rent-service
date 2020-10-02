@@ -40,14 +40,23 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Confirm
         protected override async Task<Order> ProcessAsync(Order order)
         {
             order.State = OrderStates.Confirmed;
-            //todo notify service users about new order;
-            var (notificationFormat, fromFormat, hookahRowFormat, tobaccoRowFormat, unknownTranslated) = await
+            var (
+                notificationFormat,
+                fromFormat,
+                hookahRowFormat,
+                tobaccoRowFormat,
+                unknownTranslated,
+                approveTranslated,
+                rejectTranslated
+                ) = await
                 TranslationsResolver.ResolveAsync(
                     (TranslationKeys.NewOrderNotification, Array.Empty<object>()),
                     (TranslationKeys.From, Array.Empty<object>()),
                     (TranslationKeys.OrderNotificationHookahRow, Array.Empty<object>()),
                     (TranslationKeys.OrderNotificationTobaccoRow, Array.Empty<object>()),
-                    (TranslationKeys.Unknown, Array.Empty<object>())
+                    (TranslationKeys.Unknown, Array.Empty<object>()),
+                    (TranslationKeys.Approve, Array.Empty<object>()),
+                    (TranslationKeys.Reject, Array.Empty<object>())
                 );
             var from = UserContextProvider.Update.From;
             var notification = string.Format(notificationFormat,
@@ -84,14 +93,14 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Confirm
                         {
                             new InlineKeyboardButton
                             {
-                                Text = "Approve",
+                                Text = approveTranslated,
                                 CallbackData = $"/{nameof(ApproveOrderCommand).ExtractCommandName()} {order.Id}"
-                            }, 
+                            },
                             new InlineKeyboardButton
                             {
-                                Text = "Reject",
+                                Text = rejectTranslated,
                                 CallbackData = $"/{nameof(RejectOrderCommand).ExtractCommandName()} {order.Id}"
-                            }, 
+                            }
                         })),
                 TelegramUserStates.Service,
                 TelegramUserStates.Dev);

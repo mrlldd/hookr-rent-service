@@ -37,5 +37,26 @@ namespace HookrTelegramBot.Utilities.Telegram.Translations
             (TranslationKeys Key, object[] Args) fourth,
             (TranslationKeys Key, object[] Args) fifth
         );
+
+        Task<(string First, string Second, string Third, string Fourth, string Fifth, string Sixth)>
+            ResolveAsync(
+                (TranslationKeys Key, object[] Args) first,
+                (TranslationKeys Key, object[] Args) second,
+                (TranslationKeys Key, object[] Args) third,
+                (TranslationKeys Key, object[] Args) fourth,
+                (TranslationKeys Key, object[] Args) fifth,
+                (TranslationKeys Key, object[] Args) sixth
+            );
+
+        Task<(string First, string Second, string Third, string Fourth, string Fifth, string Sixth, string Seventh)>
+            ResolveAsync(
+                (TranslationKeys Key, object[] Args) first,
+                (TranslationKeys Key, object[] Args) second,
+                (TranslationKeys Key, object[] Args) third,
+                (TranslationKeys Key, object[] Args) fourth,
+                (TranslationKeys Key, object[] Args) fifth,
+                (TranslationKeys Key, object[] Args) sixth,
+                (TranslationKeys Key, object[] Args) seventh
+            );
     }
 }

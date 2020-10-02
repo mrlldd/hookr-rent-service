@@ -12,7 +12,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration.Service
     {
         protected override TelegramUserStates ExpectedState => TelegramUserStates.Service;
 
-        protected override Func<Guid, IManagementConfig, bool> KeyValidator { get; } =
+        protected override Func<Guid, IManagementConfig, bool> KeyValidator =>
             (key, config) => config.ServiceKey.Equals(key);
 
         public RegisterServiceCommand(IExtendedTelegramBotClient telegramBotClient,

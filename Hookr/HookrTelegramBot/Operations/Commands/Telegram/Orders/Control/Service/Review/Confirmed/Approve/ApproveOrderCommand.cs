@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities;
 using HookrTelegramBot.Repository.Context.Entities.Base;
+using HookrTelegramBot.Repository.Context.Entities.Translations;
 using HookrTelegramBot.Utilities.Extensions;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
@@ -30,27 +31,40 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Control.Service.R
         {
         }
 
-        protected override Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Order response)
-            => client
-                .SendTextMessageAsync($"Order with id {response.Id} has been approved.");
+        protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client, Order response)
+            => await client
+                .SendTextMessageAsync(await TranslationsResolver.ResolveAsync(TranslationKeys.OrderHasBeenApproved, response.Id));
 
         protected sealed override OrderStates NextOrderState => OrderStates.Approved;
 
         protected override async Task<IEnumerable<Message>> NotifyAsync(Order order, TelegramUser user)
         {
+            var (notificationTranslated, orderhasBeenApprovedByTranslated, yourOrderHasBeenApprovedTranslated) =
+                await TranslationsResolver.ResolveAsync(
+                    (TranslationKeys.Notification, Array.Empty<object>()),
+                    (TranslationKeys.OrderHasBeenApprovedBy, new object[]
+                    {
+                        order.Id,
+                        user.Username,
+                        UserContextProvider.DatabaseUser.Username
+                    }),
+                    (TranslationKeys.YourOrderHasBeenApproved, new object[]
+                    {
+                        order.Id
+                    }));
             var result = await new Func<Task<IEnumerable<Message>>>[]
                 {
                     () => TelegramUsersNotifier
                         .SendAsync(
                             (client, telegramUser) => client
                                 .SendTextMessageAsync(telegramUser.Id,
-                                    $"[Notification] Order with id {order.Id} by user @{user.Username} has been approved by @{UserContextProvider.DatabaseUser.Username}."),
+                                    $"[{notificationTranslated}] {orderhasBeenApprovedByTranslated}"),
                             TelegramUserStates.Service,
                             TelegramUserStates.Dev),
                     () => TelegramUsersNotifier
                         .SendAsync((client, telegramUser) => client
                                 .SendTextMessageAsync(telegramUser.Id,
-                                    $"Your order with id {order.Id} has been approved."),
+                                    yourOrderHasBeenApprovedTranslated),
                             user)
                 }
                 .ExecuteMultipleAsync();

@@ -20,7 +20,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Registration
         private const string Space = " ";
         protected abstract TelegramUserStates ExpectedState { get; }
 
-        protected virtual Func<Guid, IManagementConfig, bool> KeyValidator { get; } = (x, y) => false;
+        protected virtual Func<Guid, IManagementConfig, bool> KeyValidator => (x, y) => false;
 
         private readonly IHookrRepository hookrRepository;
         private readonly IUserContextProvider userContextProvider;

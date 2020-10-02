@@ -33,6 +33,21 @@
         SendPhotosAsGroup,
         DeletePhotos,
         AddPhotoSuccess,
-        DeletePhotosSuccess
+        DeletePhotosSuccess,
+        Approve,
+        Reject,
+        OrderHasBeenApproved,
+        Notification,
+        OrderHasBeenApprovedBy,
+        YourOrderHasBeenApproved,
+        OrderHasBeenRejected,
+        OrderHasBeenRejectedBy,
+        YourOrderHasBeenRejected,
+        OrderIsProcessing,
+        OrderIsProcessingBy,
+        YourOrderIsProcessing,
+        OrderHasBeenFinished,
+        OrderHasBeenFinishedBy,
+        YourOrderHasBeenFinished
     }
 }

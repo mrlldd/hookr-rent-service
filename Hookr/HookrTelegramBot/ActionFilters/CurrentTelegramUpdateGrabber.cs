@@ -4,6 +4,7 @@ using HookrTelegramBot.Repository;
 using HookrTelegramBot.Repository.Context.Entities.Base;
 using HookrTelegramBot.Utilities.Telegram.Bot;
 using HookrTelegramBot.Utilities.Telegram.Bot.Client;
+using HookrTelegramBot.Utilities.Telegram.Notifiers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
@@ -14,15 +15,15 @@ namespace HookrTelegramBot.ActionFilters
     public class CurrentTelegramUpdateGrabber : ActionFilterAttribute
     {
         private readonly IUserContextProvider userContextProvider;
-        private readonly IExtendedTelegramBotClient telegramBotClient;
+        private readonly ITelegramUsersNotifier telegramUsersNotifier;
         private readonly IHookrRepository hookrRepository;
 
         public CurrentTelegramUpdateGrabber(IUserContextProvider userContextProvider,
-            IExtendedTelegramBotClient telegramBotClient,
+            ITelegramUsersNotifier telegramUsersNotifier,
             IHookrRepository hookrRepository)
         {
             this.userContextProvider = userContextProvider;
-            this.telegramBotClient = telegramBotClient;
+            this.telegramUsersNotifier = telegramUsersNotifier;
             this.hookrRepository = hookrRepository;
         }
 
@@ -41,16 +42,10 @@ namespace HookrTelegramBot.ActionFilters
             var result = await next();
             if (result.Exception != null)
             {
-                var devs = await hookrRepository.ReadAsync((hookrContext, token) =>
-                    hookrContext.TelegramUsers
-                        .Where(x => x.State == TelegramUserStates.Dev)
-                        .ToArrayAsync(token));
-                await Task.WhenAll(
-                    devs
-                        .Select(x => telegramBotClient
-                            .SendTextMessageAsync(new ChatId(x.Id), result.Exception.ToString())
-                        )
-                );
+                await telegramUsersNotifier
+                    .SendAsync((client, user) => client
+                            .SendTextMessageAsync(user.Id, result.Exception.ToString()),
+                        TelegramUserStates.Dev);
                 result.ExceptionHandled = true;
                 result.HttpContext.Response.StatusCode = 200;
             }
