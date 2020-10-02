@@ -86,7 +86,7 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
             buttons.Add(firstLayerButtons);
             if (UserContextProvider.DatabaseUser.State > TelegramUserStates.Default)
             {
-                buttons.Add(GetServiceButtons(response));
+                buttons.Add(await GetServiceButtonsAsync(response));
             }
 
             return await client
@@ -95,45 +95,56 @@ namespace HookrTelegramBot.Operations.Commands.Telegram.Orders.Get
                     replyMarkup: new InlineKeyboardMarkup(buttons));
         }
 
-        private IEnumerable<InlineKeyboardButton> GetServiceButtons(Order order)
-            => order.State switch
+        private async Task<IEnumerable<InlineKeyboardButton>> GetServiceButtonsAsync(Order order)
+        {
+            switch (order.State)
             {
-                //todo translations
-                OrderStates.Confirmed => new[]
+                case OrderStates.Confirmed:
                 {
-                    new InlineKeyboardButton
+                    var (approveTranslated, rejectTranslated) =
+                        await TranslationsResolver
+                            .ResolveAsync(TranslationKeys.Approve, TranslationKeys.Reject);
+                    return new[]
                     {
-                        Text = "Approve",
-                        CallbackData = $"/{nameof(ApproveOrderCommand).ExtractCommandName()} {order.Id}"
-                    },
-                    new InlineKeyboardButton
+                        new InlineKeyboardButton
+                        {
+                            Text = approveTranslated,
+                            CallbackData = $"/{nameof(ApproveOrderCommand).ExtractCommandName()} {order.Id}"
+                        },
+                        new InlineKeyboardButton
+                        {
+                            Text = rejectTranslated,
+                            CallbackData = $"/{nameof(RejectOrderCommand).ExtractCommandName()} {order.Id}"
+                        },
+                    };
+                }
+                case OrderStates.Approved:
+                    return new[]
                     {
-                        Text = "Reject",
-                        CallbackData = $"/{nameof(RejectOrderCommand).ExtractCommandName()} {order.Id}"
-                    },
-                },
-                OrderStates.Approved => new[]
-                {
-                    new InlineKeyboardButton
+                        new InlineKeyboardButton
+                        {
+                            Text = await TranslationsResolver.ResolveAsync(TranslationKeys.Process),
+                            CallbackData = $"/{nameof(ProcessOrderCommand).ExtractCommandName()} {order.Id}"
+                        },
+                    };
+                case OrderStates.Processing:
+                    return new[]
                     {
-                        Text = "Process",
-                        CallbackData = $"/{nameof(ProcessOrderCommand).ExtractCommandName()} {order.Id}"
-                    },
-                },
-                OrderStates.Processing => new[]
-                {
-                    new InlineKeyboardButton
-                    {
-                        Text = "Finish",
-                        CallbackData = $"/{nameof(FinishOrderCommand).ExtractCommandName()} {order.Id}"
-                    },
-                },
-                OrderStates.Constructing => Array.Empty<InlineKeyboardButton>(),
-                OrderStates.Rejected => Array.Empty<InlineKeyboardButton>(),
-                OrderStates.Finished => Array.Empty<InlineKeyboardButton>(),
-                OrderStates.Unknown => throw new ArgumentOutOfRangeException(nameof(order.State), order.State, null),
-                _ => throw new ArgumentOutOfRangeException(nameof(order.State), order.State, null)
-            };
+                        new InlineKeyboardButton
+                        {
+                            Text = await TranslationsResolver.ResolveAsync(TranslationKeys.Finish),
+                            CallbackData = $"/{nameof(FinishOrderCommand).ExtractCommandName()} {order.Id}"
+                        },
+                    };
+                case OrderStates.Constructing:
+                case OrderStates.Rejected:
+                case OrderStates.Finished:
+                    return Array.Empty<InlineKeyboardButton>();
+                case OrderStates.Unknown:
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(order.State), order.State, null);
+            }
+        }
 
         private static string StringifyResponse(Order order)
             => (order.OrderedTobaccos.Any()

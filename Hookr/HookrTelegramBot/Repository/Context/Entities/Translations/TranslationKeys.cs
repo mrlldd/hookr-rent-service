@@ -36,6 +36,8 @@
         DeletePhotosSuccess,
         Approve,
         Reject,
+        Process,
+        Finish,
         OrderHasBeenApproved,
         Notification,
         OrderHasBeenApprovedBy,
