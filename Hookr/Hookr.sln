@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HookrTelegramBot", "HookrTelegramBot\HookrTelegramBot.csproj", "{66C54099-20C3-4780-82E6-62FEEF70F170}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hookr.Telegram", "Hookr.Telegram\Hookr.Telegram.csproj", "{66C54099-20C3-4780-82E6-62FEEF70F170}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hookr.Web.Backend", "Web\Hookr.Web.Backend\Hookr.Web.Backend.csproj", "{CF07852E-A650-4D3D-BA92-669D7974C681}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +14,9 @@ Global
 		{66C54099-20C3-4780-82E6-62FEEF70F170}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66C54099-20C3-4780-82E6-62FEEF70F170}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66C54099-20C3-4780-82E6-62FEEF70F170}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF07852E-A650-4D3D-BA92-669D7974C681}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF07852E-A650-4D3D-BA92-669D7974C681}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF07852E-A650-4D3D-BA92-669D7974C681}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF07852E-A650-4D3D-BA92-669D7974C681}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

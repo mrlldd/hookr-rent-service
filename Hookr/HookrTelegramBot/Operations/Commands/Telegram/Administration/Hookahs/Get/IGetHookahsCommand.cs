@@ -1,7 +1,0 @@
-﻿namespace HookrTelegramBot.Operations.Commands.Telegram.Administration.Hookahs.Get
-{
-    public interface IGetHookahsCommand
-    {
-        
-    }
-}
