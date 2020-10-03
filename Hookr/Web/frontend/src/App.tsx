@@ -15,7 +15,7 @@ function App() {
       <TelegramLoginButton
         dataOnAuth={handler}
         botName="mrlldd_development_bot"
-        lang={navigator.languages ? navigator.languages[0] : "ru"}
+        lang={navigator.languages ? navigator.languages[0] : "ru"} // todo global config state
       />
     </div>
   );
