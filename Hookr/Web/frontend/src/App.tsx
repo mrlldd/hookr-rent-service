@@ -3,9 +3,21 @@ import "./App.css";
 import TelegramLoginButton, {
   TelegramUser,
 } from "@v9v/ts-react-telegram-login";
+import { createStore, applyMiddleware } from "redux";
+import thunk from "redux-thunk";
+import { SetUserAction } from "./store/auth/auth-actions";
+import { composeWithDevTools } from "redux-devtools-extension";
+import { rootReducer } from "./store/root-reducer";
+const store = createStore(
+  rootReducer,
+  composeWithDevTools(applyMiddleware(thunk))
+);
 
 function handler(user: TelegramUser): void {
-  console.log(user);
+  store.dispatch<SetUserAction>({
+    type: "[Auth] Set user",
+    props: user,
+  });
 }
 
 function App() {
