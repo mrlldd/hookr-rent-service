@@ -8,15 +8,29 @@ import thunk from "redux-thunk";
 import { SetUserAction } from "./store/auth/auth-actions";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { rootReducer } from "./store/root-reducer";
+import { omitHash } from "./store/utils";
+import { cut, toDataCheckString } from "./utils";
+
 const store = createStore(
   rootReducer,
   composeWithDevTools(applyMiddleware(thunk))
 );
 
-function handler(user: TelegramUser): void {
+async function handler(user: TelegramUser) {
   store.dispatch<SetUserAction>({
     type: "[Auth] Set user",
     props: user,
+  });
+  console.log(omitHash(user));
+  await fetch("/api/auth", {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      key: toDataCheckString(cut(user, "hash")),
+      hash: user.hash,
+    }),
   });
 }
 
