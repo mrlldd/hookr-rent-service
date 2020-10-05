@@ -13,11 +13,11 @@ const initialState: UserState = {
 
 export function authReducer(
   state: UserState = initialState,
-  action: AuthAction<TelegramUser>
+  action: AuthAction
 ): UserState {
   switch (action.type) {
     case "[Auth] Set user": {
-      return { ...action.props };
+      return { ...action.user };
     }
   }
   return state;
