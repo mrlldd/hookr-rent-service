@@ -2,11 +2,16 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
       <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Utilities\Config" />
     </ItemGroup>
 
 </Project>
