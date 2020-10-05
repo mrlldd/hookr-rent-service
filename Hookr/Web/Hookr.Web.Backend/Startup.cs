@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hookr.Web.Backend.Filters.Response;
 using Hookr.Web.Backend.Operations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,7 +19,7 @@ namespace Hookr.Web.Backend
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddControllers()
+                .AddControllers(x => x.Filters.Add(new ResponseFilter()))
                 .AddJsonOptions(options => { options.JsonSerializerOptions.WriteIndented = true; });
             services
                 .AddOperations();
