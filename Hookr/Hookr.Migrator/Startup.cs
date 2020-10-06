@@ -58,8 +58,6 @@ namespace Hookr.Migrator
                 endpoints
                     .MapGet("/", context => context.Response.WriteAsync("Nope, that's not a web application"));
             });
-            context.Database
-                .Migrate();
         }
     }
 }

@@ -21,5 +21,8 @@ namespace Hookr.Core.Utilities.Extensions
             await effect(obj);
             return obj;
         }
+
+        public static TResult Map<T, TResult>(this T obj, Func<T, TResult> mapper)
+            => mapper(obj);
     }
 }

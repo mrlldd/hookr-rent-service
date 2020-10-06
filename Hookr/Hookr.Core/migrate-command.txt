@@ -1,0 +1,2 @@
+dotnet ef migrations --startup-project ../Hookr.Migrator add <migration-name> --project ../Hookr.Migrations
+dotnet ef migrations --startup-project ../Hookr.Migrator remove --project ../Hookr.Migrations

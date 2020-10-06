@@ -6,5 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hookr.Core\Hookr.Core.csproj" />
+    <ProjectReference Include="..\Hookr.Migrations\Hookr.Migrations.csproj" />
   </ItemGroup>
 </Project>

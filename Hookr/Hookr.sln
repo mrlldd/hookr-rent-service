@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hookr.Core", "Hookr.Core\Ho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hookr.Migrator", "Hookr.Migrator\Hookr.Migrator.csproj", "{63422607-F19D-4325-B68F-7EF6A0C31585}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hookr.Migrations", "Hookr.Migrations\Hookr.Migrations.csproj", "{0978BFBC-0D6F-4872-9583-D973967BC0E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{63422607-F19D-4325-B68F-7EF6A0C31585}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63422607-F19D-4325-B68F-7EF6A0C31585}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63422607-F19D-4325-B68F-7EF6A0C31585}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0978BFBC-0D6F-4872-9583-D973967BC0E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0978BFBC-0D6F-4872-9583-D973967BC0E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0978BFBC-0D6F-4872-9583-D973967BC0E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0978BFBC-0D6F-4872-9583-D973967BC0E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
