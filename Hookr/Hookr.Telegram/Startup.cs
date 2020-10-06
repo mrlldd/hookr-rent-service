@@ -1,9 +1,10 @@
+using Hookr.Core.Config;
+using Hookr.Core.Repository;
+using Hookr.Core.Repository.Context;
+using Hookr.Telegram.Config;
 using Hookr.Telegram.Filters;
 using Hookr.Telegram.Operations;
-using Hookr.Telegram.Repository;
-using Hookr.Telegram.Repository.Context;
 using Hookr.Telegram.Utilities;
-using Hookr.Telegram.Utilities.App.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,16 +18,13 @@ namespace Hookr.Telegram
 {
     public class Startup
     {
-        private readonly IConfigurationRoot configurationRoot;
-        private readonly IHostEnvironment hostEnvironment;
+        private readonly IApplicationConfig applicationConfig;
 
-        public Startup(IConfiguration configuration, IHostEnvironment hostEnvironment)
+        public Startup(IConfiguration configuration)
         {
-            configurationRoot = new ConfigurationBuilder()
-                .AddConfiguration(configuration)
-                .AddEnvironmentVariables()
-                .Build();
-            this.hostEnvironment = hostEnvironment;
+            var config = new ApplicationConfig();
+            configuration.Bind(config);
+            applicationConfig = config;
         }
 
         //private const string AzureTableStorage = "AzureTableStorage";
@@ -39,10 +37,8 @@ namespace Hookr.Telegram
                 .Console()
                 .CreateLogger();
             Log.Logger = log;
-            var appSettings = new AppSettings();
-            configurationRoot.Bind(appSettings);
 
-            services.AddSingleton<IAppSettings>(appSettings);
+            services.AddSingleton(applicationConfig);
 
             services
                 .AddScoped<GrabbingCurrentTelegramUpdateFilterAttribute>()
@@ -52,7 +48,8 @@ namespace Hookr.Telegram
                 .AddHttpClient()
                 .AddMemoryCache()
                 .AddDbContext<HookrContext>(
-                    builder => builder.UseSqlServer(appSettings.Database.ConnectionString)
+                    builder => builder
+                        .UseHookrCoreConfig(applicationConfig.Database)
                 )
                 .AddOperations()
                 .AddRepositories()
@@ -76,8 +73,8 @@ namespace Hookr.Telegram
                     return context.Response.WriteAsync("Bruh, here we go again.");
 #endif
 #if !DEBUG
-                        context.Response.Redirect("https://t.me/HookrBot");
-                        return Task.CompletedTask;
+                    context.Response.Redirect("https://t.me/HookrBot");
+                    return Task.CompletedTask;
 #endif
                 });
                 endpoints.MapControllers();

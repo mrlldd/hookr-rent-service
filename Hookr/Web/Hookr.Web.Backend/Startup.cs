@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hookr.Web.Backend.Config;
+using Hookr.Core.Config;
+using Hookr.Core.Config.Telegram;
 using Hookr.Web.Backend.Filters.Response;
 using Hookr.Web.Backend.Operations;
 using Microsoft.AspNetCore.Builder;
@@ -17,19 +18,19 @@ namespace Hookr.Web.Backend
     public class Startup
     {
         private readonly IConfiguration configurationRoot;
-        private readonly IApplicationConfig applicationConfig;
+        private readonly ICoreApplicationConfig coreApplicationConfig;
 
         public Startup(IConfiguration configurationRoot)
         {
             this.configurationRoot = configurationRoot;
-            applicationConfig = new ApplicationConfig();
-            configurationRoot.Bind(applicationConfig);
+            coreApplicationConfig = new CoreApplicationConfig();
+            configurationRoot.Bind(coreApplicationConfig);
         }
         
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddConfig(applicationConfig);
+                .AddConfig(coreApplicationConfig);
             services
                 .AddControllers(x => x.Filters.Add(new ResponseFilter()))
                 .AddJsonOptions(options => { options.JsonSerializerOptions.WriteIndented = true; });

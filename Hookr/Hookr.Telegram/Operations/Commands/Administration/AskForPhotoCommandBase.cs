@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Models.Telegram.Exceptions;
 using Hookr.Telegram.Operations.Base;
-using Hookr.Telegram.Repository.Context.Entities.Base;
-using Hookr.Telegram.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client.CurrentUser;

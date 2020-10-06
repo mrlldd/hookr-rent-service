@@ -1,6 +1,6 @@
-﻿using Hookr.Telegram.Operations.Base;
-using Hookr.Telegram.Repository.Context;
-using Hookr.Telegram.Repository.Context.Entities.Base;
+﻿using Hookr.Core.Repository.Context;
+using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Telegram.Operations.Base;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Hookr.Core.Repository;
+using Hookr.Core.Repository.Context.Entities;
+using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Operations.Commands.Orders.Control.Service.Review.Confirmed.Approve;
 using Hookr.Telegram.Operations.Commands.Orders.Control.Service.Review.Confirmed.Reject;
-using Hookr.Telegram.Repository;
-using Hookr.Telegram.Repository.Context.Entities;
-using Hookr.Telegram.Repository.Context.Entities.Base;
-using Hookr.Telegram.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;

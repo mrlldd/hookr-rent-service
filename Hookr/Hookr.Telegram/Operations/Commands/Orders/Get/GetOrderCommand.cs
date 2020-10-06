@@ -4,18 +4,18 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hookr.Core.Repository;
+using Hookr.Core.Repository.Context.Entities;
+using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Core.Repository.Context.Entities.Products;
+using Hookr.Core.Repository.Context.Entities.Products.Ordered;
+using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Operations.Commands.Orders.Control.Confirm;
 using Hookr.Telegram.Operations.Commands.Orders.Control.Service.Review.Confirmed.Approve;
 using Hookr.Telegram.Operations.Commands.Orders.Control.Service.Review.Confirmed.Reject;
 using Hookr.Telegram.Operations.Commands.Orders.Control.Service.Review.Finish;
 using Hookr.Telegram.Operations.Commands.Orders.Control.Service.Review.Process;
 using Hookr.Telegram.Operations.Commands.Orders.Delete;
-using Hookr.Telegram.Repository;
-using Hookr.Telegram.Repository.Context.Entities;
-using Hookr.Telegram.Repository.Context.Entities.Base;
-using Hookr.Telegram.Repository.Context.Entities.Products;
-using Hookr.Telegram.Repository.Context.Entities.Products.Ordered;
-using Hookr.Telegram.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
@@ -25,6 +25,7 @@ using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using EnumerableExtensions = Hookr.Core.Utilities.Extensions.EnumerableExtensions;
 
 namespace Hookr.Telegram.Operations.Commands.Orders.Get
 {
@@ -159,8 +160,7 @@ namespace Hookr.Telegram.Operations.Commands.Orders.Get
         private static string AggregateProducts<TProduct>([AllowNull] IEnumerable<Ordered<TProduct>> products)
             where TProduct : Product
             => new StringBuilder()
-                .SideEffect(builder => products
-                    .ForEach(x => builder.Append($"\n{x.Product?.Name} \\- {x.Count}"))
+                .SideEffect(builder => EnumerableExtensions.ForEach(products, x => builder.Append($"\n{x.Product?.Name} \\- {x.Count}"))
                 )
                 .ToString();
     }

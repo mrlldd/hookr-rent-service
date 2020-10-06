@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hookr.Telegram.Repository.Context.Entities.Products;
+using Hookr.Core.Repository.Context.Entities.Products;
 
 namespace Hookr.Telegram.Utilities.Extensions
 {

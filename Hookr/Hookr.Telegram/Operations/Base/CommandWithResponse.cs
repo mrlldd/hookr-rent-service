@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Models.Telegram.Exceptions;
 using Hookr.Telegram.Models.Telegram.Exceptions.Base;
-using Hookr.Telegram.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client.CurrentUser;
 using Hookr.Telegram.Utilities.Telegram.Translations;

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Hookr.Telegram.Repository;
-using Hookr.Telegram.Repository.Context.Entities.Base;
+using Hookr.Core.Repository;
+using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus;

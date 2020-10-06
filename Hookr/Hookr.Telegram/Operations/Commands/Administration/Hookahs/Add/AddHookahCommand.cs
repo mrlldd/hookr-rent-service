@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Hookr.Telegram.Repository;
-using Hookr.Telegram.Repository.Context;
-using Hookr.Telegram.Repository.Context.Entities.Products;
+using Hookr.Core.Repository;
+using Hookr.Core.Repository.Context;
+using Hookr.Core.Repository.Context.Entities.Products;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Translations;

@@ -2,7 +2,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Hookr.Web.Backend.Config.Telegram;
+using Hookr.Core.Config.Telegram;
 using Hookr.Web.Backend.Operations.Base;
 using Hookr.Web.Backend.Utilities.Extensions;
 
