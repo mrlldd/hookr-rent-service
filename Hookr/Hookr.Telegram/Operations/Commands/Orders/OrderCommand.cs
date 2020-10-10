@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Hookr.Core.Repository;
+using Hookr.Core.Repository.Context.Entities;
+using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Operations.Base;
 using Hookr.Telegram.Operations.Commands.Administration.Hookahs.Get;
 using Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Get;
-using Hookr.Telegram.Repository;
-using Hookr.Telegram.Repository.Context.Entities;
-using Hookr.Telegram.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;

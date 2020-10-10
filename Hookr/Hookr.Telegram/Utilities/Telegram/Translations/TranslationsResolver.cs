@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hookr.Core.Repository;
+using Hookr.Core.Repository.Context.Entities.Translations;
+using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Models.Telegram;
-using Hookr.Telegram.Repository;
-using Hookr.Telegram.Repository.Context.Entities.Translations;
-using Hookr.Telegram.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 

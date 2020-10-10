@@ -1,4 +1,4 @@
-﻿using Hookr.Telegram.Repository.Context.Entities.Base;
+﻿using Hookr.Core.Repository.Context.Entities.Base;
 using Telegram.Bot.Types;
 
 namespace Hookr.Telegram.Utilities.Extensions

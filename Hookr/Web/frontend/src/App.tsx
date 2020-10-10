@@ -1,25 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import TelegramLoginButton, {
+  TelegramUser,
+} from "@v9v/ts-react-telegram-login";
+import { SetUserAction } from "./store/auth/auth-actions";
+import ErrorNotificator from "./components/error-notificator/ErrorNotificator";
+import { store } from "./store/store";
+import { confirmTelegramLogin } from "./core/api/auth/auth-api";
+
+async function handler(user: TelegramUser) {
+  store.dispatch(SetUserAction(user));
+  console.log(await confirmTelegramLogin(user));
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ErrorNotificator>
+      <div className="login-container">
+        <h1>Hookr</h1>
+        <TelegramLoginButton
+          dataOnAuth={handler}
+          botName="mrlldd_development_bot"
+          lang={navigator.languages ? navigator.languages[0] : "ru"} // todo global config state
+        />
+      </div>
+    </ErrorNotificator>
   );
 }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hookr.Telegram.Repository.Context.Entities.Base;
+using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Telegram.Bot.Types;
 

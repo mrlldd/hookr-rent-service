@@ -4,8 +4,9 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Hookr.Telegram.Config;
+using Hookr.Telegram.Config.Telegram;
 using Hookr.Telegram.Controllers;
-using Hookr.Telegram.Utilities.App.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Telegram.Bot;
@@ -16,13 +17,13 @@ namespace Hookr.Telegram.Utilities.Telegram.Bot.Provider
 {
     public class TelegramBotProvider : ITelegramBotProvider
     {
-        private readonly IAppSettings appSettings;
+        private readonly ITelegramConfig telegramConfig;
         private readonly IHttpClientFactory httpClientFactory;
 
-        public TelegramBotProvider(IAppSettings appSettings,
+        public TelegramBotProvider(ITelegramConfig telegramConfig,
             IHttpClientFactory httpClientFactory)
         {
-            this.appSettings = appSettings;
+            this.telegramConfig = telegramConfig;
             this.httpClientFactory = httpClientFactory;
         }
 
@@ -39,7 +40,7 @@ namespace Hookr.Telegram.Utilities.Telegram.Bot.Provider
                 throw new InvalidOperationException("Bot is already initialized.");
             }
 
-            var bot = new TelegramBotClient(appSettings.TelegramBotToken, httpClientFactory.CreateClient());
+            var bot = new TelegramBotClient(telegramConfig.Token, httpClientFactory.CreateClient());
             var info = await bot.GetMeAsync(token);
             var route = typeof(TelegramController).GetCustomAttribute<RouteAttribute>()?.Template;
             if (string.IsNullOrEmpty(route))
@@ -47,7 +48,7 @@ namespace Hookr.Telegram.Utilities.Telegram.Bot.Provider
                 throw new InvalidOperationException("Webhook route is not initialized");
             }
 
-            var finalWebhook = $"{appSettings.WebhookUrl}/{route}/update";
+            var finalWebhook = $"{telegramConfig.Webhook}/{route}/update";
             await bot.SetWebhookAsync(finalWebhook,
                 cancellationToken: token,
                 allowedUpdates: new[]

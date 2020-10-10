@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Hookr.Core.Repository;
+using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
+using Hookr.Telegram.Config;
+using Hookr.Telegram.Config.Management;
 using Hookr.Telegram.Operations.Base;
-using Hookr.Telegram.Repository;
-using Hookr.Telegram.Repository.Context.Entities.Base;
-using Hookr.Telegram.Repository.Context.Entities.Translations.Telegram;
-using Hookr.Telegram.Utilities.App.Settings;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -23,20 +24,20 @@ namespace Hookr.Telegram.Operations.Commands.Registration
 
         private readonly IHookrRepository hookrRepository;
         private readonly IUserContextProvider userContextProvider;
-        private readonly IAppSettings appSettings;
+        private readonly IApplicationConfig applicationConfig;
         private readonly DateTime now = DateTime.Now;
 
         protected RegisterCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserContextProvider userContextProvider,
-            IAppSettings appSettings,
+            IApplicationConfig applicationConfig,
             ITranslationsResolver translationsResolver) :
             base(telegramBotClient,
                 translationsResolver)
         {
             this.hookrRepository = hookrRepository;
             this.userContextProvider = userContextProvider;
-            this.appSettings = appSettings;
+            this.applicationConfig = applicationConfig;
         }
 
         protected override async Task ProcessAsync()
@@ -44,7 +45,7 @@ namespace Hookr.Telegram.Operations.Commands.Registration
             if (!OmitKeyValidation)
             {
                 var (key, keyExtractSuccess) = ExtractKey(userContextProvider.Update.RealMessage.Text);
-                if (!keyExtractSuccess || !KeyValidator(key, appSettings.Management))
+                if (!keyExtractSuccess || !KeyValidator(key, applicationConfig.Management))
                 {
                     throw new InvalidOperationException("Wrong arguments for registration.");
                 }

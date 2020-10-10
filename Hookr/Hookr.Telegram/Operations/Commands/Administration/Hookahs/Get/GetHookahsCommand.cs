@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Hookr.Telegram.Repository;
-using Hookr.Telegram.Repository.Context;
-using Hookr.Telegram.Repository.Context.Entities.Products;
-using Hookr.Telegram.Repository.Context.Entities.Translations.Telegram;
+using Hookr.Core.Repository;
+using Hookr.Core.Repository.Context;
+using Hookr.Core.Repository.Context.Entities.Products;
+using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;

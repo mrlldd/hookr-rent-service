@@ -1,5 +1,5 @@
-﻿using Hookr.Telegram.Utilities.App;
-using Hookr.Telegram.Utilities.Resiliency;
+﻿using Hookr.Core.Utilities.Resiliency;
+using Hookr.Telegram.Utilities.App;
 using Hookr.Telegram.Utilities.Telegram;
 using Microsoft.Extensions.DependencyInjection;
 

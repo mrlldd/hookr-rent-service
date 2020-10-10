@@ -12,3 +12,9 @@ Hookr/Web/frontend/.firebase
 Hookr/Web/frontend/.idea
 Hookr/Web/frontend/.firebaserc
 Hookr/Web/frontend/firebase.json
+Hookr/Hookr.Core/obj
+Hookr/Hookr.Core/bin
+Hookr/Hookr.Migrator/bin
+Hookr/Hookr.Migrator/obj
+Hookr/Hookr.Migrations/bin
+Hookr/Hookr.Migrations/obj

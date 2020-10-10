@@ -1,6 +1,6 @@
-﻿using Hookr.Telegram.Repository;
-using Hookr.Telegram.Repository.Context.Entities.Base;
-using Hookr.Telegram.Utilities.App.Settings;
+﻿using Hookr.Core.Repository;
+using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Telegram.Config;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Translations;
@@ -12,12 +12,12 @@ namespace Hookr.Telegram.Operations.Commands.Registration.Unregister
         public UnregisterCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserContextProvider userContextProvider,
-            IAppSettings appSettings,
+            IApplicationConfig applicationConfig,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 hookrRepository,
                 userContextProvider,
-                appSettings,
+                applicationConfig,
                 translationsResolver)
         {
         }

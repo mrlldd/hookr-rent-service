@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hookr.Core.Repository;
+using Hookr.Core.Repository.Context.Entities.Translations;
+using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
+using Hookr.Core.Utilities.Extensions;
 using Hookr.Telegram.Filters;
 using Hookr.Telegram.Operations;
-using Hookr.Telegram.Repository;
-using Hookr.Telegram.Repository.Context.Entities.Translations;
-using Hookr.Telegram.Repository.Context.Entities.Translations.Telegram;
-using Hookr.Telegram.Utilities.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Hookr.Telegram.Repository.Context.Entities.Translations.Telegram;
+using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 
 namespace Hookr.Telegram.Utilities.Telegram.Translations
 {
