@@ -32,6 +32,7 @@ namespace Hookr.Telegram.Operations.Base
         
         protected virtual async Task<Message> SendErrorAsync(ICurrentTelegramUserClient client, Exception exception)
         {
+            //todo change to logger method call
             Log.Information(exception.ToString());
             string message;
             var netherException = GetNetherException(exception);

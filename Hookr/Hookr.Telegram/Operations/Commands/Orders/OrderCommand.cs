@@ -7,6 +7,7 @@ using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Operations.Base;
 using Hookr.Telegram.Operations.Commands.Administration.Hookahs.Get;
 using Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Get;
+using Hookr.Telegram.Operations.Commands.Orders.Get;
 using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
@@ -43,23 +44,22 @@ namespace Hookr.Telegram.Operations.Commands.Orders
 
         protected override async Task<InlineKeyboardButton[]> ProcessAsync()
         {
-            userTemporaryStatusCache.Set(TelegramBotClient.WithCurrentUser.User.Id,
-                UserTemporaryStatus.InOrder);
-            var cachedOrderId = currentOrderCache.Get(userContextProvider.DatabaseUser.Id);
+            await userTemporaryStatusCache.SetAsync(UserTemporaryStatus.InOrder);
+            var cachedOrderId = await currentOrderCache.GetAsync();
             if (cachedOrderId.HasValue)
                 return new[]
                 {
                     new InlineKeyboardButton
                     {
                         Text = await TranslationsResolver.ResolveAsync(TelegramTranslationKeys.ViewCurrentOrder),
-                        CallbackData = $"/getorder {cachedOrderId}"
+                        CallbackData = $"/{nameof(GetOrderCommand).ExtractCommandName()} {cachedOrderId}"
                         //todo
                     }
                 };
             var order = new Order();
             hookrRepository.Context.Orders.Add(order);
             await hookrRepository.Context.SaveChangesAsync();
-            currentOrderCache.Set(userContextProvider.DatabaseUser.Id, order.Id);
+            await currentOrderCache.SetAsync(order.Id);
             return Array.Empty<InlineKeyboardButton>();
         }
 

@@ -1,5 +1,3 @@
-using System;
-using System.Reflection;
 using Hookr.Core.Config.Database;
 using Microsoft.EntityFrameworkCore;
 

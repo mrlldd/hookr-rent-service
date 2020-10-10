@@ -83,7 +83,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Hookahs.Get
             const byte defaultCount = 1;
             var buttons = new List<IEnumerable<InlineKeyboardButton>>();
             var dbUser = UserContextProvider.DatabaseUser;
-            var orderId = currentOrderCache.Get(dbUser.Id);
+            var orderId = await currentOrderCache.GetAsync();
             if (orderId.HasValue)
             {
                 buttons.Add(new[]

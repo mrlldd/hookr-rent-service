@@ -6,6 +6,7 @@ using Hookr.Core.Utilities.Providers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Hookr.Core.Utilities.Loaders
 {
@@ -32,10 +33,11 @@ namespace Hookr.Core.Utilities.Loaders
             bool omitCache = false,
             CancellationToken token = default) where TResult : class
             => serviceProvider
-                .GetService<CachingLoader<TArgs, TResult>>()
-                .SideEffect(x => x
-                    .Populate(memoryCache, distributedCache, telegramUserIdProvider)
+                .GetRequiredService<CachingLoader<TArgs, TResult>>()
+                .Unite(serviceProvider.GetRequiredService<ILogger<CachingLoader<TArgs, TResult>>>())
+                .SideEffect(x => x.First
+                    .Populate(memoryCache, distributedCache, telegramUserIdProvider, x.Second)
                 )
-                .GetOrLoadAsync(args, omitCache, token);
+                .First.GetOrLoadAsync(args, omitCache, token);
     }
 }

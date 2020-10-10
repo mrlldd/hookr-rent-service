@@ -1,8 +1,8 @@
-﻿namespace Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus
+﻿using Hookr.Core.Utilities.Caching;
+
+namespace Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus
 {
-    public interface IUserTemporaryStatusCache
+    public interface IUserTemporaryStatusCache : ICache<UserTemporaryStatus>
     {
-        void Set(int userId, UserTemporaryStatus status);
-        UserTemporaryStatus Get(int userId);
     }
 }

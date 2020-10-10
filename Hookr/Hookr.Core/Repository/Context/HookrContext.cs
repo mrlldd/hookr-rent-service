@@ -15,6 +15,7 @@ using Hookr.Core.Utilities.Loaders;
 using Hookr.Core.Utilities.Providers;
 using Microsoft.EntityFrameworkCore;
 using static System.Linq.Expressions.Expression;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Hookr.Core.Repository.Context
 {

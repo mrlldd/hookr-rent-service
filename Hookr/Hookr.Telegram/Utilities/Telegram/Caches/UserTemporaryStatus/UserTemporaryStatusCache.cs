@@ -1,27 +1,18 @@
 ﻿using System;
+using Hookr.Core.Utilities.Caching;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus
 {
-    public class UserTemporaryStatusCache : IUserTemporaryStatusCache
+    public class UserTemporaryStatusCache : Cache<UserTemporaryStatus>, IUserTemporaryStatusCache
     {
         private const int TimeoutMinutes = 3;
-        private readonly IMemoryCache memoryCache;
-        private const string KeyFormat = "{0}ts";
 
-        public UserTemporaryStatusCache(IMemoryCache memoryCache)
-        {
-            this.memoryCache = memoryCache;
-        }
+        protected override CachingOptions MemoryCacheOptions { get; } =
+            new CachingOptions(true, TimeSpan.FromMinutes(TimeoutMinutes));
+        protected override CachingOptions DistributedCacheOptions { get; } =
+            new CachingOptions(false, TimeSpan.Zero);
 
-        public void Set(int userId, UserTemporaryStatus status)
-            => memoryCache
-                .Set(string.Format(KeyFormat, userId), status, TimeSpan.FromMinutes(TimeoutMinutes));
-
-        public UserTemporaryStatus Get(int userId)
-            => memoryCache
-                .TryGetValue(string.Format(KeyFormat, userId), out var result)
-                ? (UserTemporaryStatus) result
-                : UserTemporaryStatus.Default;
+        protected override string CacheKey => "temporaryStatus";
     }
 }

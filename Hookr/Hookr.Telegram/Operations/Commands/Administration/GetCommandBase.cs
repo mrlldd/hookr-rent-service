@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Core.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus;
@@ -15,39 +16,26 @@ namespace Hookr.Telegram.Operations.Commands.Administration
     {
         private readonly IHookrRepository hookrRepository;
         private readonly IUserTemporaryStatusCache userTemporaryStatusCache;
-        private readonly IUserContextProvider userContextProvider;
 
         protected GetCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserTemporaryStatusCache userTemporaryStatusCache,
-            IUserContextProvider userContextProvider,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 translationsResolver)
         {
             this.hookrRepository = hookrRepository;
             this.userTemporaryStatusCache = userTemporaryStatusCache;
-            this.userContextProvider = userContextProvider;
         }
 
-        protected override Task<TEntity[]> ProcessAsync()
-            => hookrRepository
+        protected override async Task<TEntity[]> ProcessAsync()
+        {
+            var entities = await hookrRepository
                 .ReadAsync((context, token)
-                    => EntityTableSelector(context).ToArrayAsync(token))
-                .ContinueWith(x =>
-                {
-                    if (x.IsCompletedSuccessfully)
-                    {
-                        var update = userContextProvider.Update;
-                        userTemporaryStatusCache.Set(
-                            update.Type == UpdateType.CallbackQuery
-                                ? update.CallbackQuery.From.Id
-                                : update.RealMessage.From.Id,
-                            NextUserState);
-                    }
-
-                    return x.Result;
-                });
+                    => EntityTableSelector(context).ToArrayAsync(token));
+            await userTemporaryStatusCache.SetAsync(NextUserState);
+            return entities;
+        }
 
         protected abstract UserTemporaryStatus NextUserState { get; }
     }

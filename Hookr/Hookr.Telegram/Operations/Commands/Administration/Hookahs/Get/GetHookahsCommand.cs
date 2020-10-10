@@ -21,12 +21,10 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Hookahs.Get
         public GetHookahsCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserTemporaryStatusCache userTemporaryStatusCache,
-            IUserContextProvider userContextProvider,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 hookrRepository,
                 userTemporaryStatusCache,
-                userContextProvider,
                 translationsResolver)
         {
         }

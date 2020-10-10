@@ -1,8 +1,8 @@
-﻿namespace Hookr.Telegram.Utilities.Telegram.Caches.CurrentOrder
+﻿using Hookr.Core.Utilities.Caching;
+
+namespace Hookr.Telegram.Utilities.Telegram.Caches.CurrentOrder
 {
-    public interface ICurrentOrderCache
+    public interface ICurrentOrderCache : ICache<int?>
     {
-        void Set(int userId, int orderId);
-        int? Get(int userId);
     }
 }

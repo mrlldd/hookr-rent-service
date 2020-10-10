@@ -28,7 +28,7 @@ namespace Hookr.Telegram.Operations.Commands.Orders.Delete
         protected override async Task<Order> ProcessAsync(Order order)
         {
             HookrRepository.Context.Orders.Remove(order);
-            await HookrRepository.Context.SaveChangesAsync();
+            await HookrRepository.SaveChangesAsync();
             return order;
         }
 

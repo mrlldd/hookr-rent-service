@@ -5,7 +5,7 @@ using Hookr.Core.Utilities.Extensions;
 
 namespace Hookr.Core.Utilities.Loaders
 {
-    public abstract class CachingLoader<TArgs, TResult> : Caching<TResult>, ILoader where TResult : class
+    public abstract class CachingLoader<TArgs, TResult> : Caching<TResult> where TResult : class
     {
         public async Task<TResult> GetOrLoadAsync(TArgs args, bool omitCacheOnLoad = false, CancellationToken token = default)
         {
@@ -21,7 +21,7 @@ namespace Hookr.Core.Utilities.Loaders
 
             var loaded = await LoadAsync(args, token);
             return await loaded
-                .AsyncSideEffect(x => PerformCachingAsync(x, keySuffix, token));
+                .SideEffectAsync(x => PerformCachingAsync(x, keySuffix, token));
         }
 
         protected abstract Task<TResult> LoadAsync(TArgs args, CancellationToken token = default);

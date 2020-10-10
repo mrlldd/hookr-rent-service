@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Core.Utilities.Providers;
 using Hookr.Telegram.Models.Telegram;
 using Hookr.Telegram.Utilities.Telegram.Bot.Factory;
 using Telegram.Bot.Types;

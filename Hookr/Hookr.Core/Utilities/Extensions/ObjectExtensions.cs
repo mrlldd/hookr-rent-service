@@ -16,7 +16,7 @@ namespace Hookr.Core.Utilities.Extensions
             return obj;
         }
 
-        public static async Task<T> AsyncSideEffect<T>(this T obj, Func<T, Task> effect)
+        public static async Task<T> SideEffectAsync<T>(this T obj, Func<T, Task> effect)
         {
             await effect(obj);
             return obj;
@@ -24,5 +24,8 @@ namespace Hookr.Core.Utilities.Extensions
 
         public static TResult Map<T, TResult>(this T obj, Func<T, TResult> mapper)
             => mapper(obj);
+
+        public static (T First, TWith Second) Unite<T, TWith>(this T obj, TWith with)
+            => (obj, with);
     }
 }

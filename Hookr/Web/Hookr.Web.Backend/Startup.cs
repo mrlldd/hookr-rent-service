@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hookr.Core;
 using Hookr.Core.Config;
 using Hookr.Core.Config.Telegram;
 using Hookr.Web.Backend.Filters.Response;
@@ -30,11 +31,11 @@ namespace Hookr.Web.Backend
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddConfig(coreApplicationConfig);
-            services
                 .AddControllers(x => x.Filters.Add(new ResponseFilter()))
                 .AddJsonOptions(options => { options.JsonSerializerOptions.WriteIndented = true; });
+                
             services
+                .AddConfig(coreApplicationConfig)
                 .AddOperations();
         }
         

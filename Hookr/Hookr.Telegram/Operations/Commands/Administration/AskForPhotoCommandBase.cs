@@ -37,7 +37,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration
             this.memoryCache = memoryCache;
         }
 
-        protected override Task ProcessAsync()
+        protected override async Task ProcessAsync()
         {
             var user = userContextProvider.DatabaseUser;
             if (user.State < TelegramUserStates.Service)
@@ -56,8 +56,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration
                     AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(ExpirationMinutes)
                 }
             );
-            userTemporaryStatusCache.Set(user.Id, NextUserState);
-            return Task.CompletedTask;
+            await userTemporaryStatusCache.SetAsync(NextUserState);
         }
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)

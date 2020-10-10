@@ -1,25 +1,17 @@
 ﻿using System;
-using Microsoft.Extensions.Caching.Memory;
+using Hookr.Core.Utilities.Caching;
 
 namespace Hookr.Telegram.Utilities.Telegram.Caches.CurrentOrder
 {
-    public class CurrentOrderCache : ICurrentOrderCache
+    public class CurrentOrderCache : Cache<int?>, ICurrentOrderCache
     {
-        private readonly IMemoryCache memoryCache;
         private const int TimeoutMinutes = 33;
-        private const string KeyFormat = "{0}co";
 
-        public CurrentOrderCache(IMemoryCache memoryCache)
-        {
-            this.memoryCache = memoryCache;
-        }
+        protected override CachingOptions MemoryCacheOptions { get; } =
+            new CachingOptions(true, TimeSpan.FromMinutes(TimeoutMinutes));
+        protected override CachingOptions DistributedCacheOptions { get; } =
+            new CachingOptions(false, TimeSpan.Zero);
 
-        public void Set(int userId, int orderId)
-            => memoryCache.Set(string.Format(KeyFormat, userId), orderId, TimeSpan.FromMinutes(TimeoutMinutes));
-
-        public int? Get(int userId)
-            => memoryCache.TryGetValue(string.Format(KeyFormat, userId), out var result)
-                ? (int) result
-                : (int?) null;
+        protected override string CacheKey => "currentOrder";
     }
 }

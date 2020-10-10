@@ -9,6 +9,7 @@ using Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Photos;
 using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace Hookr.Telegram.Operations
@@ -19,17 +20,20 @@ namespace Hookr.Telegram.Operations
         private readonly IServiceProvider serviceProvider;
         private readonly IUserContextProvider userContextProvider;
         private readonly IUserTemporaryStatusCache userTemporaryStatusCache;
+        private readonly ILogger<Dispatcher> logger;
         private readonly IDictionary<UserTemporaryStatus, Func<Task>> userResponseHandlers;
 
         public Dispatcher(ICommandsContainer commandsContainer,
             IServiceProvider serviceProvider,
             IUserContextProvider userContextProvider,
-            IUserTemporaryStatusCache userTemporaryStatusCache)
+            IUserTemporaryStatusCache userTemporaryStatusCache,
+            ILogger<Dispatcher> logger)
         {
             this.commandsContainer = commandsContainer;
             this.serviceProvider = serviceProvider;
             this.userContextProvider = userContextProvider;
             this.userTemporaryStatusCache = userTemporaryStatusCache;
+            this.logger = logger;
 
             userResponseHandlers = new Dictionary<UserTemporaryStatus, Func<Task>>
             {
@@ -42,27 +46,28 @@ namespace Hookr.Telegram.Operations
         }
 
 
-        public Task DispatchAsync()
+        public async Task DispatchAsync()
         {
             var update = userContextProvider.Update;
-            var userStatus = userTemporaryStatusCache.Get(update.RealMessage.From.Id);
+            var userStatus = await userTemporaryStatusCache.GetAsync();
             var data = update.Content;
             if (string.IsNullOrEmpty(data) || data.ExtractCommand().IsNumber())
             {
                 if (userStatus != UserTemporaryStatus.Default
                     && userResponseHandlers.TryGetValue(userStatus, out var handler))
                 {
-                    Log.Information("Dispatching user with status {0} response {1}", userStatus, data);
-                    return handler();
+                    logger.LogInformation("Dispatching user with status {0} response {1}", userStatus, data);
+                    await handler();
+                    return;
                 }
             }
 
-            return ExecuteCommandAsync(data.ExtractCommand());
+            await ExecuteCommandAsync(data.ExtractCommand());
         }
 
         private Task ExecuteCommandAsync(string? commandName)
         {
-            Log.Information("Dispatching command {0}", commandName);
+            logger.LogInformation("Dispatching command {0}", commandName);
             var commandType = commandsContainer.TryGetByCommandName(commandName);
             return commandType != null && serviceProvider.GetService(commandType) is ICommand command
                 ? command.ExecuteAsync()

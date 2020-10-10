@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -5,26 +6,29 @@ using Hookr.Core.Utilities.Extensions;
 using Hookr.Core.Utilities.Providers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 
 namespace Hookr.Core.Utilities.Caching
 {
-    public abstract class Caching<T> where T : class
+    public abstract class Caching<T>
     {
         private IMemoryCache MemoryCache { get; set; }
         private ITelegramUserIdProvider TelegramUserIdProvider { get; set; }
         private IDistributedCache DistributedCache { get; set; }
-        
+        protected ILogger<Caching<T>> Logger { get; private set; }
         protected abstract CachingOptions MemoryCacheOptions { get; }
         protected abstract CachingOptions DistributedCacheOptions { get; }
         protected abstract string CacheKey { get; }
 
         internal void Populate(IMemoryCache memoryCache,
             IDistributedCache distributedCache,
-            ITelegramUserIdProvider telegramUserIdProvider)
+            ITelegramUserIdProvider telegramUserIdProvider,
+            ILogger<Caching<T>> logger)
         {
             MemoryCache = memoryCache;
             DistributedCache = distributedCache;
             TelegramUserIdProvider = telegramUserIdProvider;
+            Logger = logger;
         }
 
         private string CacheKeyFactory(string suffix) 
@@ -33,7 +37,8 @@ namespace Hookr.Core.Utilities.Caching
                 CacheKey,
                 suffix);
 
-        protected async Task PerformCachingAsync(T data, string keySuffix, CancellationToken token = default)
+        // ReSharper disable once MemberCanBeProtected.Global
+        protected internal async Task PerformCachingAsync(T data, string keySuffix, CancellationToken token = default)
         {
             var key = CacheKeyFactory(keySuffix);
             if (MemoryCacheOptions.IsCaching)
@@ -42,6 +47,8 @@ namespace Hookr.Core.Utilities.Caching
                 {
                     SlidingExpiration = MemoryCacheOptions.Timeout
                 });
+                Logger
+                    .LogDebug("Put data to memory cache with key: {0}", key);
             }
             
             token.ThrowIfCancellationRequested();
@@ -52,29 +59,41 @@ namespace Hookr.Core.Utilities.Caching
                 {
                     SlidingExpiration = DistributedCacheOptions.Timeout
                 }, token);
+                Logger
+                    .LogDebug("Put data to distributed cache with key: {0}", key);
             }
         }
 
-        protected async Task<T?> TryGetFromCacheAsync(string keySuffix, CancellationToken token = default)
+        // ReSharper disable once MemberCanBeProtected.Global
+        protected internal async Task<T> TryGetFromCacheAsync(string keySuffix, CancellationToken token = default)
         {
             var key = CacheKeyFactory(keySuffix);
             if (MemoryCacheOptions.IsCaching && MemoryCache.TryGetValue<T>(key, out var inMemory))
             {
+                Logger
+                    .LogDebug("Loaded data from memory cache with key {0}.", key);
                 return inMemory;
             }
 
             token.ThrowIfCancellationRequested();
             if (!DistributedCacheOptions.IsCaching)
             {
-                return null;
+                Logger
+                    .LogDebug("Not found data in memory cache with key: {0}. Distributed cache is disabled.");
+                return default;
             }
 
             var inDistributed = await DistributedCache.GetStringAsync(key, token);
 
             if (string.IsNullOrEmpty(inDistributed))
             {
-                return null;
+                Logger
+                    .LogDebug("Not found data in both memory and distributed caches with key: {0}.", key);
+                return default;
             }
+            
+            Logger
+                .LogDebug("Found requested data in distributed cache with key: {0}.", key);
             try
             {
                 var deserialized = JsonSerializer.Deserialize<T>(inDistributed);
@@ -84,19 +103,22 @@ namespace Hookr.Core.Utilities.Caching
                     {
                         SlidingExpiration = MemoryCacheOptions.Timeout
                     });
+                    Logger
+                        .LogDebug("Put requested data in memory cache with key: {0}.", key);
                 }
-
                 return deserialized;
             }
-            catch
+            catch (Exception e)
             {
                 if (MemoryCacheOptions.IsCaching)
                 {
                     MemoryCache.Remove(key);
                 }
+                Logger
+                    .LogDebug(e, "Cache data load failed for key {0}, removed memory cache value.", key);
             }
 
-            return null;
+            return default;
         }
     }
 }

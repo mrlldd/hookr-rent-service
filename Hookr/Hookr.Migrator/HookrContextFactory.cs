@@ -14,14 +14,14 @@ namespace Hookr.Migrator
     {
         public HookrContext CreateDbContext(string[] args)
         {
-            var configuration = new ConfigurationBuilder()
+            var config = new ConfigurationBuilder()
                 .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()))
                 .AddUserSecrets<HookrContextFactory>()
                 .AddEnvironmentVariables()
-                .Build();
-            var config = new CoreApplicationConfig();
-            configuration.Bind(config);
-
+                .Build()
+                .Map(root => new CoreApplicationConfig()
+                    .SideEffect(root.Bind)
+                );
             return new DbContextOptionsBuilder<HookrContext>()
                 .UseHookrCoreConfig(config.Database)
                 .Map(x => new HookrContext(x.Options));

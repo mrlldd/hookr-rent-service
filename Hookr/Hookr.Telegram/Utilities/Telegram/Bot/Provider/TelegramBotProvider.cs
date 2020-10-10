@@ -8,6 +8,7 @@ using Hookr.Telegram.Config;
 using Hookr.Telegram.Config.Telegram;
 using Hookr.Telegram.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -19,12 +20,15 @@ namespace Hookr.Telegram.Utilities.Telegram.Bot.Provider
     {
         private readonly ITelegramConfig telegramConfig;
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly ILogger<TelegramBotProvider> logger;
 
         public TelegramBotProvider(ITelegramConfig telegramConfig,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            ILogger<TelegramBotProvider> logger)
         {
             this.telegramConfig = telegramConfig;
             this.httpClientFactory = httpClientFactory;
+            this.logger = logger;
         }
 
         [NotNull]
@@ -34,7 +38,7 @@ namespace Hookr.Telegram.Utilities.Telegram.Bot.Provider
 
         public async Task InitializeAsync(CancellationToken token = default)
         {
-            Log.Information("Initializing bot instance...");
+            Log.Information("Initializing bot client...");
             if (Instance != null)
             {
                 throw new InvalidOperationException("Bot is already initialized.");
@@ -58,7 +62,7 @@ namespace Hookr.Telegram.Utilities.Telegram.Bot.Provider
                 });
             Instance = bot;
             Info = info;
-            Log.Information("Successfully initialized telegram bot instance (@{0}) with webhook {1}", info.Username,
+            logger.LogInformation("Successfully initialized telegram bot instance (@{0}) with webhook {1}", info.Username,
                 finalWebhook);
         }
     }

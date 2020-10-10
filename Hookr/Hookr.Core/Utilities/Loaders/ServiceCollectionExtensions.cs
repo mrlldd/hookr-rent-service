@@ -1,24 +1,26 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Hookr.Core.Internal.Utilities.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hookr.Core.Utilities.Loaders
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddLoaders(this IServiceCollection services)
+        public static IServiceCollection AddLoaders(this IServiceCollection services, Assembly assembly)
             => services
                 .AddScoped<CachingLoaderDispatcher>()
-                .WithLoaders();
+                .WithLoaders(assembly);
 
-        private static IServiceCollection WithLoaders(this IServiceCollection services) 
-            => Assembly
-                .GetExecutingAssembly()
-                .GetTypes()
-                .Where(typeof(ILoader).IsAssignableFrom)
-                .Where(x => !x.IsAbstract)
-                .Where(x => x.GetGenericArguments().Length == 2)
-                .Aggregate(services, (prev, next) => prev.AddScoped(next));
+        private static IServiceCollection WithLoaders(this IServiceCollection services, Assembly assembly)
+            => services
+                    .LoadImplementationsFromAssembly(
+                        assembly,
+                        typeof(CachingLoader<,>),
+                        services.AddScoped,
+                        types => types
+                            .Where(x => x.GetGenericArguments().Length == 2)
+                    );
     }
 }

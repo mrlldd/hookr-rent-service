@@ -17,16 +17,13 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Get
 {
     public class GetTobaccosCommand : GetCommandBase<Tobacco>, IGetTobaccosCommand
     {
-
         public GetTobaccosCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserTemporaryStatusCache userTemporaryStatusCache,
-            IUserContextProvider userContextProvider,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 hookrRepository,
                 userTemporaryStatusCache,
-                userContextProvider,
                 translationsResolver)
         {
         }
@@ -44,6 +41,5 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Get
             => context.Tobaccos;
 
         protected override UserTemporaryStatus NextUserState => UserTemporaryStatus.ChoosingTobacco;
-
     }
 }

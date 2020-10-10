@@ -83,7 +83,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Get
             const byte defaultCount = 5;
             var buttons = new List<IEnumerable<InlineKeyboardButton>>();
             var dbUser = UserContextProvider.DatabaseUser;
-            var orderId = currentOrderCache.Get(dbUser.Id);
+            var orderId = await currentOrderCache.GetAsync();
             if (orderId.HasValue)
             {
                 var orderSomeGramsFormat = await TranslationsResolver
