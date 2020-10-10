@@ -11,11 +11,8 @@ namespace Hookr.Telegram.Operations.Commands.Registration.Developer
 {
     public class RegisterDeveloperCommand : RegisterCommandBase, IRegisterDeveloperCommand
     {
-        protected override TelegramUserStates ExpectedState => TelegramUserStates.Dev;
-
-        protected override Func<Guid, IManagementConfig, bool> KeyValidator =>
-            (key, config) => config.DeveloperKey.Equals(key);
-
+        protected override TelegramUserStates StateToSet => TelegramUserStates.Dev;
+        
         public RegisterDeveloperCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
             IUserContextProvider userContextProvider,
@@ -28,5 +25,8 @@ namespace Hookr.Telegram.Operations.Commands.Registration.Developer
                 translationsResolver)
         {
         }
+
+        protected override bool KeyValidator(Guid key, IManagementConfig config)
+            => config.DeveloperKey.Equals(key);
     }
 }

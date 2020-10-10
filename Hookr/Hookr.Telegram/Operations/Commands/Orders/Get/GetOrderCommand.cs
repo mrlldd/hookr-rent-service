@@ -25,7 +25,8 @@ using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using EnumerableExtensions = Hookr.Core.Utilities.Extensions.EnumerableExtensions;
+
+using Hookr.Core.Utilities.Extensions;
 
 namespace Hookr.Telegram.Operations.Commands.Orders.Get
 {
@@ -160,7 +161,8 @@ namespace Hookr.Telegram.Operations.Commands.Orders.Get
         private static string AggregateProducts<TProduct>([AllowNull] IEnumerable<Ordered<TProduct>> products)
             where TProduct : Product
             => new StringBuilder()
-                .SideEffect(builder => EnumerableExtensions.ForEach(products, x => builder.Append($"\n{x.Product?.Name} \\- {x.Count}"))
+                .SideEffect(builder => products
+                    .ForEach(x => builder.Append($"\n{x.Product?.Name} \\- {x.Count}"))
                 )
                 .ToString();
     }

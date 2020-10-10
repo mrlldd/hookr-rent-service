@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hookr.Core.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Extensions;
 using Serilog;
 
@@ -19,7 +20,7 @@ namespace Hookr.Telegram.Operations
                     x => x.Implementation.Name
                         .ExtractCommandName(),
                     x => x.Interface);
-            Log.Information("Collected {0} commands: {1}", nameToInterfaceType.Count, nameToInterfaceType.Keys.ToJson());
+            Log.Information("Collected {0} commands: {@1}", nameToInterfaceType.Count, nameToInterfaceType.Keys);
         }
 
         public Type? TryGetByCommandName(string? commandName)

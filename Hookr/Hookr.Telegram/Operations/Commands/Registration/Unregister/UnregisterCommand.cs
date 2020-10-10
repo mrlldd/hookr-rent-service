@@ -22,7 +22,7 @@ namespace Hookr.Telegram.Operations.Commands.Registration.Unregister
         {
         }
 
-        protected override TelegramUserStates ExpectedState
+        protected override TelegramUserStates StateToSet
             => TelegramUserStates.Default;
 
         protected override bool OmitKeyValidation => true;

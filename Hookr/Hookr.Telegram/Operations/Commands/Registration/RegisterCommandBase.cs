@@ -18,9 +18,8 @@ namespace Hookr.Telegram.Operations.Commands.Registration
     public abstract class RegisterCommandBase : CommandWithResponse
     {
         private const string Space = " ";
-        protected abstract TelegramUserStates ExpectedState { get; }
+        protected abstract TelegramUserStates StateToSet { get; }
 
-        protected virtual Func<Guid, IManagementConfig, bool> KeyValidator => (x, y) => false;
 
         private readonly IHookrRepository hookrRepository;
         private readonly IUserContextProvider userContextProvider;
@@ -58,7 +57,7 @@ namespace Hookr.Telegram.Operations.Commands.Registration
                         .AnyAsync(x => x.Id == user.Id, token)))
             {
                 var dbUser = userContextProvider.DatabaseUser;
-                dbUser.State = ExpectedState;
+                dbUser.State = StateToSet;
                 dbUser.Username = user.Username;
                 dbUser.LastUpdatedAt = now;
             }
@@ -67,7 +66,7 @@ namespace Hookr.Telegram.Operations.Commands.Registration
                 hookrRepository.Context.TelegramUsers.Add(new TelegramUser
                 {
                     Id = user.Id,
-                    State = ExpectedState,
+                    State = StateToSet,
                     Username = user.Username,
                     LastUpdatedAt = now
                 });
@@ -80,7 +79,7 @@ namespace Hookr.Telegram.Operations.Commands.Registration
             => await client
                 .SendTextMessageAsync(
                     await TranslationsResolver.ResolveAsync(TelegramTranslationKeys.UserStateRegistrationSuccess,
-                        ExpectedState.ToString().ToLower())
+                        StateToSet.ToString().ToLower())
                 );
 
         protected override Task<Message> SendErrorAsync(ICurrentTelegramUserClient client, Exception exception)
@@ -102,5 +101,7 @@ namespace Hookr.Telegram.Operations.Commands.Registration
         }
 
         protected virtual bool OmitKeyValidation { get; } = false;
+
+        protected virtual bool KeyValidator(Guid key, IManagementConfig config) => false;
     }
 }

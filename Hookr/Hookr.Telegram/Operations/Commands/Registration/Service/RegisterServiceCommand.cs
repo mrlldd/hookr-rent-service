@@ -11,10 +11,7 @@ namespace Hookr.Telegram.Operations.Commands.Registration.Service
 {
     public class RegisterServiceCommand : RegisterCommandBase, IRegisterServiceCommand
     {
-        protected override TelegramUserStates ExpectedState => TelegramUserStates.Service;
-
-        protected override Func<Guid, IManagementConfig, bool> KeyValidator =>
-            (key, config) => config.ServiceKey.Equals(key);
+        protected override TelegramUserStates StateToSet => TelegramUserStates.Service;
 
         public RegisterServiceCommand(IExtendedTelegramBotClient telegramBotClient,
             IHookrRepository hookrRepository,
@@ -23,10 +20,13 @@ namespace Hookr.Telegram.Operations.Commands.Registration.Service
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 hookrRepository,
-                userContextProvider, 
+                userContextProvider,
                 applicationConfig,
                 translationsResolver)
         {
         }
+
+        protected override bool KeyValidator(Guid key, IManagementConfig config) 
+            => config.ServiceKey.Equals(key);
     }
 }

@@ -35,7 +35,7 @@ namespace Hookr.Telegram.Operations.Commands.Start
             var user = userContextProvider.Update.RealMessage.From;
             var dbUser = userContextProvider.DatabaseUser;
             var now = DateTime.Now;
-            if(dbUser != null)
+            if (dbUser != null)
             {
                 dbUser.Username = user.Username;
                 dbUser.LastUpdatedAt = now;
@@ -56,11 +56,12 @@ namespace Hookr.Telegram.Operations.Commands.Start
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)
             => await client
-                .SendTextMessageAsync(await TranslationsResolver.ResolveAsync(TelegramTranslationKeys.Welcome), replyMarkup: new ReplyKeyboardMarkup
-                {
-                    OneTimeKeyboard = true,
-                    ResizeKeyboard = true,
-                    Keyboard = Array.Empty<IEnumerable<KeyboardButton>>()
-                });
+                .SendTextMessageAsync(await TranslationsResolver.ResolveAsync(TelegramTranslationKeys.Welcome),
+                    replyMarkup: new ReplyKeyboardMarkup
+                    {
+                        OneTimeKeyboard = true,
+                        ResizeKeyboard = true,
+                        Keyboard = Array.Empty<IEnumerable<KeyboardButton>>()
+                    });
     }
 }
