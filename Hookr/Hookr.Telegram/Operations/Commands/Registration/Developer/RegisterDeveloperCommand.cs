@@ -3,6 +3,7 @@ using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Telegram.Config;
 using Hookr.Telegram.Config.Management;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Translations;
@@ -14,7 +15,7 @@ namespace Hookr.Telegram.Operations.Commands.Registration.Developer
         protected override TelegramUserStates StateToSet => TelegramUserStates.Dev;
         
         public RegisterDeveloperCommand(IExtendedTelegramBotClient telegramBotClient,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             IUserContextProvider userContextProvider,
             IApplicationConfig applicationConfig,
             ITranslationsResolver translationsResolver)

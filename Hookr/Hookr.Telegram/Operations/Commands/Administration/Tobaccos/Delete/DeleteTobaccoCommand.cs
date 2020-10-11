@@ -2,6 +2,7 @@
 using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context;
 using Hookr.Core.Repository.Context.Entities.Products;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Translations;
@@ -13,7 +14,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Delete
     {
         public DeleteTobaccoCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 userContextProvider,

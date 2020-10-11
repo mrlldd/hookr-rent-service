@@ -8,6 +8,7 @@ using Hookr.Core.Repository.Context;
 using Hookr.Telegram.Config;
 using Hookr.Telegram.Filters;
 using Hookr.Telegram.Operations;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Microsoft.AspNetCore.Builder;
@@ -57,7 +58,7 @@ namespace Hookr.Telegram
                         .UseHookrCoreConfig(applicationConfig.Database)
                 )
                 .AddOperations()
-                .AddRepositories()
+                .AddScoped<ITelegramHookrRepository, TelegramHookrRepository>()
                 .AddUtilities();
         }
 

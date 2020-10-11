@@ -11,6 +11,7 @@ using Hookr.Telegram.Models.Telegram;
 using Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Delete;
 using Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Photos;
 using Hookr.Telegram.Operations.Commands.Orders.Control.AddProduct;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
@@ -29,7 +30,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Get
 
         public GetTobaccoCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             ICurrentOrderCache currentOrderCache,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,

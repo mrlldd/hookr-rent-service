@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities;
 using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Notifiers;
@@ -18,7 +19,7 @@ namespace Hookr.Telegram.Operations.Commands.Orders.Control.Service.Review
 
         protected ReviewOrderCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             ITranslationsResolver translationsResolver,
             ITelegramUsersNotifier telegramUsersNotifier)
             : base(telegramBotClient,

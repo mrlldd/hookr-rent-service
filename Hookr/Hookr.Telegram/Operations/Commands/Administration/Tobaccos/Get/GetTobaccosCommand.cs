@@ -4,6 +4,7 @@ using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context;
 using Hookr.Core.Repository.Context.Entities.Products;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
@@ -18,7 +19,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Get
     public class GetTobaccosCommand : GetCommandBase<Tobacco>, IGetTobaccosCommand
     {
         public GetTobaccosCommand(IExtendedTelegramBotClient telegramBotClient,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             IUserTemporaryStatusCache userTemporaryStatusCache,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,

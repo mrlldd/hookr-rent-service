@@ -260,10 +260,10 @@ namespace Hookr.Core.Repository.Context
 
         public async Task<int> SaveChangesAsync(
             ITelegramUserIdProvider telegramUserIdProvider,
-            CachingLoaderDispatcher cachingLoaderDispatcher,
+            LoaderDispatcher loaderDispatcher,
             CancellationToken token = default)
         {
-            await OnPreSavingAsync(telegramUserIdProvider, cachingLoaderDispatcher);
+            await OnPreSavingAsync(telegramUserIdProvider, loaderDispatcher);
             return await base.SaveChangesAsync(token);
         }
 
@@ -289,7 +289,7 @@ namespace Hookr.Core.Repository.Context
         }
 
         private async Task OnPreSavingAsync(ITelegramUserIdProvider telegramUserIdProvider,
-            CachingLoaderDispatcher cachingLoaderDispatcher)
+            LoaderDispatcher loaderDispatcher)
         {
             var entries = ChangeTracker.Entries()
                 .ToArray();
@@ -298,7 +298,7 @@ namespace Hookr.Core.Repository.Context
                 return;
             }
 
-            var user = await cachingLoaderDispatcher
+            var user = await loaderDispatcher
                 .GetOrLoadAsync<int, TelegramUser>(telegramUserIdProvider.ProvidedValue);
             entries
                 .ForEach(x =>

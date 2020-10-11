@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Hookr.Core.Utilities.Caching;
@@ -18,7 +19,7 @@ namespace Hookr.Core.Utilities.Loaders
                     return inCache;
                 }
             }
-
+            
             var loaded = await LoadAsync(args, token);
             return await loaded
                 .SideEffectAsync(x => PerformCachingAsync(x, keySuffix, token));

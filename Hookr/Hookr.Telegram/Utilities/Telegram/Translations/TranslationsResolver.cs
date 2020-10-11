@@ -6,6 +6,7 @@ using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Translations;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Models.Telegram;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 
@@ -13,12 +14,12 @@ namespace Hookr.Telegram.Utilities.Telegram.Translations
 {
     public class TranslationsResolver : ITranslationsResolver
     {
-        private readonly IHookrRepository hookrRepository;
+        private readonly ITelegramHookrRepository hookrRepository;
         private readonly IUserContextProvider userContextProvider;
         private const LanguageCodes DefaultLanguage = LanguageCodes.Ru;
         private const string NotFoundFormat = "[{0}] [{1}]";
 
-        public TranslationsResolver(IHookrRepository hookrRepository,
+        public TranslationsResolver(ITelegramHookrRepository hookrRepository,
             IUserContextProvider userContextProvider)
         {
             this.hookrRepository = hookrRepository;
@@ -33,19 +34,25 @@ namespace Hookr.Telegram.Utilities.Telegram.Translations
             return FormatResult(result, telegramTranslationKey, args);
         }
 
-        public async Task<(string First, string Second)> ResolveAsync((TelegramTranslationKeys Key, object[] Args) first,
+        public async Task<(string First, string Second)> ResolveAsync(
+            (TelegramTranslationKeys Key, object[] Args) first,
             (TelegramTranslationKeys Key, object[] Args) second)
         {
             var update = userContextProvider.Update;
             var languageCode = ResolveLanguage(update);
-            var result = await hookrRepository.GetTranslationsAsync(languageCode, false, first.Key, second.Key);
+            var result = await hookrRepository.GetTranslationsAsync(languageCode, new[]
+            {
+                first.Key,
+                second.Key
+            });
             return (
                 FormatResult(ExtractResult(result, first.Key), first.Key, first.Args),
                 FormatResult(ExtractResult(result, second.Key), second.Key, second.Args)
             );
         }
 
-        public Task<(string First, string Second)> ResolveAsync(TelegramTranslationKeys first, TelegramTranslationKeys second)
+        public Task<(string First, string Second)> ResolveAsync(TelegramTranslationKeys first,
+            TelegramTranslationKeys second)
             => ResolveAsync(
                 (first, Array.Empty<object>()),
                 (second, Array.Empty<object>())
@@ -58,10 +65,12 @@ namespace Hookr.Telegram.Utilities.Telegram.Translations
         {
             var update = userContextProvider.Update;
             var languageCode = ResolveLanguage(update);
-            var result = await hookrRepository.GetTranslationsAsync(languageCode, false,
+            var result = await hookrRepository.GetTranslationsAsync(languageCode, new[]
+            {
                 first.Key,
                 second.Key,
-                third.Key);
+                third.Key
+            });
             return (
                 FormatResult(ExtractResult(result, first.Key), first.Key, first.Args),
                 FormatResult(ExtractResult(result, second.Key), second.Key, second.Args),
@@ -77,11 +86,13 @@ namespace Hookr.Telegram.Utilities.Telegram.Translations
         {
             var update = userContextProvider.Update;
             var languageCode = ResolveLanguage(update);
-            var result = await hookrRepository.GetTranslationsAsync(languageCode, false,
+            var result = await hookrRepository.GetTranslationsAsync(languageCode, new[]
+            {
                 first.Key,
                 second.Key,
                 third.Key,
-                fourth.Key);
+                fourth.Key
+            });
             return (
                 FormatResult(ExtractResult(result, first.Key), first.Key, first.Args),
                 FormatResult(ExtractResult(result, second.Key), second.Key, second.Args),
@@ -99,12 +110,14 @@ namespace Hookr.Telegram.Utilities.Telegram.Translations
         {
             var update = userContextProvider.Update;
             var languageCode = ResolveLanguage(update);
-            var result = await hookrRepository.GetTranslationsAsync(languageCode, false,
+            var result = await hookrRepository.GetTranslationsAsync(languageCode, new[]
+            {
                 first.Key,
                 second.Key,
                 third.Key,
                 fourth.Key,
-                fifth.Key);
+                fifth.Key
+            });
             return (
                 FormatResult(ExtractResult(result, first.Key), first.Key, first.Args),
                 FormatResult(ExtractResult(result, second.Key), second.Key, second.Args),
@@ -122,17 +135,19 @@ namespace Hookr.Telegram.Utilities.Telegram.Translations
                 (TelegramTranslationKeys Key, object[] Args) fourth,
                 (TelegramTranslationKeys Key, object[] Args) fifth,
                 (TelegramTranslationKeys Key, object[] Args) sixth
-                )
+            )
         {
             var update = userContextProvider.Update;
             var languageCode = ResolveLanguage(update);
-            var result = await hookrRepository.GetTranslationsAsync(languageCode, false,
+            var result = await hookrRepository.GetTranslationsAsync(languageCode, new[]
+            {
                 first.Key,
                 second.Key,
                 third.Key,
                 fourth.Key,
                 fifth.Key,
-                sixth.Key);
+                sixth.Key
+            });
             return (
                 FormatResult(ExtractResult(result, first.Key), first.Key, first.Args),
                 FormatResult(ExtractResult(result, second.Key), second.Key, second.Args),
@@ -142,8 +157,9 @@ namespace Hookr.Telegram.Utilities.Telegram.Translations
                 FormatResult(ExtractResult(result, sixth.Key), sixth.Key, sixth.Args)
             );
         }
-        
-        public async Task<(string First, string Second, string Third, string Fourth, string Fifth, string Sixth, string Seventh)>
+
+        public async Task<(string First, string Second, string Third, string Fourth, string Fifth, string Sixth, string
+                Seventh)>
             ResolveAsync(
                 (TelegramTranslationKeys Key, object[] Args) first,
                 (TelegramTranslationKeys Key, object[] Args) second,
@@ -156,13 +172,15 @@ namespace Hookr.Telegram.Utilities.Telegram.Translations
         {
             var update = userContextProvider.Update;
             var languageCode = ResolveLanguage(update);
-            var result = await hookrRepository.GetTranslationsAsync(languageCode, false,
+            var result = await hookrRepository.GetTranslationsAsync(languageCode, new[]
+            {
                 first.Key,
                 second.Key,
                 third.Key,
                 fourth.Key,
                 fifth.Key,
-                sixth.Key);
+                sixth.Key
+            });
             return (
                 FormatResult(ExtractResult(result, first.Key), first.Key, first.Args),
                 FormatResult(ExtractResult(result, second.Key), second.Key, second.Args),
@@ -174,7 +192,8 @@ namespace Hookr.Telegram.Utilities.Telegram.Translations
             );
         }
 
-        private static string ExtractResult(IDictionary<TelegramTranslationKeys, string> dictionary, TelegramTranslationKeys key)
+        private static string ExtractResult(IDictionary<TelegramTranslationKeys, string> dictionary,
+            TelegramTranslationKeys key)
             => dictionary.TryGetValue(key, out var result)
                 ? result
                 : string.Empty;

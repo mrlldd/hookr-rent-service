@@ -6,6 +6,7 @@ using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Config;
 using Hookr.Telegram.Config.Management;
 using Hookr.Telegram.Operations.Base;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -21,13 +22,13 @@ namespace Hookr.Telegram.Operations.Commands.Registration
         protected abstract TelegramUserStates StateToSet { get; }
 
 
-        private readonly IHookrRepository hookrRepository;
+        private readonly ITelegramHookrRepository hookrRepository;
         private readonly IUserContextProvider userContextProvider;
         private readonly IApplicationConfig applicationConfig;
         private readonly DateTime now = DateTime.Now;
 
         protected RegisterCommandBase(IExtendedTelegramBotClient telegramBotClient,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             IUserContextProvider userContextProvider,
             IApplicationConfig applicationConfig,
             ITranslationsResolver translationsResolver) :

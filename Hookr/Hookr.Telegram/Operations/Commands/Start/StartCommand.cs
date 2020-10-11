@@ -5,6 +5,7 @@ using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Operations.Base;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -16,11 +17,11 @@ namespace Hookr.Telegram.Operations.Commands.Start
 {
     public class StartCommand : CommandWithResponse, IStartCommand
     {
-        private readonly IHookrRepository hookrRepository;
+        private readonly ITelegramHookrRepository hookrRepository;
         private readonly IUserContextProvider userContextProvider;
 
         public StartCommand(IExtendedTelegramBotClient telegramBotClient,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             IUserContextProvider userContextProvider,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,

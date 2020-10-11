@@ -7,6 +7,7 @@ using Hookr.Core.Repository.Context.Entities.Products;
 using Hookr.Core.Repository.Context.Entities.Products.Photo;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Models.Telegram.Exceptions;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -23,11 +24,11 @@ namespace Hookr.Telegram.Operations.Commands.Administration
         where TPhoto : ProductPhoto
     {
         private readonly IUserContextProvider userContextProvider;
-        private readonly IHookrRepository hookrRepository;
+        private readonly ITelegramHookrRepository hookrRepository;
         private readonly IMemoryCache memoryCache;
 
         protected SetPhotoCommandBase(IExtendedTelegramBotClient telegramBotClient,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             ITranslationsResolver translationsResolver,
             IUserContextProvider userContextProvider,
             IMemoryCache memoryCache)

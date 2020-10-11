@@ -1,5 +1,6 @@
 ﻿using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Notifiers;
@@ -11,7 +12,7 @@ namespace Hookr.Telegram.Operations.Commands.Orders.Control.Service.Review.Confi
     {
         protected ReviewConfirmedOrderCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             ITranslationsResolver translationsResolver,
             ITelegramUsersNotifier telegramUsersNotifier)
             : base(telegramBotClient,

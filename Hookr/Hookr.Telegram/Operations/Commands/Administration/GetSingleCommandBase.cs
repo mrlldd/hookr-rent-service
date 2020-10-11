@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Telegram.Models.Telegram;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Translations;
@@ -14,11 +15,11 @@ namespace Hookr.Telegram.Operations.Commands.Administration
         where TEntity : Entity
     {
         protected readonly IUserContextProvider UserContextProvider;
-        private readonly IHookrRepository hookrRepository;
+        private readonly ITelegramHookrRepository hookrRepository;
 
         protected GetSingleCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 translationsResolver)

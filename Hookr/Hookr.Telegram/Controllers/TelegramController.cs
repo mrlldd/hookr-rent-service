@@ -7,6 +7,7 @@ using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Core.Utilities.Extensions;
 using Hookr.Telegram.Filters;
 using Hookr.Telegram.Operations;
+using Hookr.Telegram.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
@@ -18,10 +19,10 @@ namespace Hookr.Telegram.Controllers
     public class TelegramController : ControllerBase
     {
         private readonly IDispatcher dispatcher;
-        private readonly IHookrRepository hookrRepository;
+        private readonly ITelegramHookrRepository hookrRepository;
 
         public TelegramController(IDispatcher dispatcher,
-            IHookrRepository hookrRepository)
+            ITelegramHookrRepository hookrRepository)
         {
             this.dispatcher = dispatcher;
             this.hookrRepository = hookrRepository;

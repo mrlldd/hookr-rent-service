@@ -61,7 +61,7 @@ namespace Hookr.Telegram.Operations
                     return;
                 }
             }
-
+            // todo command population as there is a lot of redundant constructor code.
             await ExecuteCommandAsync(data.ExtractCommand());
         }
 

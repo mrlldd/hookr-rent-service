@@ -8,6 +8,7 @@ namespace Hookr.Core.Utilities.Caching
     {
         public static IServiceCollection AddCaches(this IServiceCollection services, Assembly assembly)
             => services
+                .AddMemoryCache()
                 .WithCaches(assembly);
 
         private static IServiceCollection WithCaches(this IServiceCollection services, Assembly assembly)

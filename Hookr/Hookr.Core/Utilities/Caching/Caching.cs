@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +15,6 @@ namespace Hookr.Core.Utilities.Caching
     public abstract class Caching<T>
     {
         private IMemoryCache MemoryCache { get; set; }
-        private ITelegramUserIdProvider TelegramUserIdProvider { get; set; }
         private IDistributedCache DistributedCache { get; set; }
         protected ILogger<Caching<T>> Logger { get; private set; }
         protected abstract CachingOptions MemoryCacheOptions { get; }
@@ -22,20 +23,22 @@ namespace Hookr.Core.Utilities.Caching
 
         internal void Populate(IMemoryCache memoryCache,
             IDistributedCache distributedCache,
-            ITelegramUserIdProvider telegramUserIdProvider,
             ILogger<Caching<T>> logger)
         {
             MemoryCache = memoryCache;
             DistributedCache = distributedCache;
-            TelegramUserIdProvider = telegramUserIdProvider;
             Logger = logger;
         }
 
         private string CacheKeyFactory(string suffix) 
             => string.Join(":",
-                TelegramUserIdProvider.ProvidedValue,
-                CacheKey,
-                suffix);
+                CacheKeyPrefixesFactory()
+                    .Concat(new[]
+                    {
+                        CacheKey,
+                        suffix
+                    })
+                );
 
         // ReSharper disable once MemberCanBeProtected.Global
         protected internal async Task PerformCachingAsync(T data, string keySuffix, CancellationToken token = default)
@@ -120,5 +123,7 @@ namespace Hookr.Core.Utilities.Caching
 
             return default;
         }
+
+        protected abstract IEnumerable<object> CacheKeyPrefixesFactory();
     }
 }

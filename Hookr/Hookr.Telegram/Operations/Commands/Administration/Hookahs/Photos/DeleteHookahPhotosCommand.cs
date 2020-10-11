@@ -4,6 +4,7 @@ using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context;
 using Hookr.Core.Repository.Context.Entities.Products;
 using Hookr.Core.Repository.Context.Entities.Products.Photo;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Translations;
@@ -17,7 +18,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Hookahs.Photos
         public DeleteHookahPhotosCommand(IExtendedTelegramBotClient telegramBotClient,
             ITranslationsResolver translationsResolver,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository)
+            ITelegramHookrRepository hookrRepository)
             : base(telegramBotClient,
                 translationsResolver,
                 userContextProvider,

@@ -10,23 +10,20 @@ using Microsoft.Extensions.Logging;
 
 namespace Hookr.Core.Utilities.Loaders
 {
-    public class CachingLoaderDispatcher
+    public class LoaderDispatcher
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IMemoryCache memoryCache;
         private readonly IDistributedCache distributedCache;
-        private readonly ITelegramUserIdProvider telegramUserIdProvider;
 
-        public CachingLoaderDispatcher(
+        public LoaderDispatcher(
             IServiceProvider serviceProvider,
             IMemoryCache memoryCache,
-            IDistributedCache distributedCache,
-            ITelegramUserIdProvider telegramUserIdProvider)
+            IDistributedCache distributedCache)
         {
             this.serviceProvider = serviceProvider;
             this.memoryCache = memoryCache;
             this.distributedCache = distributedCache;
-            this.telegramUserIdProvider = telegramUserIdProvider;
         }
 
         public Task<TResult> GetOrLoadAsync<TArgs, TResult>(TArgs args,
@@ -36,7 +33,7 @@ namespace Hookr.Core.Utilities.Loaders
                 .GetRequiredService<CachingLoader<TArgs, TResult>>()
                 .Unite(serviceProvider.GetRequiredService<ILogger<CachingLoader<TArgs, TResult>>>())
                 .SideEffect(x => x.First
-                    .Populate(memoryCache, distributedCache, telegramUserIdProvider, x.Second)
+                    .Populate(memoryCache, distributedCache, x.Second)
                 )
                 .First.GetOrLoadAsync(args, omitCache, token);
     }

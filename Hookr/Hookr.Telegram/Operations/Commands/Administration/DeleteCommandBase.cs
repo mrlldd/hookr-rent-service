@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -19,11 +20,11 @@ namespace Hookr.Telegram.Operations.Commands.Administration
         protected const string Space = " ";
 
         private readonly IUserContextProvider userContextProvider;
-        private readonly IHookrRepository hookrRepository;
+        private readonly ITelegramHookrRepository hookrRepository;
 
         protected DeleteCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             ITranslationsResolver translationsResolver) : base(telegramBotClient, translationsResolver)
         {
             this.userContextProvider = userContextProvider;

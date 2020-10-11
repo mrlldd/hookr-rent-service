@@ -19,7 +19,6 @@ namespace Hookr.Web.Backend.Operations
                 .GetExecutingAssembly()
                 .GetTypes()
                 .Where(typeof(Handler).IsAssignableFrom)
-                .WithNoAny<Type, Handler>()
                 .Where(x => !x.IsAbstract)
                 .Where(x => x.GetInterfaces().Any())
                 .Aggregate(services, (prev, next) => prev

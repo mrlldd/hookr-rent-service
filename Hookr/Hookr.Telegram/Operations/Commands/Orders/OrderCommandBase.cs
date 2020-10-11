@@ -7,6 +7,7 @@ using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Models.Telegram.Exceptions;
 using Hookr.Telegram.Operations.Base;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Translations;
@@ -19,11 +20,11 @@ namespace Hookr.Telegram.Operations.Commands.Orders
         private const string Space = " ";
 
         protected readonly IUserContextProvider UserContextProvider;
-        protected readonly IHookrRepository HookrRepository;
+        protected readonly ITelegramHookrRepository HookrRepository;
         protected List<string> ArgumentsLeft { get; } = new List<string>();
         protected OrderCommandBase(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             ITranslationsResolver translationsResolver) 
             : base(telegramBotClient,
             translationsResolver)

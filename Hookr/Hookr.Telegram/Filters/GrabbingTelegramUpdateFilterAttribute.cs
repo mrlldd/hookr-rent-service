@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Notifiers;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +17,11 @@ namespace Hookr.Telegram.Filters
     {
         private readonly IUserContextProvider userContextProvider;
         private readonly ITelegramUsersNotifier telegramUsersNotifier;
-        private readonly IHookrRepository hookrRepository;
+        private readonly ITelegramHookrRepository hookrRepository;
 
         public GrabbingCurrentTelegramUpdateFilterAttribute(IUserContextProvider userContextProvider,
             ITelegramUsersNotifier telegramUsersNotifier,
-            IHookrRepository hookrRepository)
+            ITelegramHookrRepository hookrRepository)
         {
             this.userContextProvider = userContextProvider;
             this.telegramUsersNotifier = telegramUsersNotifier;

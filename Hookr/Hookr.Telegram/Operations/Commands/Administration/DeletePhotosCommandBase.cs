@@ -10,6 +10,7 @@ using Hookr.Core.Repository.Context.Entities.Products.Photo;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Models.Telegram.Exceptions;
 using Hookr.Telegram.Operations.Base;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -25,13 +26,13 @@ namespace Hookr.Telegram.Operations.Commands.Administration
         where TPhoto : ProductPhoto
     {
         private readonly IUserContextProvider userContextProvider;
-        private readonly IHookrRepository hookrRepository;
+        private readonly ITelegramHookrRepository hookrRepository;
         private const string Space = " ";
 
         protected DeletePhotosCommandBase(IExtendedTelegramBotClient telegramBotClient,
             ITranslationsResolver translationsResolver,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository)
+            ITelegramHookrRepository hookrRepository)
             : base(telegramBotClient, translationsResolver)
         {
             this.userContextProvider = userContextProvider;

@@ -17,13 +17,5 @@ namespace Hookr.Core.Repository
         Task<TResult> WriteAsync<TResult>(Func<HookrContext, CancellationToken, Task<TResult>> functor);
 
         Task<int> SaveChangesAsync();
-
-        Task<string?> GetTranslationAsync(LanguageCodes languageCode,
-            TelegramTranslationKeys telegramTranslationKey,
-            bool omitCache = false);
-
-        Task<IDictionary<TelegramTranslationKeys, string>> GetTranslationsAsync(LanguageCodes languageCode,
-            bool omitCache = false,
-            params TelegramTranslationKeys[] translationKeys);
     }
 }

@@ -7,6 +7,7 @@ using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Operations.Commands.Orders.Control.Service.Review.Confirmed.Approve;
 using Hookr.Telegram.Operations.Commands.Orders.Control.Service.Review.Confirmed.Reject;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
@@ -26,7 +27,7 @@ namespace Hookr.Telegram.Operations.Commands.Orders.Control.Confirm
 
         public ConfirmOrderCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             ITelegramUsersNotifier telegramUsersNotifier,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,

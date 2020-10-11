@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Hookr.Web.Backend.Utilities.Extensions
+namespace Hookr.Core.Utilities.Extensions
 {
     public static class StringExtensions
     {

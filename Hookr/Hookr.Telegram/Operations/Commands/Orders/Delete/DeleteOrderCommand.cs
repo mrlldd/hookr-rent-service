@@ -4,6 +4,7 @@ using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Telegram.Models.Telegram.Exceptions;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client.CurrentUser;
@@ -16,7 +17,7 @@ namespace Hookr.Telegram.Operations.Commands.Orders.Delete
     {
         public DeleteOrderCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 userContextProvider,

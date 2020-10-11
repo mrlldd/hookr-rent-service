@@ -1,11 +1,16 @@
 ﻿using System;
 using Hookr.Core.Utilities.Caching;
+using Hookr.Core.Utilities.Providers;
 
 namespace Hookr.Telegram.Utilities.Telegram.Caches.CurrentOrder
 {
-    public class CurrentOrderCache : Cache<int?>, ICurrentOrderCache
+    public class CurrentOrderCache : UserLevelCache<int?>, ICurrentOrderCache
     {
         private const int TimeoutMinutes = 33;
+        public CurrentOrderCache(ITelegramUserIdProvider telegramUserIdProvider) : base(telegramUserIdProvider)
+        {
+        }
+        
 
         protected override CachingOptions MemoryCacheOptions { get; } =
             new CachingOptions(true, TimeSpan.FromMinutes(TimeoutMinutes));

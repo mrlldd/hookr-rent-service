@@ -8,6 +8,7 @@ using Hookr.Telegram.Operations.Base;
 using Hookr.Telegram.Operations.Commands.Administration.Hookahs.Get;
 using Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Get;
 using Hookr.Telegram.Operations.Commands.Orders.Get;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
@@ -23,13 +24,13 @@ namespace Hookr.Telegram.Operations.Commands.Orders
     public class OrderCommand : CommandWithResponse<InlineKeyboardButton[]>, IOrderCommand
     {
         private readonly IUserTemporaryStatusCache userTemporaryStatusCache;
-        private readonly IHookrRepository hookrRepository;
+        private readonly ITelegramHookrRepository hookrRepository;
         private readonly ICurrentOrderCache currentOrderCache;
         private readonly IUserContextProvider userContextProvider;
 
         public OrderCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserTemporaryStatusCache userTemporaryStatusCache,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             ICurrentOrderCache currentOrderCache,
             IUserContextProvider userContextProvider,
             ITranslationsResolver translationsResolver)

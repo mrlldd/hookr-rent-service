@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,10 @@ namespace Hookr.Telegram.Utilities.Telegram.Notifiers
 {
     public class TelegramUsersNotifier : ITelegramUsersNotifier
     {
-        private readonly IHookrRepository hookrRepository;
+        private readonly ITelegramHookrRepository hookrRepository;
         private readonly IExtendedTelegramBotClient telegramBotClient;
 
-        public TelegramUsersNotifier(IHookrRepository hookrRepository,
+        public TelegramUsersNotifier(ITelegramHookrRepository hookrRepository,
             IExtendedTelegramBotClient telegramBotClient)
         {
             this.hookrRepository = hookrRepository;

@@ -27,6 +27,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 using Hookr.Core.Utilities.Extensions;
+using Hookr.Telegram.Repository;
 
 namespace Hookr.Telegram.Operations.Commands.Orders.Get
 {
@@ -35,7 +36,7 @@ namespace Hookr.Telegram.Operations.Commands.Orders.Get
     {
         public GetOrderCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 userContextProvider,

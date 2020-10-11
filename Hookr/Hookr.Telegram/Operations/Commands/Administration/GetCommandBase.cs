@@ -2,6 +2,7 @@
 using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Core.Utilities.Extensions;
+using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus;
@@ -14,11 +15,11 @@ namespace Hookr.Telegram.Operations.Commands.Administration
     public abstract class GetCommandBase<TEntity> : AdministrationCommandBase<TEntity, TEntity[]>
         where TEntity : Entity
     {
-        private readonly IHookrRepository hookrRepository;
+        private readonly ITelegramHookrRepository hookrRepository;
         private readonly IUserTemporaryStatusCache userTemporaryStatusCache;
 
         protected GetCommandBase(IExtendedTelegramBotClient telegramBotClient,
-            IHookrRepository hookrRepository,
+            ITelegramHookrRepository hookrRepository,
             IUserTemporaryStatusCache userTemporaryStatusCache,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
