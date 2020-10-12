@@ -26,5 +26,7 @@ namespace Hookr.Telegram.Utilities.Telegram.Caches.CurrentOrder
 
         public override string ToString()
             => Source.ToString();
+        
+        //todo unify similar code somehow.
     }
 }
