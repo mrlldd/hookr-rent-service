@@ -17,9 +17,10 @@ namespace Hookr.Core.Internal.Utilities.Loaders
         protected override string CacheKey => "users";
 
         protected override CachingOptions MemoryCacheOptions { get; } =
-            new CachingOptions(true, TimeSpan.FromMinutes(MemoryTimeoutMinutes));
+            CachingOptions.Enabled(TimeSpan.FromMinutes(MemoryTimeoutMinutes));
 
         protected override CachingOptions DistributedCacheOptions { get; } =
+            // todo enable after implementing redis interaction
             new CachingOptions(false, TimeSpan.FromMinutes(DistributedTimeoutMinutes));
 
         public TelegramUserLoader(IHookrRepository hookrRepository)

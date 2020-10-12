@@ -12,8 +12,8 @@ namespace Hookr.Telegram.Utilities.Telegram.Caches.Product
         }
         private const int TimeoutMinutes = 1;
         protected override CachingOptions MemoryCacheOptions { get; } =
-            new CachingOptions(true, TimeSpan.FromMinutes(TimeoutMinutes));
-        protected override CachingOptions DistributedCacheOptions { get; } = CachingOptions.False;
+            CachingOptions.Enabled(TimeSpan.FromMinutes(TimeoutMinutes));
+        protected override CachingOptions DistributedCacheOptions { get; } = CachingOptions.Disabled;
 
         protected override string CacheKey => "product";
 

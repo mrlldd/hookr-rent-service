@@ -13,8 +13,8 @@ namespace Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus
         }
 
         protected override CachingOptions MemoryCacheOptions { get; } =
-            new CachingOptions(true, TimeSpan.FromMinutes(TimeoutMinutes));
-        protected override CachingOptions DistributedCacheOptions { get; } = CachingOptions.False;
+            CachingOptions.Enabled(TimeSpan.FromMinutes(TimeoutMinutes));
+        protected override CachingOptions DistributedCacheOptions { get; } = CachingOptions.Disabled;
 
         protected override string CacheKey => "temporaryStatus";
     }

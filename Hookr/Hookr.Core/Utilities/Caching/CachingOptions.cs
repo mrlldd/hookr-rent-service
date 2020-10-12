@@ -4,15 +4,17 @@ namespace Hookr.Core.Utilities.Caching
 {
     public class CachingOptions
     {
-        public CachingOptions(bool shouldCache, TimeSpan timeout)
+        internal CachingOptions(bool shouldCache, TimeSpan timeout)
         {
             IsCaching = shouldCache;
             Timeout = timeout;
         }
 
-        public bool IsCaching { get; }
+        internal bool IsCaching { get; }
         public TimeSpan Timeout { get; }
         
-        public static readonly CachingOptions False = new CachingOptions(false, TimeSpan.Zero);
+        public static readonly CachingOptions Disabled = new CachingOptions(false, TimeSpan.Zero);
+        
+        public static CachingOptions Enabled(TimeSpan timeout) => new CachingOptions(true, timeout);
     }
 }
