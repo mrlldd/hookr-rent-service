@@ -58,7 +58,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration
             }
 
             PhotoTableSelector(hookrRepository.Context).RemoveRange(PhotosSelector(product));
-            await hookrRepository.Context.SaveChangesAsync();
+            await hookrRepository.SaveChangesAsync();
         }
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)

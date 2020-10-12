@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Core.Utilities.Providers;
 using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Notifiers;
@@ -17,14 +18,17 @@ namespace Hookr.Telegram.Filters
     {
         private readonly IUserContextProvider userContextProvider;
         private readonly ITelegramUsersNotifier telegramUsersNotifier;
+        private readonly ITelegramUserIdProvider telegramUserIdProvider;
         private readonly ITelegramHookrRepository hookrRepository;
 
         public GrabbingCurrentTelegramUpdateFilterAttribute(IUserContextProvider userContextProvider,
-            ITelegramUsersNotifier telegramUsersNotifier,
+            ITelegramUsersNotifier telegramUsersNotifier,    
+            ITelegramUserIdProvider telegramUserIdProvider,
             ITelegramHookrRepository hookrRepository)
         {
             this.userContextProvider = userContextProvider;
             this.telegramUsersNotifier = telegramUsersNotifier;
+            this.telegramUserIdProvider = telegramUserIdProvider;
             this.hookrRepository = hookrRepository;
         }
 
@@ -40,10 +44,12 @@ namespace Hookr.Telegram.Filters
             var id = extendedUpdate.Type == UpdateType.CallbackQuery
                 ? extendedUpdate.CallbackQuery.From.Id
                 : extendedUpdate.RealMessage.From.Id;
+            telegramUserIdProvider.Set(id);
             var dbUser = await hookrRepository
                 .ReadAsync((hookrContext, token)
                     => hookrContext.TelegramUsers.FirstOrDefaultAsync(x => x.Id == id,
-                        token));
+                        token)
+                    );
             userContextProvider.SetDatabaseUser(dbUser);
             var result = await next();
             if (result.Exception != null)

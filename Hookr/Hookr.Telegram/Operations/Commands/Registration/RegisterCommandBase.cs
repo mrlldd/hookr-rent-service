@@ -73,7 +73,7 @@ namespace Hookr.Telegram.Operations.Commands.Registration
                 });
             }
 
-            await hookrRepository.Context.SaveChangesAsync();
+            await hookrRepository.SaveChangesAsync();
         }
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)

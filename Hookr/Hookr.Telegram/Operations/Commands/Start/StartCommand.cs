@@ -52,7 +52,7 @@ namespace Hookr.Telegram.Operations.Commands.Start
                 });
             }
 
-            return hookrRepository.Context.SaveChangesAsync();
+            return hookrRepository.SaveChangesAsync();
         }
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)

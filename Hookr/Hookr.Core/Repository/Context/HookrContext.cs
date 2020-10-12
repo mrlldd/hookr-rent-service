@@ -260,36 +260,28 @@ namespace Hookr.Core.Repository.Context
 
         public async Task<int> SaveChangesAsync(
             ITelegramUserIdProvider telegramUserIdProvider,
-            LoaderDispatcher loaderDispatcher,
+            ILoaderProvider loaderProvider,
             CancellationToken token = default)
         {
-            await OnPreSavingAsync(telegramUserIdProvider, loaderDispatcher);
+            await OnPreSavingAsync(telegramUserIdProvider, loaderProvider);
             return await base.SaveChangesAsync(token);
         }
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default)
-        {
-            throw new NotSupportedException("Use another overload with services in parameters.");
-        }
+            => throw new NotSupportedException("Use another overload with services in parameters.");
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            throw new NotSupportedException("Use another overload with services in parameters.");
-        }
-        
-        public override int SaveChanges()
-        {
-            throw new NotSupportedException("Async only.");
-        }
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) 
+            => throw new NotSupportedException("Use another overload with services in parameters.");
 
-        public override int SaveChanges(bool acceptAllChangesOnSuccess)
-        {
-            throw new NotSupportedException("Async only.");
-        }
+        public override int SaveChanges() 
+            => throw new NotSupportedException("Async only.");
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess) 
+            => throw new NotSupportedException("Async only.");
 
         private async Task OnPreSavingAsync(ITelegramUserIdProvider telegramUserIdProvider,
-            LoaderDispatcher loaderDispatcher)
+            ILoaderProvider loaderProvider)
         {
             var entries = ChangeTracker.Entries()
                 .ToArray();
@@ -298,8 +290,10 @@ namespace Hookr.Core.Repository.Context
                 return;
             }
 
-            var user = await loaderDispatcher
-                .GetOrLoadAsync<int, TelegramUser>(telegramUserIdProvider.ProvidedValue);
+            var loader = loaderProvider.Get<int, TelegramUser>();
+
+            var user = await loader
+                .GetOrLoadAsync(telegramUserIdProvider.ProvidedValue);
             entries
                 .ForEach(x =>
                 {

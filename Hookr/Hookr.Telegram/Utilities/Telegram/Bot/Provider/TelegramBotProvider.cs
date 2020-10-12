@@ -18,15 +18,15 @@ namespace Hookr.Telegram.Utilities.Telegram.Bot.Provider
 {
     public class TelegramBotProvider : ITelegramBotProvider
     {
-        private readonly ITelegramConfig telegramConfig;
+        private readonly IExtendedTelegramConfig extendedTelegramConfig;
         private readonly IHttpClientFactory httpClientFactory;
         private readonly ILogger<TelegramBotProvider> logger;
 
-        public TelegramBotProvider(ITelegramConfig telegramConfig,
+        public TelegramBotProvider(IExtendedTelegramConfig extendedTelegramConfig,
             IHttpClientFactory httpClientFactory,
             ILogger<TelegramBotProvider> logger)
         {
-            this.telegramConfig = telegramConfig;
+            this.extendedTelegramConfig = extendedTelegramConfig;
             this.httpClientFactory = httpClientFactory;
             this.logger = logger;
         }
@@ -44,7 +44,7 @@ namespace Hookr.Telegram.Utilities.Telegram.Bot.Provider
                 throw new InvalidOperationException("Bot is already initialized.");
             }
 
-            var bot = new TelegramBotClient(telegramConfig.Token, httpClientFactory.CreateClient());
+            var bot = new TelegramBotClient(extendedTelegramConfig.Token, httpClientFactory.CreateClient());
             var info = await bot.GetMeAsync(token);
             var route = typeof(TelegramController).GetCustomAttribute<RouteAttribute>()?.Template;
             if (string.IsNullOrEmpty(route))
@@ -52,7 +52,7 @@ namespace Hookr.Telegram.Utilities.Telegram.Bot.Provider
                 throw new InvalidOperationException("Webhook route is not initialized");
             }
 
-            var finalWebhook = $"{telegramConfig.Webhook}/{route}/update";
+            var finalWebhook = $"{extendedTelegramConfig.Webhook}/{route}/update";
             await bot.SetWebhookAsync(finalWebhook,
                 cancellationToken: token,
                 allowedUpdates: new[]

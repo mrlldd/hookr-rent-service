@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using Hookr.Core.Utilities.Caching;
 using Hookr.Core.Utilities.Providers;
 
-namespace Hookr.Core.Utilities.Caching
+namespace Hookr.Core.Utilities.Caches.Leveled
 {
-    public abstract class UserLevelCache<T> : Cache<T>
+    public abstract class UserLevelCache<T> : Cache<T>, IUserLevelCache<T>
     {
         // ReSharper disable once MemberCanBePrivate.Global
         protected readonly ITelegramUserIdProvider TelegramUserIdProvider;

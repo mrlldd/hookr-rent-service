@@ -1,4 +1,5 @@
-﻿using Hookr.Telegram.Utilities.Telegram.Bot;
+﻿using Hookr.Core.Utilities.Caches;
+using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus;
 using Hookr.Telegram.Utilities.Telegram.Translations;
@@ -10,12 +11,12 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Hookahs.Photos
     {
         public AskForHookahPhotosCommand(IExtendedTelegramBotClient telegramBotClient,
             ITranslationsResolver translationsResolver,
-            IUserTemporaryStatusCache userTemporaryStatusCache,
+            ICacheProvider cacheProvider,
             IUserContextProvider userContextProvider,
             IMemoryCache memoryCache)
             : base(telegramBotClient,
                 translationsResolver,
-                userTemporaryStatusCache,
+                cacheProvider,
                 userContextProvider,
                 memoryCache)
         {

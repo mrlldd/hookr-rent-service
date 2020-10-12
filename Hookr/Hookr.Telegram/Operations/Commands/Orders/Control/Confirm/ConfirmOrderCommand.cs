@@ -86,7 +86,7 @@ namespace Hookr.Telegram.Operations.Commands.Orders.Control.Confirm
                         ? $"[{unknownTranslated}]"
                         : from.LastName)
             );
-            await HookrRepository.Context.SaveChangesAsync();
+            await HookrRepository.SaveChangesAsync();
             await telegramUsersNotifier.SendAsync((client, user) =>
                     client.SendTextMessageAsync(user.Id,
                         notification,

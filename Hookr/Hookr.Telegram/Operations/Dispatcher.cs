@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hookr.Core.Utilities.Caches;
 using Hookr.Telegram.Operations.Base;
 using Hookr.Telegram.Operations.Commands.Administration.Hookahs.Get;
 using Hookr.Telegram.Operations.Commands.Administration.Hookahs.Photos;
@@ -19,20 +20,20 @@ namespace Hookr.Telegram.Operations
         private readonly ICommandsContainer commandsContainer;
         private readonly IServiceProvider serviceProvider;
         private readonly IUserContextProvider userContextProvider;
-        private readonly IUserTemporaryStatusCache userTemporaryStatusCache;
+        private readonly ICacheProvider cacheProvider;
         private readonly ILogger<Dispatcher> logger;
         private readonly IDictionary<UserTemporaryStatus, Func<Task>> userResponseHandlers;
 
         public Dispatcher(ICommandsContainer commandsContainer,
             IServiceProvider serviceProvider,
             IUserContextProvider userContextProvider,
-            IUserTemporaryStatusCache userTemporaryStatusCache,
+            ICacheProvider cacheProvider,
             ILogger<Dispatcher> logger)
         {
             this.commandsContainer = commandsContainer;
             this.serviceProvider = serviceProvider;
             this.userContextProvider = userContextProvider;
-            this.userTemporaryStatusCache = userTemporaryStatusCache;
+            this.cacheProvider = cacheProvider;
             this.logger = logger;
 
             userResponseHandlers = new Dictionary<UserTemporaryStatus, Func<Task>>
@@ -49,7 +50,8 @@ namespace Hookr.Telegram.Operations
         public async Task DispatchAsync()
         {
             var update = userContextProvider.Update;
-            var userStatus = await userTemporaryStatusCache.GetAsync();
+            var cache = cacheProvider.UserLevel<UserTemporaryStatus>();
+            var userStatus = await cache.GetAsync();
             var data = update.Content;
             if (string.IsNullOrEmpty(data) || data.ExtractCommand().IsNumber())
             {

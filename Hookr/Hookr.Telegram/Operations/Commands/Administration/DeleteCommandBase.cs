@@ -43,7 +43,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration
             var entities = await hookrRepository.ReadAsync((context, token)
                 => EntityTableSelector(context).ToArrayAsync(token));
             EntityTableSelector(hookrRepository.Context).Remove(entities[id - 1]);
-            await hookrRepository.Context.SaveChangesAsync();
+            await hookrRepository.SaveChangesAsync();
         }
 
         protected abstract int ExtractIndex(string command);

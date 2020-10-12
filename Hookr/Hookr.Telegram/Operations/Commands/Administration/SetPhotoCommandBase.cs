@@ -72,7 +72,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration
             }
 
             AddPhotoToTable(PhotoTableSelector(hookrRepository.Context), message.Photo.First().FileId, productId);
-            await hookrRepository.Context.SaveChangesAsync();
+            await hookrRepository.SaveChangesAsync();
         }
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)

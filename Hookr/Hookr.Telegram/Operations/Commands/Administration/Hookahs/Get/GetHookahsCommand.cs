@@ -4,6 +4,7 @@ using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context;
 using Hookr.Core.Repository.Context.Entities.Products;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
+using Hookr.Core.Utilities.Caches;
 using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
@@ -21,11 +22,11 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Hookahs.Get
 
         public GetHookahsCommand(IExtendedTelegramBotClient telegramBotClient,
             ITelegramHookrRepository hookrRepository,
-            IUserTemporaryStatusCache userTemporaryStatusCache,
+            ICacheProvider cacheProvider,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 hookrRepository,
-                userTemporaryStatusCache,
+                cacheProvider,
                 translationsResolver)
         {
         }

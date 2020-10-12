@@ -13,7 +13,6 @@ namespace Hookr.Telegram.Utilities.Telegram
             => services
                 .AddTelegramSelectors()
                 .AddTelegramBotServices()
-                .AddCaches()
                 .AddNotifiers()
                 .AddTranslations();
 

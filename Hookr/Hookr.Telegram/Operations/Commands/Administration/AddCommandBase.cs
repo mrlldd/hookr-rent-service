@@ -39,7 +39,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration
 
             EntityTableSelector(hookrRepository.Context)
                 .Add(ParseEntityModel(userContextProvider.Update.RealMessage.Text));
-            await hookrRepository.Context.SaveChangesAsync();
+            await hookrRepository.SaveChangesAsync();
         }
 
         protected abstract TEntity ParseEntityModel(string command);

@@ -25,11 +25,11 @@ namespace Hookr.Telegram.Repository
             IPolicySet policySet,
             ITelegramUserIdProvider telegramUserIdProvider,
             IMemoryCache memoryCache,
-            LoaderDispatcher loaderDispatcher)
+            ILoaderProvider loaderProvider)
             : base(context,
                 policySet,
                 telegramUserIdProvider,
-                loaderDispatcher)
+                loaderProvider)
         {
             this.memoryCache = memoryCache;
         }
@@ -52,7 +52,7 @@ namespace Hookr.Telegram.Repository
                     .FirstOrDefaultAsync(x
                         => x.Language == languageCode
                            && x.Key == telegramTranslationKey, token));
-            var value = translation.Value;
+            var value = translation?.Value;
             if (!string.IsNullOrEmpty(value))
             {
                 memoryCache.Set(key, value, new MemoryCacheEntryOptions

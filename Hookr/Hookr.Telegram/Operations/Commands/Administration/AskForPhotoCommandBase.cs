@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
+using Hookr.Core.Utilities.Caches;
 using Hookr.Telegram.Models.Telegram.Exceptions;
 using Hookr.Telegram.Operations.Base;
 using Hookr.Telegram.Utilities.Telegram.Bot;
@@ -17,7 +18,7 @@ namespace Hookr.Telegram.Operations.Commands.Administration
 {
     public abstract class AskForPhotoCommandBase : CommandWithResponse
     {
-        private readonly IUserTemporaryStatusCache userTemporaryStatusCache;
+        private readonly ICacheProvider cacheProvider;
         private readonly IUserContextProvider userContextProvider;
         private readonly IMemoryCache memoryCache;
         private const double ExpirationMinutes = 1;
@@ -26,13 +27,13 @@ namespace Hookr.Telegram.Operations.Commands.Administration
 
         protected AskForPhotoCommandBase(IExtendedTelegramBotClient telegramBotClient,
             ITranslationsResolver translationsResolver,
-            IUserTemporaryStatusCache userTemporaryStatusCache,
+            ICacheProvider cacheProvider,
             IUserContextProvider userContextProvider,
             IMemoryCache memoryCache)
             : base(telegramBotClient,
                 translationsResolver)
         {
-            this.userTemporaryStatusCache = userTemporaryStatusCache;
+            this.cacheProvider = cacheProvider;
             this.userContextProvider = userContextProvider;
             this.memoryCache = memoryCache;
         }
@@ -56,7 +57,9 @@ namespace Hookr.Telegram.Operations.Commands.Administration
                     AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(ExpirationMinutes)
                 }
             );
-            await userTemporaryStatusCache.SetAsync(NextUserState);
+            await cacheProvider
+                .UserLevel<UserTemporaryStatus>()
+                .SetAsync(NextUserState);
         }
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client)

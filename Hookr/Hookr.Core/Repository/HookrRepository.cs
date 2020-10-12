@@ -19,17 +19,17 @@ namespace Hookr.Core.Repository
     {
         protected readonly IPolicySet PolicySet;
         private readonly ITelegramUserIdProvider telegramUserIdProvider;
-        private readonly LoaderDispatcher loaderDispatcher;
+        private readonly ILoaderProvider loaderProvider;
         public HookrContext Context { get; }
 
-        public HookrRepository(HookrContext context,
+        protected HookrRepository(HookrContext context,
             IPolicySet policySet,
             ITelegramUserIdProvider telegramUserIdProvider,
-            LoaderDispatcher loaderDispatcher)
+            ILoaderProvider loaderProvider)
         {
-            this.PolicySet = policySet;
+            PolicySet = policySet;
             this.telegramUserIdProvider = telegramUserIdProvider;
-            this.loaderDispatcher = loaderDispatcher;
+            this.loaderProvider = loaderProvider;
             Context = context;
         }
 
@@ -43,7 +43,7 @@ namespace Hookr.Core.Repository
             => PolicySet.WritePolicy.ExecuteAsync(() => functor(Context, default));
 
         public Task<int> SaveChangesAsync()
-            => WriteAsync((context, token) => context.SaveChangesAsync(telegramUserIdProvider, loaderDispatcher, token));
+            => WriteAsync((context, token) => context.SaveChangesAsync(telegramUserIdProvider, loaderProvider, token));
 
 
     }

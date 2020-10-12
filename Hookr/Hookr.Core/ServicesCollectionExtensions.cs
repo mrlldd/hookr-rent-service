@@ -1,4 +1,5 @@
 using System.Reflection;
+using Hookr.Core.Utilities.Caches;
 using Hookr.Core.Utilities.Caching;
 using Hookr.Core.Utilities.Loaders;
 using Hookr.Core.Utilities.Providers;

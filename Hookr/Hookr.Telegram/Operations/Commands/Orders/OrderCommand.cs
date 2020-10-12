@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
+using Hookr.Core.Utilities.Caches;
 using Hookr.Telegram.Operations.Base;
 using Hookr.Telegram.Operations.Commands.Administration.Hookahs.Get;
 using Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Get;
@@ -23,29 +24,29 @@ namespace Hookr.Telegram.Operations.Commands.Orders
 {
     public class OrderCommand : CommandWithResponse<InlineKeyboardButton[]>, IOrderCommand
     {
-        private readonly IUserTemporaryStatusCache userTemporaryStatusCache;
         private readonly ITelegramHookrRepository hookrRepository;
-        private readonly ICurrentOrderCache currentOrderCache;
         private readonly IUserContextProvider userContextProvider;
+        private readonly ICacheProvider cacheProvider;
 
         public OrderCommand(IExtendedTelegramBotClient telegramBotClient,
-            IUserTemporaryStatusCache userTemporaryStatusCache,
             ITelegramHookrRepository hookrRepository,
-            ICurrentOrderCache currentOrderCache,
             IUserContextProvider userContextProvider,
+            ICacheProvider cacheProvider,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 translationsResolver)
         {
-            this.userTemporaryStatusCache = userTemporaryStatusCache;
             this.hookrRepository = hookrRepository;
-            this.currentOrderCache = currentOrderCache;
             this.userContextProvider = userContextProvider;
+            this.cacheProvider = cacheProvider;
         }
 
         protected override async Task<InlineKeyboardButton[]> ProcessAsync()
         {
-            await userTemporaryStatusCache.SetAsync(UserTemporaryStatus.InOrder);
+            var (statusCache, currentOrderCache) = 
+                (cacheProvider.UserLevel<UserTemporaryStatus>(),
+                    cacheProvider.UserLevel<CurrentOrder>());
+            await statusCache.SetAsync(UserTemporaryStatus.InOrder);
             var cachedOrderId = await currentOrderCache.GetAsync();
             if (cachedOrderId.HasValue)
                 return new[]
@@ -59,7 +60,7 @@ namespace Hookr.Telegram.Operations.Commands.Orders
                 };
             var order = new Order();
             hookrRepository.Context.Orders.Add(order);
-            await hookrRepository.Context.SaveChangesAsync();
+            await hookrRepository.SaveChangesAsync();
             await currentOrderCache.SetAsync(order.Id);
             return Array.Empty<InlineKeyboardButton>();
         }

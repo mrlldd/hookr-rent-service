@@ -6,9 +6,8 @@ namespace Hookr.Telegram.Operations
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddOperations(this IServiceCollection services)
-        {
-            return typeof(ServiceCollectionExtensions)
+        public static IServiceCollection AddOperations(this IServiceCollection services) 
+            => typeof(ServiceCollectionExtensions)
                 .Assembly
                 .ExtractCommandServicesTypes()
                 .Aggregate(services,
@@ -16,6 +15,5 @@ namespace Hookr.Telegram.Operations
                         .AddScoped(next.Interface, next.Implementation))
                 .AddSingleton<ICommandsContainer, CommandsContainer>()
                 .AddScoped<IDispatcher, Dispatcher>();
-        }
     }
 }

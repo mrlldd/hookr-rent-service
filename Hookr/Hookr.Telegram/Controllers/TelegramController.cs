@@ -78,7 +78,7 @@ namespace Hookr.Telegram.Controllers
                             }
                         });
                 });
-            await hookrRepository.Context.SaveChangesAsync();
+            await hookrRepository.SaveChangesAsync();
         }
     }
 }

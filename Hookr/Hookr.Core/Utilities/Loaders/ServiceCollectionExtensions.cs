@@ -10,7 +10,7 @@ namespace Hookr.Core.Utilities.Loaders
     {
         public static IServiceCollection AddLoaders(this IServiceCollection services, Assembly assembly)
             => services
-                .AddScoped<LoaderDispatcher>()
+                .AddScoped<ILoaderProvider, LoaderProvider>()
                 .WithLoaders(assembly);
 
         private static IServiceCollection WithLoaders(this IServiceCollection services, Assembly assembly)

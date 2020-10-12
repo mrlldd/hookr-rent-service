@@ -10,6 +10,7 @@ namespace Hookr.Core.Config
             Database = new DatabaseConfig();
             Telegram = new TelegramConfig();
         }
+        
         public IDatabaseConfig Database { get; }
         public ITelegramConfig Telegram { get; }
     }

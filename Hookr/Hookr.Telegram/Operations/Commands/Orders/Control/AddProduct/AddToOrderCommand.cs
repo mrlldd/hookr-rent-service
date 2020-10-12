@@ -71,7 +71,7 @@ namespace Hookr.Telegram.Operations.Commands.Orders.Control.AddProduct
                 }
             }
 
-            await HookrRepository.Context.SaveChangesAsync();
+            await HookrRepository.SaveChangesAsync();
             return order;
         }
 

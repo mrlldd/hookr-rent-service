@@ -1,7 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Hookr.Core.Utilities.Caching;
 
-namespace Hookr.Core.Utilities.Caching
+namespace Hookr.Core.Utilities.Caches
 {
     public abstract class Cache<T> : Caching<T>, ICache<T>
     {

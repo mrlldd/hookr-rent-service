@@ -12,18 +12,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Hookr.Core.Utilities.Caching
 {
-    public abstract class Caching<T>
+    public abstract class Caching<T> : ICaching<T>
     {
         private IMemoryCache MemoryCache { get; set; }
         private IDistributedCache DistributedCache { get; set; }
-        protected ILogger<Caching<T>> Logger { get; private set; }
+        protected ILogger<ICaching<T>> Logger { get; private set; }
         protected abstract CachingOptions MemoryCacheOptions { get; }
         protected abstract CachingOptions DistributedCacheOptions { get; }
         protected abstract string CacheKey { get; }
 
-        internal void Populate(IMemoryCache memoryCache,
+        public void Populate(IMemoryCache memoryCache,
             IDistributedCache distributedCache,
-            ILogger<Caching<T>> logger)
+            ILogger<ICaching<T>> logger)
         {
             MemoryCache = memoryCache;
             DistributedCache = distributedCache;

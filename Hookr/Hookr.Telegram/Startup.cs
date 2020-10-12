@@ -6,6 +6,7 @@ using Hookr.Core.Filters;
 using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context;
 using Hookr.Telegram.Config;
+using Hookr.Telegram.Config.Telegram;
 using Hookr.Telegram.Filters;
 using Hookr.Telegram.Operations;
 using Hookr.Telegram.Repository;
@@ -24,12 +25,16 @@ namespace Hookr.Telegram
     public class Startup
     {
         private readonly IApplicationConfig applicationConfig;
+        private readonly IExtendedTelegramConfig extendedTelegramConfig;
 
         public Startup(IConfiguration configuration)
         {
             var config = new ApplicationConfig();
+            var extendedTelegramConfig = new ExtendedTelegramConfig();
             configuration.Bind(config);
+            configuration.GetSection(nameof(CoreApplicationConfig.Telegram)).Bind(extendedTelegramConfig);
             applicationConfig = config;
+            this.extendedTelegramConfig = extendedTelegramConfig;
         }
 
         //private const string AzureTableStorage = "AzureTableStorage";
@@ -43,14 +48,14 @@ namespace Hookr.Telegram
                 .CreateLogger();
             Log.Logger = log;
 
-            services.AddSingleton(applicationConfig);
-
             services
                 .AddScoped<GrabbingCurrentTelegramUpdateFilterAttribute>()
                 .AddControllers()
                 .AddNewtonsoftJson();
             services
                 .AddHookrCore(typeof(Startup).Assembly)
+                .AddConfig(applicationConfig)
+                .AddSingleton(extendedTelegramConfig)
                 .AddHttpClient()
                 .AddMemoryCache()
                 .AddDbContext<HookrContext>(
@@ -68,6 +73,7 @@ namespace Hookr.Telegram
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                
             }
 
             app.UseRouting();

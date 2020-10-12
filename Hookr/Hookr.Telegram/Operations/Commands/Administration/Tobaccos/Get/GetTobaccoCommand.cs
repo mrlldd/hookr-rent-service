@@ -7,6 +7,7 @@ using Hookr.Core.Repository.Context;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Core.Repository.Context.Entities.Products;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
+using Hookr.Core.Utilities.Caches;
 using Hookr.Telegram.Models.Telegram;
 using Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Delete;
 using Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Photos;
@@ -26,19 +27,19 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Get
 {
     public class GetTobaccoCommand : GetSingleCommandBase<Tobacco>, IGetTobaccoCommand
     {
-        private readonly ICurrentOrderCache currentOrderCache;
+        private readonly ICacheProvider cacheProvider;
 
         public GetTobaccoCommand(IExtendedTelegramBotClient telegramBotClient,
             IUserContextProvider userContextProvider,
             ITelegramHookrRepository hookrRepository,
-            ICurrentOrderCache currentOrderCache,
+            ICacheProvider cacheProvider,
             ITranslationsResolver translationsResolver)
             : base(telegramBotClient,
                 userContextProvider,
                 hookrRepository,
                 translationsResolver)
         {
-            this.currentOrderCache = currentOrderCache;
+            this.cacheProvider = cacheProvider;
         }
 
         protected override async Task<Message> SendResponseAsync(ICurrentTelegramUserClient client,
@@ -84,7 +85,9 @@ namespace Hookr.Telegram.Operations.Commands.Administration.Tobaccos.Get
             const byte defaultCount = 5;
             var buttons = new List<IEnumerable<InlineKeyboardButton>>();
             var dbUser = UserContextProvider.DatabaseUser;
-            var orderId = await currentOrderCache.GetAsync();
+            var orderId = await cacheProvider
+                .UserLevel<CurrentOrder>()
+                .GetAsync();
             if (orderId.HasValue)
             {
                 var orderSomeGramsFormat = await TranslationsResolver
