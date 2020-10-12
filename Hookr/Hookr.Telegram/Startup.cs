@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Events;
 
 namespace Hookr.Telegram
 {
@@ -30,11 +31,11 @@ namespace Hookr.Telegram
         public Startup(IConfiguration configuration)
         {
             var config = new ApplicationConfig();
-            var extendedTelegramConfig = new ExtendedTelegramConfig();
+            var telegramConfig = new ExtendedTelegramConfig();
             configuration.Bind(config);
-            configuration.GetSection(nameof(CoreApplicationConfig.Telegram)).Bind(extendedTelegramConfig);
+            configuration.GetSection(nameof(CoreApplicationConfig.Telegram)).Bind(telegramConfig);
             applicationConfig = config;
-            this.extendedTelegramConfig = extendedTelegramConfig;
+            extendedTelegramConfig = telegramConfig;
         }
 
         //private const string AzureTableStorage = "AzureTableStorage";
@@ -42,12 +43,6 @@ namespace Hookr.Telegram
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            var log = new LoggerConfiguration()
-                .WriteTo
-                .Console()
-                .CreateLogger();
-            Log.Logger = log;
-
             services
                 .AddScoped<GrabbingCurrentTelegramUpdateFilterAttribute>()
                 .AddControllers()

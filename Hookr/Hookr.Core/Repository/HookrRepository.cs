@@ -22,7 +22,7 @@ namespace Hookr.Core.Repository
         private readonly ILoaderProvider loaderProvider;
         public HookrContext Context { get; }
 
-        protected HookrRepository(HookrContext context,
+        public HookrRepository(HookrContext context,
             IPolicySet policySet,
             ITelegramUserIdProvider telegramUserIdProvider,
             ILoaderProvider loaderProvider)

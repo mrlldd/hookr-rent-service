@@ -1,12 +1,14 @@
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Hookr.Core.Config.Telegram;
 using Hookr.Core.Utilities.Caching;
 using Hookr.Core.Utilities.Extensions;
 
 namespace Hookr.Core.Utilities.Loaders
 {
-    public abstract class CachingLoader<TArgs, TResult> : Caching<TResult> where TResult : class
+    public abstract class CachingLoader<TArgs, TResult> : Caching<TResult>, ICachingLoader<TArgs, TResult> where TResult : class
     {
         public async Task<TResult> GetOrLoadAsync(TArgs args, bool omitCacheOnLoad = false, CancellationToken token = default)
         {
@@ -24,6 +26,12 @@ namespace Hookr.Core.Utilities.Loaders
             return await loaded
                 .SideEffectAsync(x => PerformCachingAsync(x, keySuffix, token));
         }
+
+        protected sealed override IEnumerable<object> CacheKeyPrefixesFactory()
+            => new List<object>
+            {
+                "loader"
+            };
 
         protected abstract Task<TResult> LoadAsync(TArgs args, CancellationToken token = default);
 

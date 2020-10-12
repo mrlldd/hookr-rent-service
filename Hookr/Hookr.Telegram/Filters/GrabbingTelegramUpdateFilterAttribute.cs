@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Base;
+using Hookr.Core.Utilities.Loaders;
 using Hookr.Core.Utilities.Providers;
 using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
@@ -19,17 +20,17 @@ namespace Hookr.Telegram.Filters
         private readonly IUserContextProvider userContextProvider;
         private readonly ITelegramUsersNotifier telegramUsersNotifier;
         private readonly ITelegramUserIdProvider telegramUserIdProvider;
-        private readonly ITelegramHookrRepository hookrRepository;
+        private readonly ILoaderProvider loaderProvider;
 
         public GrabbingCurrentTelegramUpdateFilterAttribute(IUserContextProvider userContextProvider,
             ITelegramUsersNotifier telegramUsersNotifier,    
             ITelegramUserIdProvider telegramUserIdProvider,
-            ITelegramHookrRepository hookrRepository)
+            ILoaderProvider loaderProvider)
         {
             this.userContextProvider = userContextProvider;
             this.telegramUsersNotifier = telegramUsersNotifier;
             this.telegramUserIdProvider = telegramUserIdProvider;
-            this.hookrRepository = hookrRepository;
+            this.loaderProvider = loaderProvider;
         }
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -45,11 +46,9 @@ namespace Hookr.Telegram.Filters
                 ? extendedUpdate.CallbackQuery.From.Id
                 : extendedUpdate.RealMessage.From.Id;
             telegramUserIdProvider.Set(id);
-            var dbUser = await hookrRepository
-                .ReadAsync((hookrContext, token)
-                    => hookrContext.TelegramUsers.FirstOrDefaultAsync(x => x.Id == id,
-                        token)
-                    );
+            var dbUser = await loaderProvider
+                .Get<int, TelegramUser>()
+                .GetOrLoadAsync(id);
             userContextProvider.SetDatabaseUser(dbUser);
             var result = await next();
             if (result.Exception != null)

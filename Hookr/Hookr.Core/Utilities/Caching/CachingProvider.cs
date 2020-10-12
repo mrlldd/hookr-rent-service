@@ -11,7 +11,7 @@ namespace Hookr.Core.Utilities.Caching
     {
         private readonly IMemoryCache memoryCache;
         private readonly IDistributedCache distributedCache;
-        protected readonly IServiceProvider ServiceProvider;
+        private readonly IServiceProvider serviceProvider;
 
         protected CachingProvider(IMemoryCache memoryCache,
             IDistributedCache distributedCache,
@@ -19,17 +19,17 @@ namespace Hookr.Core.Utilities.Caching
         {
             this.memoryCache = memoryCache;
             this.distributedCache = distributedCache;
-            ServiceProvider = serviceProvider;
+            this.serviceProvider = serviceProvider;
         }
 
         private void Populate<T, TCached>(T target) where T : ICaching<TCached>
             => (target as Caching<TCached>)?
                 .Populate(memoryCache,
                     distributedCache,
-                    ServiceProvider.GetRequiredService<ILogger<ICaching<TCached>>>());
+                    serviceProvider.GetRequiredService<ILogger<ICaching<TCached>>>());
         
         protected T InternalGet<T, TCached>() where T : ICaching<TCached>
-            => ServiceProvider
+            => serviceProvider
                 .GetRequiredService<T>()
                 .SideEffect(Populate<T, TCached>);
     }

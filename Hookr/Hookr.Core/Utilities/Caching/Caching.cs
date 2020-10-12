@@ -82,7 +82,7 @@ namespace Hookr.Core.Utilities.Caching
             if (!DistributedCacheOptions.IsCaching)
             {
                 Logger
-                    .LogDebug("Not found data in memory cache with key: {0}. Distributed cache is disabled.");
+                    .LogDebug("Not found data in memory cache with key: {0}. Distributed cache is disabled.", key);
                 return default;
             }
 

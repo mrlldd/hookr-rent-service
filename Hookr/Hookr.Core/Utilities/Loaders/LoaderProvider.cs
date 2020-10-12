@@ -18,8 +18,8 @@ namespace Hookr.Core.Utilities.Loaders
         {
         }
 
-        public CachingLoader<TArgs, TResult> Get<TArgs, TResult>()
+        public ICachingLoader<TArgs, TResult> Get<TArgs, TResult>()
             where TResult : class
-            => InternalGet<CachingLoader<TArgs, TResult>, TResult>();
+            => InternalGet<ICachingLoader<TArgs, TResult>, TResult>();
     }
 }

@@ -9,6 +9,6 @@ namespace Hookr.Telegram.Config
         {
             Management = new ManagementConfig();
         }
-        public IManagementConfig Management { get; set; }
+        public IManagementConfig Management { get; }
     }
 }

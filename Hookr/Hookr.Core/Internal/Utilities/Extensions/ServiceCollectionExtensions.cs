@@ -49,7 +49,6 @@ namespace Hookr.Core.Internal.Utilities.Extensions
             Func<Type, IServiceCollection> adder,
             Func<IEnumerable<Type>, IEnumerable<Type>>? customQuery = null)
             => GetTypesFromAssembly(assembly, type, customQuery ?? (x => x))
-                //.SideEffect(x => Console.WriteLine(JsonConvert.SerializeObject(x.Select(y => y.Name))))
                 .Aggregate(services, (prev, next) => adder(next));
 
         private static IEnumerable<Type> GetTypesFromAssembly(Assembly assembly,
@@ -60,7 +59,6 @@ namespace Hookr.Core.Internal.Utilities.Extensions
                 .Where(type.IsGenericType
                     ? (Func<Type, bool>) (x => IsSubclassOfRawGeneric(type, x))
                     : type.IsAssignableFrom)
-                .SideEffect(x => Console.WriteLine(JsonConvert.SerializeObject(x.Select(y => y.Name))))
                 .Where(x => !x.IsAbstract)
                 .Map(customQuery);
 

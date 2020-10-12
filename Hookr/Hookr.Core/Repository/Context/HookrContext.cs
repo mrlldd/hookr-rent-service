@@ -267,12 +267,12 @@ namespace Hookr.Core.Repository.Context
             return await base.SaveChangesAsync(token);
         }
 
-        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
+        /*public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default)
             => throw new NotSupportedException("Use another overload with services in parameters.");
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) 
-            => throw new NotSupportedException("Use another overload with services in parameters.");
+            => throw new NotSupportedException("Use another overload with services in parameters.");*/
 
         public override int SaveChanges() 
             => throw new NotSupportedException("Async only.");
@@ -290,9 +290,9 @@ namespace Hookr.Core.Repository.Context
                 return;
             }
 
-            var loader = loaderProvider.Get<int, TelegramUser>();
 
-            var user = await loader
+            var user = await loaderProvider
+                .Get<int, TelegramUser>()
                 .GetOrLoadAsync(telegramUserIdProvider.ProvidedValue);
             entries
                 .ForEach(x =>
@@ -326,6 +326,7 @@ namespace Hookr.Core.Repository.Context
                             break;
                     }
                 });
+            Entry(user).State = EntityState.Modified;
         }
     }
 }

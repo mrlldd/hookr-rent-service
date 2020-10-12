@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Events;
 
 namespace Hookr.Telegram
 {
@@ -9,8 +10,24 @@ namespace Hookr.Telegram
         public static void Main(string[] args)
             => Host
                 .CreateDefaultBuilder(args)
-                .UseSerilog()
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
+                .UseSerilog((context, configuration) =>
+                {
+                    if (context.HostingEnvironment.IsDevelopment())
+                    {
+                        configuration
+                            .MinimumLevel.Debug();
+                    }
+
+                    configuration
+                        .ReadFrom
+                        .Configuration(context.Configuration)
+                        .WriteTo
+                        .Console();
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                })
                 .Build()
                 .Run();
     }
