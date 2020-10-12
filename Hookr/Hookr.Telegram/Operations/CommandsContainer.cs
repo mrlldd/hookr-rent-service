@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hookr.Core.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Extensions;
 using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace Hookr.Telegram.Operations
 {

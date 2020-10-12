@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context;
 using Hookr.Core.Repository.Context.Entities.Products;
 using Hookr.Telegram.Repository;

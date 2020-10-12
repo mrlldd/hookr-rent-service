@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Hookr.Core;
 using Hookr.Core.Config;
-using Hookr.Core.Config.Telegram;
 using Hookr.Web.Backend.Filters.Response;
 using Hookr.Web.Backend.Operations;
 using Microsoft.AspNetCore.Builder;

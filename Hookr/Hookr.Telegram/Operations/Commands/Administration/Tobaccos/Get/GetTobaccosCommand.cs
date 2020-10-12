@@ -1,13 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context;
 using Hookr.Core.Repository.Context.Entities.Products;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 using Hookr.Core.Utilities.Caches;
 using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Extensions;
-using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client.CurrentUser;
 using Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus;

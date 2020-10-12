@@ -1,9 +1,7 @@
 ﻿using System;
-using Hookr.Core.Utilities.Caches;
 using Hookr.Core.Utilities.Caches.Leveled;
 using Hookr.Core.Utilities.Caching;
 using Hookr.Core.Utilities.Providers;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus
 {

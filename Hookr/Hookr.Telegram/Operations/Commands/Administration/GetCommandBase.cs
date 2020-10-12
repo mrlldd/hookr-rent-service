@@ -1,15 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Core.Utilities.Caches;
-using Hookr.Core.Utilities.Extensions;
 using Hookr.Telegram.Repository;
-using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;
 using Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus;
 using Hookr.Telegram.Utilities.Telegram.Translations;
 using Microsoft.EntityFrameworkCore;
-using Telegram.Bot.Types.Enums;
 
 namespace Hookr.Telegram.Operations.Commands.Administration
 {

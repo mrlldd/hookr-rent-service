@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Hookr.Core.Repository;
@@ -10,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hookr.Core.Internal.Utilities.Loaders
 {
-    public class TelegramUserLoader : CachingLoader<int, TelegramUser>
+    internal class TelegramUserLoader : CachingLoader<int, TelegramUser>
     {
         private readonly IHookrRepository hookrRepository;
         private const int MemoryTimeoutMinutes = 10;

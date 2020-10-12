@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Hookr.Telegram.Config;
 using Hookr.Telegram.Config.Telegram;
 using Hookr.Telegram.Controllers;
 using Microsoft.AspNetCore.Mvc;

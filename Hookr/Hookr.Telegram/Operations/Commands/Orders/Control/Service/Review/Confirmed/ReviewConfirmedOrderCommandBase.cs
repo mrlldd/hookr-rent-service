@@ -1,5 +1,4 @@
-﻿using Hookr.Core.Repository;
-using Hookr.Core.Repository.Context.Entities;
+﻿using Hookr.Core.Repository.Context.Entities;
 using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Bot.Client;

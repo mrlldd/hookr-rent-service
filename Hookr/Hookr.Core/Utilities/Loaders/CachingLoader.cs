@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Hookr.Core.Config.Telegram;
 using Hookr.Core.Utilities.Caching;
 using Hookr.Core.Utilities.Extensions;
 

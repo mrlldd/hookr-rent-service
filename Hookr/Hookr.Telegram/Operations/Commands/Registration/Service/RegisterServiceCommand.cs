@@ -1,5 +1,4 @@
 ﻿using System;
-using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Telegram.Config;
 using Hookr.Telegram.Config.Management;

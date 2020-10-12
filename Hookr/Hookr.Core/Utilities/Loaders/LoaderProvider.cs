@@ -1,9 +1,7 @@
 using System;
 using Hookr.Core.Utilities.Caching;
-using Hookr.Core.Utilities.Extensions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Hookr.Core.Utilities.Loaders
 {

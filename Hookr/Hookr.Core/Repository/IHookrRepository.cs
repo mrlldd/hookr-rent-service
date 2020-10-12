@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Hookr.Core.Repository.Context;
-using Hookr.Core.Repository.Context.Entities.Translations;
-using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
 
 namespace Hookr.Core.Repository
 {

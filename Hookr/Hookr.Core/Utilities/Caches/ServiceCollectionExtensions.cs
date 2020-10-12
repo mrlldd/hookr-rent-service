@@ -1,12 +1,6 @@
-using System;
-using System.Linq;
 using System.Reflection;
 using Hookr.Core.Internal.Utilities.Extensions;
-using Hookr.Core.Utilities.Caching;
-using Hookr.Core.Utilities.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Hookr.Core.Utilities.Caches
 {

@@ -1,7 +1,6 @@
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Hookr.Core.Config.Telegram;
 
 namespace Hookr.Core.Utilities.Extensions
 {

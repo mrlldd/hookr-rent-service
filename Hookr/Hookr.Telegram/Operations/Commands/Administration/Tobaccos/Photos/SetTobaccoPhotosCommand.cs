@@ -1,5 +1,4 @@
-﻿using Hookr.Core.Repository;
-using Hookr.Core.Repository.Context;
+﻿using Hookr.Core.Repository.Context;
 using Hookr.Core.Repository.Context.Entities.Products;
 using Hookr.Core.Repository.Context.Entities.Products.Photo;
 using Hookr.Telegram.Repository;

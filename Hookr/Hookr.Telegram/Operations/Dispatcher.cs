@@ -11,7 +11,6 @@ using Hookr.Telegram.Utilities.Extensions;
 using Hookr.Telegram.Utilities.Telegram.Bot;
 using Hookr.Telegram.Utilities.Telegram.Caches.UserTemporaryStatus;
 using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace Hookr.Telegram.Operations
 {

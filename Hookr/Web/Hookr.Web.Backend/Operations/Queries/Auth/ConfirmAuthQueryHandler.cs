@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Hookr.Core.Config.Telegram;
 using Hookr.Core.Utilities.Extensions;
 using Hookr.Web.Backend.Operations.Base;
-using Hookr.Web.Backend.Utilities.Extensions;
 
 namespace Hookr.Web.Backend.Operations.Queries.Auth
 {

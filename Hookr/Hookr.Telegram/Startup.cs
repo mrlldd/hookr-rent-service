@@ -1,9 +1,5 @@
-using System.Reflection;
 using Hookr.Core;
 using Hookr.Core.Config;
-using Hookr.Core.Config.Telegram;
-using Hookr.Core.Filters;
-using Hookr.Core.Repository;
 using Hookr.Core.Repository.Context;
 using Hookr.Telegram.Config;
 using Hookr.Telegram.Config.Telegram;
@@ -11,15 +7,12 @@ using Hookr.Telegram.Filters;
 using Hookr.Telegram.Operations;
 using Hookr.Telegram.Repository;
 using Hookr.Telegram.Utilities;
-using Hookr.Telegram.Utilities.Telegram.Bot;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Serilog;
-using Serilog.Events;
 
 namespace Hookr.Telegram
 {
