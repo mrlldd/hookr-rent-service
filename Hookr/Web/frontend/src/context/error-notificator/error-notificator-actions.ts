@@ -10,11 +10,7 @@ interface NotifyAboutErrorAction extends Action<typeof NOTIFY_ABOUT_ERROR> {
   message: ErrorResponse;
 }
 
-export type ErrorNotificatorAction =
-  | NotifyAboutErrorAction
-  | Action<typeof HIDE_NOTIFICATOR>
-  | Action<typeof NOTIFICATOR_CHANGE_SIZE>
-  | Action<typeof RESET_NOTIFICATOR>;
+export type ErrorNotificatorAction = NotifyAboutErrorAction | undefined;
 
 export function NotifyAboutErrorAction(
   error: ErrorResponse
@@ -24,15 +20,3 @@ export function NotifyAboutErrorAction(
     message: error,
   };
 }
-
-export const HideNotificatorAction: ErrorNotificatorAction = {
-  type: HIDE_NOTIFICATOR,
-};
-
-export const ChangeNotificatorSizeAction: ErrorNotificatorAction = {
-  type: NOTIFICATOR_CHANGE_SIZE,
-};
-
-export const ResetNotificatorAction: ErrorNotificatorAction = {
-  type: RESET_NOTIFICATOR,
-};

@@ -1,30 +1,24 @@
-import React from "react";
+import React, { useReducer } from "react";
 import "./App.css";
-import TelegramLoginButton, {
-  TelegramUser,
-} from "@v9v/ts-react-telegram-login";
-import { SetUserAction } from "./store/auth/auth-actions";
-import ErrorNotificator from "./components/error-notificator/ErrorNotificator";
-import { store } from "./store/store";
-import { confirmTelegramLogin } from "./core/api/auth/auth-api";
-
-async function handler(user: TelegramUser) {
-  store.dispatch(SetUserAction(user));
-  console.log(await confirmTelegramLogin(user));
-}
+import Login from "./components/Login/Login";
+import {
+  ErrorNotificatorContextInstance,
+  errorNotificatorReducer,
+} from "./context/error-notificator/error-notificator-context-instance";
+import ErrorNotificator from "./components/ErrorNotificator/ErrorNotificator";
 
 function App() {
+  const [state, dispatch] = useReducer(errorNotificatorReducer, undefined);
   return (
-    <ErrorNotificator>
-      <div className="login-container">
-        <h1>Hookr</h1>
-        <TelegramLoginButton
-          dataOnAuth={handler}
-          botName="mrlldd_development_bot"
-          lang={navigator.languages ? navigator.languages[0] : "ru"} // todo global config state
-        />
-      </div>
-    </ErrorNotificator>
+    <ErrorNotificatorContextInstance.Provider
+      value={{
+        state: state,
+        dispatch: dispatch,
+      }}
+    >
+      <ErrorNotificator />
+      <Login />
+    </ErrorNotificatorContextInstance.Provider>
   );
 }
 

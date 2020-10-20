@@ -1,20 +1,15 @@
-import React, { useState } from "react";
+import React, { ReactNode, useContext, useEffect, useState } from "react";
 import "./ErrorNotificator.css";
 import { Alert } from "@material-ui/lab";
 import { Snackbar } from "@material-ui/core";
 import Slide from "@material-ui/core/Slide";
-import { store } from "../../store/store";
-import { ErrorNotificatorState } from "../../store/error-notificator/error-notificator-reducer";
-import { connect } from "react-redux";
-import { RootState } from "../../store/root-reducer";
-import {
-  ChangeNotificatorSizeAction,
-  HideNotificatorAction,
-  ResetNotificatorAction,
-} from "../../store/error-notificator/error-notificator-actions";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import { ErrorNotificatorContextInstance } from "../../context/error-notificator/error-notificator-context-instance";
 
-type Props = ErrorNotificatorState;
+interface ErrorNotificatorState {
+  opened: boolean;
+  fullSize: boolean;
+}
 
 const maxLength = 20;
 
@@ -28,29 +23,48 @@ function withValidatedLength(
 }
 
 const transitionDuration = 1000;
-const autohideDurationDefault = 2000;
-const ErrorNotificator: React.FC = (
-  props: React.PropsWithChildren<any> & Props
-) => {
-  let [duration, setDuration] = useState(autohideDurationDefault);
+const autohideDurationDefault = 4000;
+
+const ErrorNotificatorContextConsumer: React.FC = () => {
+  const [duration, setDuration] = useState(autohideDurationDefault);
+  const [componentState, setter] = useState<ErrorNotificatorState>({
+    fullSize: false,
+    opened: false,
+  });
+  const { state } = useContext(ErrorNotificatorContextInstance);
+  useEffect(
+    () =>
+      setter({
+        ...componentState,
+        opened: Boolean(state),
+      }),
+    [state]
+  );
   return (
     <div className="ErrorNotificator" data-testid="ErrorNotificator">
-      {props.children}
       <ClickAwayListener
-        onClickAway={() => store.dispatch(HideNotificatorAction)}
+        onClickAway={() => setter({ ...componentState, opened: false })}
       >
         <Snackbar
-          open={props.opened}
+          open={componentState.opened}
           anchorOrigin={{
             horizontal: "center",
             vertical: "top",
           }}
           transitionDuration={transitionDuration}
           autoHideDuration={duration}
-          onClose={() => store.dispatch(HideNotificatorAction)}
+          onClose={() =>
+            setter({
+              ...componentState,
+              opened: false,
+            })
+          }
           onTransitionEnd={() => {
-            if (!store.getState().errorNotificator.opened) {
-              store.dispatch(ResetNotificatorAction);
+            if (!componentState.opened) {
+              setter({
+                fullSize: false,
+                opened: false,
+              });
               setDuration(autohideDurationDefault);
             }
           }}
@@ -60,7 +74,7 @@ const ErrorNotificator: React.FC = (
             severity="error"
             variant="filled"
             onClick={() => {
-              store.dispatch(ChangeNotificatorSizeAction);
+              setter({ ...componentState, fullSize: !componentState.fullSize });
               setDuration(duration * 2);
             }}
           >
@@ -69,11 +83,11 @@ const ErrorNotificator: React.FC = (
                 textDecoration: "underline",
               }}
             >
-              {props.type}
+              {state && state.type}
             </span>
             {withValidatedLength(
-              `: ${props.description} (${props.traceId})`,
-              !props.fullSize
+              `: ${state && state.description} (${state && state.traceId})`,
+              !componentState.fullSize
             )}
           </Alert>
         </Snackbar>
@@ -82,8 +96,15 @@ const ErrorNotificator: React.FC = (
   );
 };
 
-function mapper(state: RootState): Props {
-  return state.errorNotificator;
-}
+const ErrorNotificator: React.FC = (
+  props: React.PropsWithChildren<ReactNode>
+) => {
+  return (
+    <div>
+      <ErrorNotificatorContextConsumer />
+      {props.children}
+    </div>
+  );
+};
 
-export default connect(mapper)(ErrorNotificator);
+export default ErrorNotificator;

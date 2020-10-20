@@ -1,0 +1,28 @@
+.Login {
+  position: absolute;
+  height: 100% !important;
+  width: 100% !important;
+  background-color: #00244e;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.Login * {
+  margin: 7% 0;
+}
+
+.Login > h1 {
+  color: white;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  min-width: 25%;
+  min-height: 10%;
+}
