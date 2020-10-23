@@ -1,14 +1,9 @@
 .LoadingSpinner {
-  position: relative;
+  position: absolute;
 }
 
-.loadingSpinner {
-  height: 100%;
-  width: 100%;
-}
 .spinnerSvgContainer,
 .spinnerContainer {
   width: 100%;
   height: 100%;
-  position: absolute;
 }

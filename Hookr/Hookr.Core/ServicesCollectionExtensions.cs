@@ -3,6 +3,7 @@ using Hookr.Core.Repository;
 using Hookr.Core.Utilities.Caches;
 using Hookr.Core.Utilities.Loaders;
 using Hookr.Core.Utilities.Providers;
+using Hookr.Core.Utilities.Resiliency;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hookr.Core
@@ -14,6 +15,7 @@ namespace Hookr.Core
                 .AddScoped<ITelegramUserIdProvider, TelegramUserIdProvider>()
                 .AddScoped<IHookrRepository, HookrRepository>()
                 .AddLoaders(loadTypesFrom)
-                .AddCaches(loadTypesFrom);
+                .AddCaches(loadTypesFrom)
+                .AddSingleton<IPolicySet, PolicySet>();
     }
 }

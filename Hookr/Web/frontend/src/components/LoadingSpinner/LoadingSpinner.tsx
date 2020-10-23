@@ -14,10 +14,10 @@ function useStyles(size: number) {
     createStyles({
       spinnerContainer: {
         margin: theme.spacing(1),
-        position: "absolute",
+        position: "relative",
         top: "50%",
         left: "50%",
-        marginTop: -size / 2,
+        marginTop: size / 2,
         marginLeft: -size / 2,
         zIndex: 1,
       },
@@ -25,9 +25,7 @@ function useStyles(size: number) {
   )();
 }
 
-const LoadingSpinner: React.FC<Props> = (
-  props: React.PropsWithChildren<Props>
-) => {
+const LoadingSpinner: React.FC<Props> = (props: Props) => {
   const styleClasses = useStyles(props.size);
   return (
     <div className="LoadingSpinner" data-testid="LoadingSpinner">
@@ -37,7 +35,6 @@ const LoadingSpinner: React.FC<Props> = (
           size={props.size}
         />
       )}
-      {props.children}
     </div>
   );
 };

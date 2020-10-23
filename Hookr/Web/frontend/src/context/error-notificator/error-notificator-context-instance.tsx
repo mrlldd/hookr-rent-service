@@ -1,29 +1,16 @@
 import React, { createContext } from "react";
 import { ErrorResponse } from "../../core/api/api-utils";
-import { ErrorNotificatorAction } from "./error-notificator-actions";
+
+export type ErrorMessage = Omit<ErrorResponse, "traceId" & "success">;
 
 export interface ErrorNotificatorContext {
-  state?: ErrorResponse;
-  dispatch: React.Dispatch<ErrorNotificatorAction>;
+  errorMessage?: ErrorMessage;
+  sendError: React.Dispatch<ErrorMessage>;
 }
 
 export const ErrorNotificatorContextInstance = createContext<
   ErrorNotificatorContext
 >({
-  state: undefined,
-  dispatch: () => null,
+  errorMessage: undefined,
+  sendError: () => undefined,
 });
-
-export function errorNotificatorReducer(
-  state: ErrorResponse | undefined,
-  action: ErrorNotificatorAction
-): ErrorResponse | undefined {
-  if (!action) {
-    return undefined;
-  }
-  switch (action.type) {
-    case "[Error Notificator] Notify":
-      return { ...action.message };
-  }
-  return state;
-}

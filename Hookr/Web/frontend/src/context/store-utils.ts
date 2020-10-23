@@ -1,4 +1,4 @@
-import { Dispatch, useCallback, useContext, useEffect, useState } from "react";
+import { Dispatch, useContext, useEffect, useState } from "react";
 import { ErrorNotificatorContextInstance } from "./error-notificator/error-notificator-context-instance";
 import { EmptyResponse, ErrorResponse, Success } from "../core/api/api-utils";
 
@@ -15,8 +15,8 @@ export function useLoadableState<P = void, T = void>(
     loading: false,
     data: initialState,
   });
-  const [paramsState, setParams] = useState<P>();
-  const errorContext = useContext(ErrorNotificatorContextInstance);
+  const [paramsState, paramsSetter] = useState<P>();
+  const { sendError } = useContext(ErrorNotificatorContextInstance);
   useEffect(() => {
     if (paramsState) {
       setter({
@@ -24,10 +24,7 @@ export function useLoadableState<P = void, T = void>(
       });
       asyncFunctor(paramsState).then((x) => {
         if (!x.success) {
-          errorContext.dispatch({
-            type: "[Error Notificator] Notify",
-            message: x as ErrorResponse,
-          });
+          sendError(x as ErrorResponse);
         }
         return setter({
           loading: false,
@@ -35,6 +32,18 @@ export function useLoadableState<P = void, T = void>(
         });
       });
     }
-  }, [paramsState, asyncFunctor]);
-  return [state, setParams];
+  }, [paramsState, asyncFunctor, sendError]);
+  return [state, paramsSetter];
+}
+
+export function useSwitchState(
+  initialState?: boolean
+): [boolean, () => void, (value: boolean) => void] {
+  const [state, setter] = useState(initialState || false);
+
+  function switcher(): void {
+    setter(!state);
+  }
+
+  return [state, switcher, setter];
 }

@@ -4,7 +4,7 @@ namespace Hookr.Core.Utilities.Caching
 {
     public class CachingOptions
     {
-        internal CachingOptions(bool shouldCache, TimeSpan timeout)
+        private CachingOptions(bool shouldCache, TimeSpan timeout)
         {
             IsCaching = shouldCache;
             Timeout = timeout;

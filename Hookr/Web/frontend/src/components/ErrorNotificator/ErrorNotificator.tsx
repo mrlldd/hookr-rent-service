@@ -1,15 +1,11 @@
-import React, { ReactNode, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./ErrorNotificator.css";
 import { Alert } from "@material-ui/lab";
 import { Snackbar } from "@material-ui/core";
 import Slide from "@material-ui/core/Slide";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { ErrorNotificatorContextInstance } from "../../context/error-notificator/error-notificator-context-instance";
-
-interface ErrorNotificatorState {
-  opened: boolean;
-  fullSize: boolean;
-}
+import { useSwitchState } from "../../context/store-utils";
 
 const maxLength = 20;
 
@@ -26,45 +22,26 @@ const transitionDuration = 1000;
 const autohideDurationDefault = 4000;
 
 const ErrorNotificatorContextConsumer: React.FC = () => {
+  const [opened, switchOpened] = useSwitchState(true);
+  const { errorMessage } = useContext(ErrorNotificatorContextInstance);
+  useEffect(switchOpened, [errorMessage]);
+  const [fullSize, switchFullSize, setFullSize] = useSwitchState(false);
   const [duration, setDuration] = useState(autohideDurationDefault);
-  const [componentState, setter] = useState<ErrorNotificatorState>({
-    fullSize: false,
-    opened: false,
-  });
-  const { state } = useContext(ErrorNotificatorContextInstance);
-  useEffect(
-    () =>
-      setter({
-        ...componentState,
-        opened: Boolean(state),
-      }),
-    [state]
-  );
   return (
     <div className="ErrorNotificator" data-testid="ErrorNotificator">
-      <ClickAwayListener
-        onClickAway={() => setter({ ...componentState, opened: false })}
-      >
+      <ClickAwayListener onClickAway={switchOpened}>
         <Snackbar
-          open={componentState.opened}
+          open={opened}
           anchorOrigin={{
             horizontal: "center",
             vertical: "top",
           }}
           transitionDuration={transitionDuration}
           autoHideDuration={duration}
-          onClose={() =>
-            setter({
-              ...componentState,
-              opened: false,
-            })
-          }
+          onClose={() => opened && switchOpened()}
           onTransitionEnd={() => {
-            if (!componentState.opened) {
-              setter({
-                fullSize: false,
-                opened: false,
-              });
+            if (!opened) {
+              setFullSize(false);
               setDuration(autohideDurationDefault);
             }
           }}
@@ -74,7 +51,7 @@ const ErrorNotificatorContextConsumer: React.FC = () => {
             severity="error"
             variant="filled"
             onClick={() => {
-              setter({ ...componentState, fullSize: !componentState.fullSize });
+              switchFullSize();
               setDuration(duration * 2);
             }}
           >
@@ -83,12 +60,15 @@ const ErrorNotificatorContextConsumer: React.FC = () => {
                 textDecoration: "underline",
               }}
             >
-              {state && state.type}
+              {errorMessage && errorMessage.type}
             </span>
-            {withValidatedLength(
-              `: ${state && state.description} (${state && state.traceId})`,
-              !componentState.fullSize
-            )}
+            {errorMessage &&
+              withValidatedLength(
+                `: ${errorMessage.description} ${
+                  errorMessage.traceId ? `(${errorMessage.traceId})` : ""
+                }`.trim(),
+                !fullSize
+              )}
           </Alert>
         </Snackbar>
       </ClickAwayListener>
@@ -96,15 +76,8 @@ const ErrorNotificatorContextConsumer: React.FC = () => {
   );
 };
 
-const ErrorNotificator: React.FC = (
-  props: React.PropsWithChildren<ReactNode>
-) => {
-  return (
-    <div>
-      <ErrorNotificatorContextConsumer />
-      {props.children}
-    </div>
-  );
+const ErrorNotificator: React.FC = () => {
+  return <ErrorNotificatorContextConsumer />;
 };
 
 export default ErrorNotificator;
