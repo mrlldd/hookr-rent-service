@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import ErrorNotificator from "./ErrorNotificator";
 
-describe("<error-notificator />", () => {
+describe("<ErrorNotificator />", () => {
   test("it should mount", () => {
     render(<ErrorNotificator />);
 

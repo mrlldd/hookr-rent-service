@@ -290,10 +290,12 @@ namespace Hookr.Core.Repository.Context
                 return;
             }
 
-
             var user = await loaderProvider
                 .Get<int, TelegramUser>()
                 .GetOrLoadAsync(telegramUserIdProvider.ProvidedValue);
+
+            var now = DateTime.Now;
+            user.LastUpdatedAt = now;
             entries
                 .ForEach(x =>
                 {
@@ -301,9 +303,6 @@ namespace Hookr.Core.Repository.Context
                     {
                         return;
                     }
-
-                    var now = DateTime.Now;
-                    user.LastUpdatedAt = now;
                     switch (x.State)
                     {
                         case EntityState.Added:

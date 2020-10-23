@@ -21,7 +21,7 @@ namespace Hookr.Core.Internal.Utilities.Loaders
 
         protected override CachingOptions DistributedCacheOptions { get; } =
             // todo enable after implementing redis interaction
-            new CachingOptions(false, TimeSpan.FromMinutes(DistributedTimeoutMinutes));
+            CachingOptions.Disabled;
 
         public TelegramUserLoader(IHookrRepository hookrRepository)
         {

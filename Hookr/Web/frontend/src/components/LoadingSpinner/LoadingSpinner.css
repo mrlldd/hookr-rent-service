@@ -1,0 +1,9 @@
+.LoadingSpinner {
+  position: absolute;
+}
+
+.spinnerSvgContainer,
+.spinnerContainer {
+  width: 100%;
+  height: 100%;
+}

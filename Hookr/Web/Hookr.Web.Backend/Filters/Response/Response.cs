@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Hookr.Web.Backend.Filters.Response
 {
     public abstract class Response
     {
-        public string TraceId { get; set; } 
+        [NotNull]public string? TraceId { get; set; } 
     }
     
     public class Success : Response 
@@ -11,12 +13,13 @@ namespace Hookr.Web.Backend.Filters.Response
 
     public class Success<T> : Success
     {
+        [AllowNull]
         public T Data { get; set; }
     }
 
     public class Error : Response
     {
-        public string Type { get; set; }
-        public string Description { get; set; }
+        [NotNull]public string? Type { get; set; }
+        [NotNull]public string? Description { get; set; }
     }
 }

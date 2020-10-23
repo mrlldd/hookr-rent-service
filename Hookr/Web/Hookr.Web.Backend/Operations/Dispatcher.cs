@@ -14,9 +14,14 @@ namespace Hookr.Web.Backend.Operations
             this.serviceProvider = serviceProvider;
         }
 
+        public Task DispatchCommandAsync<TCommand>(TCommand command)
+            => serviceProvider
+                .GetRequiredService<ICommandHandler<TCommand>>()
+                .ExecuteCommandAsync(command);
+        
         public Task<TResult> DispatchQueryAsync<TQuery, TResult>(TQuery query) 
             => serviceProvider
-                .GetService<IQueryHandler<TQuery, TResult>>()
+                .GetRequiredService<IQueryHandler<TQuery, TResult>>()
                 .ExecuteQueryAsync(query);
     }
 }
