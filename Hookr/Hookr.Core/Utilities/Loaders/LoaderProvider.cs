@@ -7,7 +7,6 @@ namespace Hookr.Core.Utilities.Loaders
 {
     internal sealed class LoaderProvider : CachingProvider, ILoaderProvider
     {
-
         public LoaderProvider(
             IMemoryCache memoryCache,
             IDistributedCache distributedCache,

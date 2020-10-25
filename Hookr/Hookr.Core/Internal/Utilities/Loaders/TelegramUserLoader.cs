@@ -20,8 +20,7 @@ namespace Hookr.Core.Internal.Utilities.Loaders
             CachingOptions.Enabled(TimeSpan.FromMinutes(MemoryTimeoutMinutes));
 
         protected override CachingOptions DistributedCacheOptions { get; } =
-            // todo enable after implementing redis interaction
-            CachingOptions.Disabled;
+            CachingOptions.Enabled(TimeSpan.FromMinutes(DistributedTimeoutMinutes));
 
         public TelegramUserLoader(IHookrRepository hookrRepository)
         {
@@ -31,7 +30,7 @@ namespace Hookr.Core.Internal.Utilities.Loaders
         protected override Task<TelegramUser> LoadAsync(int args, CancellationToken token = default)
             => hookrRepository
                 .ReadAsync((context, cancellationToken) => context.TelegramUsers
-                    .AsNoTracking()
+                    //.AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == args, token)
                 );
 

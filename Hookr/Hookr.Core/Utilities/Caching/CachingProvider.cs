@@ -25,7 +25,7 @@ namespace Hookr.Core.Utilities.Caching
         }
 
         private void Populate<T, TCached>(T target) where T : ICaching<TCached>
-            => (target as Caching<TCached>)?
+            => target
                 .Populate(memoryCache,
                     distributedCache,
                     serviceProvider.GetRequiredService<ILogger<ICaching<TCached>>>());

@@ -1,9 +1,10 @@
+using System.Runtime.CompilerServices;
 using Hookr.Core.Config.Database;
 using Microsoft.EntityFrameworkCore;
-
+[assembly: InternalsVisibleTo("Hookr.Migrator")]
 namespace Hookr.Core.Repository.Context
 {
-    public static class DbContextOptionsBuilderExtensions
+    internal static class DbContextOptionsBuilderExtensions
     {
         public static DbContextOptionsBuilder UseHookrCoreConfig(this DbContextOptionsBuilder builder,
             IDatabaseConfig databaseConfig) 
