@@ -1,9 +1,22 @@
 .LoadingSpinner {
-  position: absolute;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
-.spinnerSvgContainer,
-.spinnerContainer {
+.spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.spinner-container {
+  user-select: none;
+  position: absolute;
   width: 100%;
   height: 100%;
 }

@@ -9,6 +9,7 @@ using Hookr.Web.Backend.Config;
 using Hookr.Web.Backend.Filters.Response;
 using Hookr.Web.Backend.Middleware;
 using Hookr.Web.Backend.Operations;
+using Hookr.Web.Backend.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,6 +37,7 @@ namespace Hookr.Web.Backend
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddUtilities()
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -50,7 +52,6 @@ namespace Hookr.Web.Backend
                     };
                 });
             services
-                .AddHttpContextAccessor()
                 .AddControllers()
                 .AddJsonOptions(options =>
                 {

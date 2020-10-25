@@ -26,15 +26,10 @@ namespace Hookr.Web.Backend.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public Task<JwtInfo> Confirm([FromBody] CreateSessionQuery query, CancellationToken token)
+        public Task<JwtInfo> CreateSession([FromBody] CreateSessionQuery query, CancellationToken token)
             => dispatcher
                 .DispatchQueryAsync<CreateSessionQuery, JwtInfo>(query, token);
-
-        [HttpPost("refresh")]
-        public Task GenerateRefreshToken(CancellationToken token)
-            => dispatcher
-                .DispatchCommandAsync(new GenerateRefreshTokenCommand(), token);
-
+        
         [HttpGet("refresh")]
         public Task<Guid> GetRefreshToken(CancellationToken token)
             => dispatcher
@@ -43,10 +38,11 @@ namespace Hookr.Web.Backend.Controllers
         [HttpPost("refresh/{id:guid}")]
         [AllowAnonymous]
         public Task<JwtInfo> RefreshSession([FromRoute] Guid id, CancellationToken token)
-            => dispatcher.DispatchQueryAsync<RefreshSessionQuery, JwtInfo>(new RefreshSessionQuery
-            {
-                RefreshToken = id
-            }, token);
+            => dispatcher
+                .DispatchQueryAsync<RefreshSessionQuery, JwtInfo>(new RefreshSessionQuery
+                {
+                    RefreshToken = id
+                }, token);
 
         [HttpDelete("refresh/{id:guid}")]
         public Task RevokeToken([FromRoute] Guid id, CancellationToken token)

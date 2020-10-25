@@ -77,8 +77,6 @@ namespace Hookr.Web.Backend.Middleware
             userContextAccessor
                 .SetContext(cachedSession);
             await next(httpContext);
-            await userContextAccessor
-                .SaveChangesAsync();
             await hookrRepository
                 .SaveChangesAsync();
         }

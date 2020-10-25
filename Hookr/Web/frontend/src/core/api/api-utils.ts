@@ -3,6 +3,7 @@ import { getFromLocalStorage } from "../../context/local-storage-utils";
 export enum HttpMethod {
   GET = "get",
   POST = "post",
+  DELETE = "delete",
 }
 
 interface ContainsTraceId {
@@ -53,7 +54,7 @@ function call<R>(
   return fetch(request.url, {
     method: request.method,
     headers: headers,
-    body: request.body ? JSON.stringify(request.body) : null,
+    body: request.body && JSON.stringify(request.body),
   }).then((x) => readResponseAsync<R>(x));
 }
 

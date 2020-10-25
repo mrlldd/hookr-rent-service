@@ -21,7 +21,11 @@ namespace Hookr.Core
                 .AddScoped<IHookrRepository, HookrRepository>()
                 .AddSingleton<IPolicySet, PolicySet>()
                 .AddDbContext<HookrContext>(builder => builder
-                    .UseHookrCoreConfig(config.Database));
+                        .UseHookrCoreConfig(config.Database)
+#if DEBUG
+                        .EnableSensitiveDataLogging()
+#endif
+                );
 
         private static IServiceCollection AddAssemblyDependentServices(this IServiceCollection services,
             Assembly assembly,

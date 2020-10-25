@@ -12,29 +12,30 @@ interface Props {
 function useStyles(size: number) {
   return makeStyles((theme: Theme) =>
     createStyles({
-      spinnerContainer: {
+      dynamicContainer: {
         margin: theme.spacing(1),
-        position: "relative",
-        top: "50%",
-        left: "50%",
-        marginTop: size / 2,
+        marginTop: -size / 2,
         marginLeft: -size / 2,
-        zIndex: 1,
       },
     })
   )();
 }
 
-const LoadingSpinner: React.FC<Props> = (props: Props) => {
+const LoadingSpinner: React.FC<React.PropsWithChildren<Props>> = (
+  props: React.PropsWithChildren<Props>
+) => {
   const styleClasses = useStyles(props.size);
   return (
     <div className="LoadingSpinner" data-testid="LoadingSpinner">
       {props.loading && (
-        <CircularProgress
-          className={styleClasses.spinnerContainer}
-          size={props.size}
-        />
+        <div className={"spinner-container"}>
+          <CircularProgress
+            className={`${styleClasses.dynamicContainer} spinner`}
+            size={props.size}
+          />
+        </div>
       )}
+      {props.children}
     </div>
   );
 };

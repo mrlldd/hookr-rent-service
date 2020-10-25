@@ -13,7 +13,6 @@ namespace Hookr.Web.Backend
                 .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
                 .UseSerilog((context, configuration) =>
                     configuration
-                        .MinimumLevel.Debug()
                         .WriteTo.Console()
                 )
                 .Build()
