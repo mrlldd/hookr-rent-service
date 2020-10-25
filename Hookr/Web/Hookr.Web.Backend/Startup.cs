@@ -57,8 +57,7 @@ namespace Hookr.Web.Backend
                     options.JsonSerializerOptions.IgnoreNullValues = true;
                 });
             services
-                .AddHookrCore(typeof(Startup).Assembly)
-                .AddDbContext<HookrContext>(builder => builder.UseHookrCoreConfig(coreApplicationConfig.Database));
+                .AddHookrCore(typeof(Startup).Assembly, coreApplicationConfig);
             services
                 .AddSingleton(jwtConfig)
                 .AddConfig(coreApplicationConfig)
@@ -74,8 +73,8 @@ namespace Hookr.Web.Backend
 
             app.UseRouting();
             app.UseAuthentication();
+            app.UseMiddleware<JwtReaderMiddleware>();
             app.UseAuthorization();
-            app.UseMiddleware<JwtCryptorMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 if (env.IsDevelopment())

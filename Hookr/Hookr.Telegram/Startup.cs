@@ -41,15 +41,10 @@ namespace Hookr.Telegram
                 .AddControllers()
                 .AddNewtonsoftJson();
             services
-                .AddHookrCore(typeof(Startup).Assembly)
+                .AddHookrCore(typeof(Startup).Assembly, applicationConfig)
                 .AddConfig(applicationConfig)
                 .AddSingleton(extendedTelegramConfig)
                 .AddHttpClient()
-                .AddMemoryCache()
-                .AddDbContext<HookrContext>(
-                    builder => builder
-                        .UseHookrCoreConfig(applicationConfig.Database)
-                )
                 .AddOperations()
                 .AddScoped<ITelegramHookrRepository, TelegramHookrRepository>()
                 .AddUtilities();

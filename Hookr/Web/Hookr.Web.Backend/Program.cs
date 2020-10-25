@@ -7,16 +7,15 @@ namespace Hookr.Web.Backend
 {
     public class Program
     {
-        public static Task Main(string[] args) 
+        public static Task Main(string[] args)
             => Host
                 .CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                })
-                .UseSerilog((context, configuration) => 
+                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
+                .UseSerilog((context, configuration) =>
                     configuration
-                        .WriteTo.Console())
+                        .MinimumLevel.Debug()
+                        .WriteTo.Console()
+                )
                 .Build()
                 .RunAsync();
     }

@@ -1,8 +1,10 @@
 using System.Threading.Tasks;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Web.Backend.Filters;
+using Hookr.Web.Backend.Filters.Auth;
 using Hookr.Web.Backend.Filters.Response.Auth;
 using Hookr.Web.Backend.Operations;
+using Hookr.Web.Backend.Operations.Commands.Auth;
 using Hookr.Web.Backend.Operations.Queries.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +13,7 @@ namespace Hookr.Web.Backend.Controllers
 {
     [Route("api/auth")]
     [AuthResponseFilter]
-    [MinimumUserLevel(TelegramUserStates.Default)]
+    [ForAll]
     public class AuthController : Controller
     {
         private readonly Dispatcher dispatcher;
@@ -19,8 +21,14 @@ namespace Hookr.Web.Backend.Controllers
             => this.dispatcher = dispatcher;
 
         [HttpPost]
-        public Task<ConfirmAuthQueryHandler.JwtTokens> Confirm([FromBody] ConfirmAuthQuery query)
+        [AllowAnonymous]
+        public Task<ConfirmAuthQueryHandler.JwtInfo> Confirm([FromBody] ConfirmAuthQuery query)
             => dispatcher
-                .DispatchQueryAsync<ConfirmAuthQuery, ConfirmAuthQueryHandler.JwtTokens>(query);
+                .DispatchQueryAsync<ConfirmAuthQuery, ConfirmAuthQueryHandler.JwtInfo>(query);
+
+        [HttpPost("refresh")]
+        public Task GenerateRefreshToken()
+            => dispatcher
+                .DispatchCommandAsync(new GenerateRefreshTokenCommand());
     }
 }

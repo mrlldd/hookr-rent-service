@@ -7,5 +7,7 @@ namespace Hookr.Web.Backend.Config
         [NotNull] public string? Issuer { get; set; }
         [NotNull] public string? Audience { get; set; }
         [NotNull] public string? Key { get; set; }
+        
+        public int LifeTimeMinutes { get; set; }
     }
 }

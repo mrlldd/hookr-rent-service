@@ -5,5 +5,6 @@ namespace Hookr.Web.Backend.Config
         string Issuer { get; }
         string Audience { get; }
         string Key { get; }
+        int LifeTimeMinutes { get; }
     }
 }
