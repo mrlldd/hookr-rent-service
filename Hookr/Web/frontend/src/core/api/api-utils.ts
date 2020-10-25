@@ -91,7 +91,7 @@ function parseResponseToError(response: Response): ErrorResponse {
 export function queryCall<T, R>(
   request: ApiRequest<T>
 ): Promise<Success<R> | ErrorResponse> {
-  return call<R>(request);
+  return call(request);
 }
 
 export function commandCall<T>(
