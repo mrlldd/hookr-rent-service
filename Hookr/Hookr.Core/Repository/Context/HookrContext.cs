@@ -27,6 +27,7 @@ namespace Hookr.Core.Repository.Context
         }
 
         [NotNull] public DbSet<TelegramUser>? TelegramUsers { get; set; }
+        [NotNull] public DbSet<RefreshToken>? RefreshTokens { get; set; }
 
         [NotNull] public DbSet<Hookah>? Hookahs { get; set; }
 
@@ -253,6 +254,16 @@ namespace Hookr.Core.Repository.Context
                         .HasOne(x => x.Tobacco)
                         .WithMany(x => x.Photos)
                         .HasForeignKey(x => x.TobaccoId)
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder
+                .Entity<RefreshToken>(token =>
+                {
+                    token
+                        .HasOne(x => x.User)
+                        .WithMany(x => x.RefreshTokens)
+                        .HasForeignKey(x => x.UserId)
                         .OnDelete(DeleteBehavior.Cascade);
                 });
         }

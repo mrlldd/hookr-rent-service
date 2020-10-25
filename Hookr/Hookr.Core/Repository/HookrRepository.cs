@@ -26,18 +26,19 @@ namespace Hookr.Core.Repository
             Context = context;
         }
 
-        public Task<TResult> ReadAsync<TResult>(Func<HookrContext, CancellationToken, Task<TResult>> functor)
-            => PolicySet.ReadPolicy.ExecuteAsync(() => functor(Context, default));
+        public Task<TResult> ReadAsync<TResult>(Func<HookrContext, CancellationToken, Task<TResult>> functor,
+            CancellationToken cancellationToken = default)
+            => PolicySet.ReadPolicy.ExecuteAsync(() => functor(Context, cancellationToken));
 
-        public Task WriteAsync(Func<HookrContext, CancellationToken, Task> functor)
-            => PolicySet.WritePolicy.ExecuteAsync(() => functor(Context, default));
+        public Task WriteAsync(Func<HookrContext, CancellationToken, Task> functor,
+            CancellationToken cancellationToken = default)
+            => PolicySet.WritePolicy.ExecuteAsync(() => functor(Context, cancellationToken));
 
-        public Task<TResult> WriteAsync<TResult>(Func<HookrContext, CancellationToken, Task<TResult>> functor)
-            => PolicySet.WritePolicy.ExecuteAsync(() => functor(Context, default));
+        public Task<TResult> WriteAsync<TResult>(Func<HookrContext, CancellationToken, Task<TResult>> functor,
+            CancellationToken cancellationToken = default)
+            => PolicySet.WritePolicy.ExecuteAsync(() => functor(Context, cancellationToken));
 
-        public Task<int> SaveChangesAsync()
-            => WriteAsync((context, token) => context.SaveChangesAsync(telegramUserIdProvider, loaderProvider, token));
-
-
+        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+            => WriteAsync((context, token) => context.SaveChangesAsync(telegramUserIdProvider, loaderProvider, token), cancellationToken);
     }
 }

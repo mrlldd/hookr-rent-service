@@ -30,7 +30,7 @@ namespace Hookr.Core.Internal.Utilities.Loaders
         protected override Task<TelegramUser> LoadAsync(int args, CancellationToken token = default)
             => hookrRepository
                 .ReadAsync((context, cancellationToken) => context.TelegramUsers
-                    //.AsNoTracking()
+                    .Include(x => x.RefreshTokens)
                     .FirstOrDefaultAsync(x => x.Id == args, token)
                 );
 
