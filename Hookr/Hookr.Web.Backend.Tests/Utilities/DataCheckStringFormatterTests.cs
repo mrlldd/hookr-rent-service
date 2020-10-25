@@ -11,8 +11,8 @@ namespace Hookr.Web.Backend.Tests.Utilities
         [Test]
         public void NotNullInput()
         {
-            var formatter = DataCheckStringFormatter<ConfirmAuthQuery>.Instance;
-            var result = formatter.Format(new ConfirmAuthQuery
+            var formatter = DataCheckStringFormatter<CreateSessionQuery>.Instance;
+            var result = formatter.Format(new CreateSessionQuery
             {
                 Hash = "testhash",
                 Id = 123,
@@ -30,8 +30,8 @@ namespace Hookr.Web.Backend.Tests.Utilities
         [Test]
         public void ExceptProperty()
         {
-            var result = DataCheckStringFormatter<ConfirmAuthQuery>.Instance
-                .Format(new ConfirmAuthQuery
+            var result = DataCheckStringFormatter<CreateSessionQuery>.Instance
+                .Format(new CreateSessionQuery
                 {
                     Hash = "testhash",
                     Id = 123,
@@ -39,7 +39,7 @@ namespace Hookr.Web.Backend.Tests.Utilities
                     AuthDate = 123,
                     FirstName = "firstname",
                     PhotoUrl = "photourl"
-                }, nameof(ConfirmAuthQuery.Hash));
+                }, nameof(CreateSessionQuery.Hash));
 
             result.Should()
                 .Be(

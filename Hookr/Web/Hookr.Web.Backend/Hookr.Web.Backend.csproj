@@ -15,5 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Operations\Queries" />
+    <Folder Include="Utilities\Sessions" />
   </ItemGroup>
 </Project>

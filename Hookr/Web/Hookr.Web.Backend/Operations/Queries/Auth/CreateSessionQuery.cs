@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Hookr.Web.Backend.Operations.Queries.Auth
 {
-    public class ConfirmAuthQuery
+    public class CreateSessionQuery
     {
         [JsonPropertyName("auth_date")] 
         public long AuthDate { get; set; }

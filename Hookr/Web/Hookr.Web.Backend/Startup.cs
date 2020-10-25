@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Hookr.Core;
 using Hookr.Core.Config;
 using Hookr.Core.Repository.Context;
@@ -55,6 +56,7 @@ namespace Hookr.Web.Backend
                 {
                     options.JsonSerializerOptions.WriteIndented = true;
                     options.JsonSerializerOptions.IgnoreNullValues = true;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
                 });
             services
                 .AddHookrCore(typeof(Startup).Assembly, coreApplicationConfig);
@@ -73,8 +75,8 @@ namespace Hookr.Web.Backend
 
             app.UseRouting();
             app.UseAuthentication();
-            app.UseMiddleware<JwtReaderMiddleware>();
             app.UseAuthorization();
+            app.UseMiddleware<JwtReaderMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 if (env.IsDevelopment())
