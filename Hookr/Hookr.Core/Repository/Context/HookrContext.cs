@@ -14,14 +14,15 @@ using Hookr.Core.Utilities.Extensions;
 using Hookr.Core.Utilities.Loaders;
 using Hookr.Core.Utilities.Providers;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using static System.Linq.Expressions.Expression;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Hookr.Core.Repository.Context
 {
     public class HookrContext : DbContext
     {
-
         public HookrContext(DbContextOptions options) : base(options)
         {
         }
@@ -64,11 +65,18 @@ namespace Hookr.Core.Repository.Context
                     user
                         .Property(x => x.State)
                         .HasDefaultValue(TelegramUserStates.Default);
+
                     user
                         .HasKey(x => x.Id);
                     user
                         .Property(x => x.Id)
                         .ValueGeneratedNever();
+
+                    user
+                        .HasMany(x => x.RefreshTokens)
+                        .WithOne(x => x.User)
+                        .HasForeignKey(x => x.UserId)
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
             modelBuilder
                 .Entity<OrderedHookah>(hookah =>
@@ -256,16 +264,6 @@ namespace Hookr.Core.Repository.Context
                         .HasForeignKey(x => x.TobaccoId)
                         .OnDelete(DeleteBehavior.Cascade);
                 });
-
-            modelBuilder
-                .Entity<RefreshToken>(token =>
-                {
-                    token
-                        .HasOne(x => x.User)
-                        .WithMany(x => x.RefreshTokens)
-                        .HasForeignKey(x => x.UserId)
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
         }
 #pragma warning restore
 
@@ -285,10 +283,10 @@ namespace Hookr.Core.Repository.Context
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) 
             => throw new NotSupportedException("Use another overload with services in parameters.");*/
 
-        public override int SaveChanges() 
+        public override int SaveChanges()
             => throw new NotSupportedException("Async only.");
 
-        public override int SaveChanges(bool acceptAllChangesOnSuccess) 
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
             => throw new NotSupportedException("Async only.");
 
         private async Task OnPreSavingAsync(ITelegramUserIdProvider telegramUserIdProvider,
@@ -296,17 +294,12 @@ namespace Hookr.Core.Repository.Context
         {
             var entries = ChangeTracker.Entries()
                 .ToArray();
-            if (!entries.Any())
-            {
-                return;
-            }
 
             var user = await loaderProvider
                 .Get<int, TelegramUser>()
-                .GetOrLoadAsync(telegramUserIdProvider.ProvidedValue);
-
+                .GetOrLoadAsync(telegramUserIdProvider.ProvidedValue, true);
+            Console.WriteLine(JsonConvert.SerializeObject(user, Formatting.Indented));
             var now = DateTime.Now;
-            user.LastUpdatedAt = now;
             entries
                 .ForEach(x =>
                 {
@@ -314,6 +307,7 @@ namespace Hookr.Core.Repository.Context
                     {
                         return;
                     }
+
                     switch (x.State)
                     {
                         case EntityState.Added:
@@ -336,7 +330,11 @@ namespace Hookr.Core.Repository.Context
                             break;
                     }
                 });
-            Entry(user).State = EntityState.Modified;
+            user.LastUpdatedAt = now;
+            if (ChangeTracker.Entries<TelegramUser>().All(x => x.Entity.Id != user.Id))
+            {
+                Update(user);
+            }
         }
     }
 }

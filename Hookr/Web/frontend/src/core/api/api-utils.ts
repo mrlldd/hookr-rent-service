@@ -1,4 +1,9 @@
-import { getFromLocalStorage } from "../../context/local-storage-utils";
+import {
+  getFromLocalStorage,
+  JwtInfo,
+} from "../../context/local-storage-utils";
+import { AuthResult, refreshSession } from "./auth/auth-api";
+import { grabAndSaveAdditionalSessionDataAsync } from "./auth/auth-api-utils";
 
 export enum HttpMethod {
   GET = "get",
@@ -20,6 +25,16 @@ export interface Success<T> extends EmptyResponse {
   data: T;
 }
 
+export function successFactory<T>(data: T): Success<T> {
+  return {
+    data: data,
+    success: true,
+  };
+}
+
+export function unwrap<T>(response: EmptyResponse): T {
+  return (response as Success<T>).data;
+}
 export interface ErrorResponse extends EmptyResponse {
   type: string;
   description: string;
@@ -37,9 +52,7 @@ export interface ApiRequest<T> extends RequestMeta {
 
 const baseUrl = `${window.location.protocol}//${window.location.host}`;
 
-function call<R>(
-  request: ApiRequest<any>
-): Promise<Success<R> | ErrorResponse> {
+function callOnce(request: ApiRequest<any>): Promise<Response> {
   const url = new URL(request.url, baseUrl);
   if (request.query) {
     url.search = new URLSearchParams(request.query).toString();
@@ -55,7 +68,25 @@ function call<R>(
     method: request.method,
     headers: headers,
     body: request.body && JSON.stringify(request.body),
-  }).then((x) => readResponseAsync<R>(x));
+  });
+}
+
+function call<R>(
+  request: ApiRequest<any>,
+  notRefreshSessionOnError: boolean
+): Promise<Success<R> | ErrorResponse> {
+  return callOnce(request)
+    .then(async (response) => {
+      if (response.ok || response.status !== 401 || notRefreshSessionOnError) {
+        return response;
+      }
+      const refreshResult = await refreshIfPossible();
+      if (!refreshResult.success) {
+        return response;
+      }
+      return await callOnce(request);
+    })
+    .then((x) => readResponseAsync<R>(x));
 }
 
 async function readResponseAsync<R>(
@@ -80,23 +111,40 @@ async function readBodyAs<R extends HasSuccess>(
   return result;
 }
 
+async function refreshIfPossible(): Promise<EmptyResponse | ErrorResponse> {
+  const refreshToken = getFromLocalStorage("refresh");
+  if (!refreshToken) {
+    return {
+      success: false,
+      description: "Missing refresh token",
+      type: "SessionRefreshError",
+    };
+  }
+  const sessionResponse = await refreshSession(refreshToken);
+  return sessionResponse.success
+    ? await grabAndSaveAdditionalSessionDataAsync(unwrap(sessionResponse))
+    : sessionResponse;
+}
+
 function parseResponseToError(response: Response): ErrorResponse {
   return {
     success: false,
-    type: `UnknownError`,
+    type: "UnknownError",
     description: `${response.url} returned response with status: ${response.status}`,
     traceId: undefined,
   };
 }
 
 export function queryCall<T, R>(
-  request: ApiRequest<T>
+  request: ApiRequest<T>,
+  notRefreshSessionOnError?: boolean
 ): Promise<Success<R> | ErrorResponse> {
-  return call(request);
+  return call(request, notRefreshSessionOnError || false);
 }
 
 export function commandCall<T>(
-  request: ApiRequest<T>
+  request: ApiRequest<T>,
+  notRefreshSessionOnError?: boolean
 ): Promise<EmptyResponse | ErrorResponse> {
-  return call(request);
+  return call(request, notRefreshSessionOnError || false);
 }

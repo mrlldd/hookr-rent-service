@@ -6,6 +6,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Hookr.Core.Config.Telegram;
+using Hookr.Core.Repository;
+using Hookr.Core.Repository.Context.Entities;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Core.Utilities.Caches;
 using Hookr.Core.Utilities.Extensions;
@@ -21,6 +23,8 @@ using Hookr.Web.Backend.Utilities.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.IdentityModel.Tokens;
 using JwtPayload = Hookr.Web.Backend.Utilities.Jwt.JwtPayload;
 
@@ -30,24 +34,25 @@ namespace Hookr.Web.Backend.Operations.Queries.Auth
     {
         private readonly ITelegramConfig telegramConfig;
         private readonly ITelegramUserIdProvider telegramUserIdProvider;
+        private readonly IHookrRepository hookrRepository;
 
         public CreateSessionQueryHandler(ITelegramConfig telegramConfig,
             ITelegramUserIdProvider telegramUserIdProvider,
             IJwtConfig jwtConfig,
             ICacheProvider cacheProvider,
-            ILoaderProvider loaderProvider) 
-            : base(loaderProvider,
-                cacheProvider,
+            IHookrRepository hookrRepository)
+            : base(cacheProvider,
                 jwtConfig)
         {
             this.telegramConfig = telegramConfig;
             this.telegramUserIdProvider = telegramUserIdProvider;
+            this.hookrRepository = hookrRepository;
         }
 
 
-        public override Task<JwtInfo> ExecuteQueryAsync(CreateSessionQuery query) =>
+        public override Task<AuthResult> ExecuteQueryAsync(CreateSessionQuery query) =>
             VerifyHashes(query)
-                ? AuthenticateAsync(query.Id)
+                ? AuthenticateAsync(query)
                 : throw new TelegramNotAuthenticatedException();
 
         private bool VerifyHashes(CreateSessionQuery query)
@@ -70,11 +75,44 @@ namespace Hookr.Web.Backend.Operations.Queries.Auth
                 );
         }
 
-        private Task<JwtInfo> AuthenticateAsync(int telegramUserId)
+        private async Task<AuthResult> AuthenticateAsync(TelegramUserDto dto)
         {
-            telegramUserIdProvider.Set(telegramUserId);
-            return CreateAndSaveSessionAsync(telegramUserId);
+            telegramUserIdProvider.Set(dto.Id);
+            var user = await GetOrCreateTelegramUser(dto);
+            return await CreateAndSaveSessionAsync(user);
         }
 
+        private async Task<TelegramUser> GetOrCreateTelegramUser(TelegramUserDto dto)
+        {
+            var user = await hookrRepository
+                .ReadAsync((context, token) => context.TelegramUsers
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(x => x.Id == dto.Id, token),
+                    Token);
+            if (user != null)
+            {
+                await UpdateTelegramUserAsync(hookrRepository.Context.Update(user).Entity, dto);
+                return user;
+            }
+
+            var createdUser = new TelegramUser
+            {
+                Id = dto.Id,
+                State = TelegramUserStates.Default
+            };
+            await UpdateTelegramUserAsync(hookrRepository.Context.Add(createdUser).Entity,
+                dto);
+            return createdUser;
+        }
+
+        private async Task UpdateTelegramUserAsync(TelegramUser user,
+            TelegramUserDto dto)
+        {
+            user.Username = dto.Username;
+            user.FirstName = dto.FirstName;
+            user.PhotoUrl = dto.PhotoUrl;
+            user.LastUpdatedAt = DateTime.UtcNow;
+            await hookrRepository.SaveChangesAsync();
+        }
     }
 }

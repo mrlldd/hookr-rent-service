@@ -4,14 +4,16 @@ using Hookr.Core.Repository.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Hookr.Migrations.Migrations
+namespace HookrTelegramBot.Migrations
 {
     [DbContext(typeof(HookrContext))]
-    partial class HookrContextModelSnapshot : ModelSnapshot
+    [Migration("20201026200913_AddFirstNameToTelegramBotUsers")]
+    partial class AddFirstNameToTelegramBotUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -19,7 +21,7 @@ namespace Hookr.Migrations.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", b =>
+            modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -31,9 +33,6 @@ namespace Hookr.Migrations.Migrations
                     b.Property<DateTime>("LastUpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PhotoUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("State")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -42,9 +41,12 @@ namespace Hookr.Migrations.Migrations
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("WebAppUserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("TelegramUsers");
+                    b.ToTable("TelegramBotUsers");
                 });
 
             modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.Order", b =>
@@ -348,17 +350,39 @@ namespace Hookr.Migrations.Migrations
                     b.Property<bool>("Used")
                         .HasColumnType("bit");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("Value")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("WebAppUserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("WebAppUserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.TelegramWebAppUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BotUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhotoUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BotUserId")
+                        .IsUnique();
+
+                    b.ToTable("TelegramWebAppUsers");
                 });
 
             modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.Translations.Translation<Hookr.Core.Repository.Context.Entities.Translations.Telegram.TelegramTranslationKeys>", b =>
@@ -386,17 +410,17 @@ namespace Hookr.Migrations.Migrations
 
             modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.Order", b =>
                 {
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "DeletedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "DeletedBy")
                         .WithMany()
                         .HasForeignKey("DeletedById")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "UpdatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -404,12 +428,12 @@ namespace Hookr.Migrations.Migrations
 
             modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.Products.Hookah", b =>
                 {
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "UpdatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -417,7 +441,7 @@ namespace Hookr.Migrations.Migrations
 
             modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.Products.Ordered.OrderedHookah", b =>
                 {
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -434,7 +458,7 @@ namespace Hookr.Migrations.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "UpdatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -442,7 +466,7 @@ namespace Hookr.Migrations.Migrations
 
             modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.Products.Ordered.OrderedTobacco", b =>
                 {
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -459,7 +483,7 @@ namespace Hookr.Migrations.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "UpdatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -467,12 +491,12 @@ namespace Hookr.Migrations.Migrations
 
             modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.Products.Photo.HookahPhoto", b =>
                 {
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "DeletedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "DeletedBy")
                         .WithMany()
                         .HasForeignKey("DeletedById")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -483,7 +507,7 @@ namespace Hookr.Migrations.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "UpdatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -491,12 +515,12 @@ namespace Hookr.Migrations.Migrations
 
             modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.Products.Photo.TobaccoPhoto", b =>
                 {
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "DeletedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "DeletedBy")
                         .WithMany()
                         .HasForeignKey("DeletedById")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -507,7 +531,7 @@ namespace Hookr.Migrations.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "UpdatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -515,12 +539,12 @@ namespace Hookr.Migrations.Migrations
 
             modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.Products.Tobacco", b =>
                 {
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "CreatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "UpdatedBy")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -528,9 +552,18 @@ namespace Hookr.Migrations.Migrations
 
             modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.RefreshToken", b =>
                 {
-                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramUser", "User")
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.TelegramWebAppUser", "WebAppUser")
                         .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("WebAppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Hookr.Core.Repository.Context.Entities.TelegramWebAppUser", b =>
+                {
+                    b.HasOne("Hookr.Core.Repository.Context.Entities.Base.TelegramBotUser", "BotUser")
+                        .WithOne("WebAppUser")
+                        .HasForeignKey("Hookr.Core.Repository.Context.Entities.TelegramWebAppUser", "BotUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

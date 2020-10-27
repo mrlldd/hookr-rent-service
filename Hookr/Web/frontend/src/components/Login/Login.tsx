@@ -1,76 +1,71 @@
 import React, { useEffect, useState } from "react";
 import "./Login.css";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import TelegramLoginButton, {
-  TelegramUser,
-} from "@v9v/ts-react-telegram-login";
 import { useLoadableState } from "../../context/store-utils";
 import {
+  AuthResult,
   createSession,
-  getRefreshToken,
   revokeToken,
 } from "../../core/api/auth/auth-api";
 import {
   clearLocalStorage,
   getFromLocalStorage,
   JwtInfo,
-  saveJwtTokensToLocalStorage,
-  setToLocalStorage,
 } from "../../context/local-storage-utils";
 import {
-  EmptyResponse,
   ErrorResponse,
   Success,
+  successFactory,
+  unwrap,
 } from "../../core/api/api-utils";
+import { grabAndSaveAdditionalSessionDataAsync } from "../../core/api/auth/auth-api-utils";
+import FullPageWrapper from "../FullPageWrapper/FullPageWrapper";
+import TelegramLoginButton, { TelegramUser } from "telegram-login-button";
+import { Redirect } from "react-router";
+import { dashboardRoute, deciderRoute } from "../../App";
 
 const Login: React.FC = () => {
   const [user, setter] = useState<TelegramUser>();
-  const [state, dispatch] = useLoadableState(authenticate);
+  const [state, dispatch] = useLoadableState(authenticate, false);
   useEffect(() => user && dispatch(user), [dispatch, user]);
   return (
-    <div className="Login" data-testid="Login">
+    <FullPageWrapper className="Login" data-testid="Login">
       <h1>Hookr</h1>
-      <div>
-        <LoadingSpinner loading={state.loading} size={35}>
-          <TelegramLoginButton
-            buttonSize={"large"}
-            dataOnAuth={setter}
-            botName="mrlldd_development_bot"
-            lang={navigator.languages ? navigator.languages[0] : "ru"} // todo global config state
-          />
-        </LoadingSpinner>
-      </div>
-    </div>
+      {state.data ? (
+        <Redirect to={deciderRoute} />
+      ) : (
+        <div>
+          <LoadingSpinner loading={state.loading} size={35}>
+            <TelegramLoginButton
+              buttonSize={"large"}
+              usePic={true}
+              dataOnauth={setter}
+              botName="mrlldd_development_bot"
+            />
+          </LoadingSpinner>
+        </div>
+      )}
+    </FullPageWrapper>
   );
 };
 
 async function authenticate(
   user: TelegramUser
-): Promise<EmptyResponse | ErrorResponse> {
+): Promise<Success<boolean> | ErrorResponse> {
   const existingRefreshToken = getFromLocalStorage("refresh");
+  if (existingRefreshToken) {
+    await revokeToken(existingRefreshToken);
+  }
   clearLocalStorage();
-  const [createSessionResult] = await Promise.all([
-    createSession(user),
-    existingRefreshToken
-      ? revokeToken(existingRefreshToken)
-      : Promise.resolve<EmptyResponse>({
-          success: true,
-        }),
-  ]);
-  if (!createSessionResult.success) {
-    return createSessionResult;
+  const createSessionResult = await createSession(user);
+  if (!createSessionResult) {
+    return successFactory(false);
   }
-  const jwtInfo = (createSessionResult as Success<JwtInfo>).data;
-  saveJwtTokensToLocalStorage(jwtInfo);
-  const getRefreshTokenResult = await getRefreshToken();
-  if (!getRefreshTokenResult.success) {
-    return getRefreshTokenResult;
-  }
-  const refreshToken = (getRefreshTokenResult as Success<string>).data;
-  setToLocalStorage("refresh", refreshToken);
-  return {
-    success: true,
-  };
+
+  const grabResult = await grabAndSaveAdditionalSessionDataAsync(
+    unwrap(createSessionResult)
+  );
+  return successFactory(grabResult.success);
 }
 
 export default Login;

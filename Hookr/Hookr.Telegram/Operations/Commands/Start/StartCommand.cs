@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Core.Repository.Context.Entities.Translations.Telegram;
@@ -47,7 +48,8 @@ namespace Hookr.Telegram.Operations.Commands.Start
                     Id = user.Id,
                     State = TelegramUserStates.Default,
                     Username = user.Username,
-                    LastUpdatedAt = now
+                    LastUpdatedAt = now,
+                    FirstName = user.FirstName
                 });
             }
 

@@ -15,27 +15,26 @@ namespace Hookr.Web.Backend.Operations.Queries.Auth
     public class GetRefreshTokenQueryHandler : QueryHandler<GetRefreshTokenQuery, Guid>
     {
         private readonly IUserContextAccessor userContextAccessor;
-        private readonly HookrContext hookrContext;
+        private readonly IHookrRepository hookrRepository;
         private const int RefreshExpirationDays = 14;
 
         public GetRefreshTokenQueryHandler(IUserContextAccessor userContextAccessor, 
-            HookrContext hookrContext)
+            IHookrRepository hookrRepository)
         {
             this.userContextAccessor = userContextAccessor;
-            this.hookrContext = hookrContext;
+            this.hookrRepository = hookrRepository;
         }
 
-        public override Task<Guid> ExecuteQueryAsync(GetRefreshTokenQuery query)
+        public override async Task<Guid> ExecuteQueryAsync(GetRefreshTokenQuery query)
         {
             var session = userContextAccessor.Context;
             var token = RefreshTokenFactory()
                 .SideEffect(x => x.UserId = session.Id);
-            
-            hookrContext.RefreshTokens
+            hookrRepository.Context.RefreshTokens
                 .Add(token);
-            return Task.FromResult(token.Value);
+            await hookrRepository.SaveChangesAsync();
+            return token.Value;
         }
-        
         
         private static RefreshToken RefreshTokenFactory()
             => new RefreshToken

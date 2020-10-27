@@ -1,8 +1,4 @@
 .Login {
-  position: absolute;
-  height: 100% !important;
-  width: 100% !important;
-  background-color: #00244e;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

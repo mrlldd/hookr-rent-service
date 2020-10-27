@@ -4,14 +4,16 @@ using Hookr.Core.Repository.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Hookr.Migrations.Migrations
+namespace HookrTelegramBot.Migrations
 {
     [DbContext(typeof(HookrContext))]
-    partial class HookrContextModelSnapshot : ModelSnapshot
+    [Migration("20201026224438_RevertedWebAppUsersTable")]
+    partial class RevertedWebAppUsersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,6 +34,7 @@ namespace Hookr.Migrations.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("PhotoUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("State")

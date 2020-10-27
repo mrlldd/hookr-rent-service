@@ -1,16 +1,13 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Hookr.Core.Repository;
 using Hookr.Core.Utilities.Caches;
-using Hookr.Core.Utilities.Loaders;
 using Hookr.Core.Utilities.Providers;
 using Hookr.Web.Backend.Config;
 using Hookr.Web.Backend.Exceptions.Auth;
 using Hookr.Web.Backend.Models.Auth;
-using Hookr.Web.Backend.Operations.Base;
-using Hookr.Web.Backend.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Hookr.Web.Backend.Operations.Queries.Auth
 {
@@ -21,20 +18,20 @@ namespace Hookr.Web.Backend.Operations.Queries.Auth
         public RefreshSessionQueryHandler(
             ITelegramUserIdProvider telegramUserIdProvider,
             IHookrRepository hookrRepository,
-            ILoaderProvider loaderProvider,
             ICacheProvider cacheProvider,
-            IJwtConfig jwtConfig) : base(loaderProvider, cacheProvider, jwtConfig)
+            IJwtConfig jwtConfig) : base(cacheProvider, jwtConfig)
         {
             this.telegramUserIdProvider = telegramUserIdProvider;
             this.hookrRepository = hookrRepository;
         }
 
-        public override async Task<JwtInfo> ExecuteQueryAsync(RefreshSessionQuery query)
+        public override async Task<AuthResult> ExecuteQueryAsync(RefreshSessionQuery query)
         {
             var now = DateTime.UtcNow;
             var token = await hookrRepository
                 .ReadAsync((context, cancellationToken) => context
                     .RefreshTokens
+                    .Include(x => x.User)
                     .FirstOrDefaultAsync(x => !x.Used
                                               && x.ExpiresAt > now
                                               && x.Value
@@ -44,9 +41,11 @@ namespace Hookr.Web.Backend.Operations.Queries.Auth
             {
                 throw new RefreshTokenNotFoundException();
             }
+            Console.WriteLine(JsonConvert.SerializeObject(token.User.PhotoUrl));
             telegramUserIdProvider.Set(token.UserId);
-            var result = await CreateAndSaveSessionAsync(token.UserId);
+            var result = await CreateAndSaveSessionAsync(token.User);
             token.Used = true;
+            await hookrRepository.SaveChangesAsync();
             return result;
         }
 

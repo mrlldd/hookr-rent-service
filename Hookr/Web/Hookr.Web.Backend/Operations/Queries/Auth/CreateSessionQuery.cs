@@ -1,24 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using Hookr.Web.Backend.Models.Auth;
 
 namespace Hookr.Web.Backend.Operations.Queries.Auth
 {
-    public class CreateSessionQuery
+    public class CreateSessionQuery : TelegramUserDto
     {
         [JsonPropertyName("auth_date")] 
         public long AuthDate { get; set; }
 
-        [JsonPropertyName("first_name")]
-        public string? FirstName { get; set; }
-
         [NotNull] public string? Hash { get; set; }
-
-        public int Id { get; set; }
-
-        [NotNull]
-        [JsonPropertyName("photo_url")]
-        public string? PhotoUrl { get; set; }
-
-        [NotNull] public string? Username { get; set; }
     }
 }

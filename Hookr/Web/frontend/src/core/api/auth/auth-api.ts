@@ -1,5 +1,6 @@
 import {
   ApiRequest,
+  commandCall,
   EmptyResponse,
   ErrorResponse,
   HttpMethod,
@@ -7,8 +8,8 @@ import {
   RequestMeta,
   Success,
 } from "../api-utils";
-import { TelegramUser } from "@v9v/ts-react-telegram-login";
 import { JwtInfo } from "../../../context/local-storage-utils";
+import { TelegramUser } from "telegram-login-button";
 
 const url = "api/auth";
 
@@ -33,8 +34,8 @@ function authPostRequestFactory(body: AuthPostBody): ApiRequest<AuthPostBody> {
 
 export function createSession(
   user: TelegramUser
-): Promise<Success<JwtInfo> | ErrorResponse> {
-  return queryCall(authPostRequestFactory(user));
+): Promise<Success<AuthResult> | ErrorResponse> {
+  return queryCall(authPostRequestFactory(user), true);
 }
 
 export function getRefreshToken(): Promise<Success<string> | ErrorResponse> {
@@ -48,14 +49,19 @@ function refreshFactory(refreshToken: string, method: HttpMethod): RequestMeta {
   };
 }
 
+export interface AuthResult extends JwtInfo {
+  user: TelegramUser;
+  lifetime: number;
+}
+
 export function refreshSession(
   refreshToken: string
-): Promise<Success<JwtInfo> | ErrorResponse> {
-  return queryCall(refreshFactory(refreshToken, HttpMethod.POST));
+): Promise<Success<AuthResult> | ErrorResponse> {
+  return queryCall(refreshFactory(refreshToken, HttpMethod.POST), true);
 }
 
 export function revokeToken(
   refreshToken: string
 ): Promise<EmptyResponse | ErrorResponse> {
-  return queryCall(refreshFactory(refreshToken, HttpMethod.DELETE));
+  return commandCall(refreshFactory(refreshToken, HttpMethod.DELETE), true);
 }

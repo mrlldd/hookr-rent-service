@@ -33,7 +33,6 @@ namespace Hookr.Web.Backend.Middleware
             ILogger<JwtReaderMiddleware> logger,
             ICacheProvider cacheProvider,
             IUserContextAccessor userContextAccessor,
-            IHookrRepository hookrRepository,
             ITelegramUserIdProvider telegramUserIdProvider
         )
         {
@@ -72,15 +71,12 @@ namespace Hookr.Web.Backend.Middleware
                 httpContext.Response.StatusCode = 401;
                 return;
             }
+
             logger
                 .LogInformation("Found valid session for {TelegramUserId} in caches", payload.Id);
             userContextAccessor
                 .SetContext(cachedSession);
             await next(httpContext);
-            await hookrRepository
-                .SaveChangesAsync();
         }
-
-
     }
 }

@@ -15,23 +15,24 @@ export function useLoadableState<P = void, T = void>(
     loading: false,
     data: initialState,
   });
-  const [paramsState, paramsSetter] = useState<P>();
+  const [paramsState, paramsSetter] = useState<P | null>(null);
   const { sendError } = useContext(ErrorNotificatorContextInstance);
   useEffect(() => {
-    if (paramsState) {
-      setter({
-        loading: true,
-      });
-      asyncFunctor(paramsState).then((x) => {
-        if (!x.success) {
-          sendError(x as ErrorResponse);
-        }
-        return setter({
-          loading: false,
-          data: (x as Success<T>).data,
-        });
-      });
+    if (paramsState === null) {
+      return;
     }
+    setter({
+      loading: true,
+    });
+    asyncFunctor(paramsState).then((x) => {
+      if (!x.success) {
+        sendError(x as ErrorResponse);
+      }
+      return setter({
+        loading: false,
+        data: (x as Success<T>).data,
+      });
+    });
   }, [paramsState, asyncFunctor, sendError]);
   return [state, paramsSetter];
 }
