@@ -298,7 +298,6 @@ namespace Hookr.Core.Repository.Context
             var user = await loaderProvider
                 .Get<int, TelegramUser>()
                 .GetOrLoadAsync(telegramUserIdProvider.ProvidedValue, true);
-            Console.WriteLine(JsonConvert.SerializeObject(user, Formatting.Indented));
             var now = DateTime.Now;
             entries
                 .ForEach(x =>

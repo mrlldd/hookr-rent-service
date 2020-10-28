@@ -5,6 +5,7 @@ import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import {
   UserContext,
   UserContextInstance,
+  userInitialState,
 } from "../../context/user/user-context-instance";
 import { useLoadableState } from "../../context/store-utils";
 import {
@@ -49,7 +50,7 @@ const Decider: React.FC = () => {
 async function decide(
   context: UserContext
 ): Promise<Success<boolean> | ErrorResponse> {
-  if (context.state) {
+  if (context.state !== userInitialState) {
     return successFactory(true);
   }
   if (localStorageHasNeededUserData()) {

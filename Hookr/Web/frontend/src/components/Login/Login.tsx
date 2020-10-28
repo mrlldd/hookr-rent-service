@@ -58,8 +58,8 @@ async function authenticate(
   }
   clearLocalStorage();
   const createSessionResult = await createSession(user);
-  if (!createSessionResult) {
-    return successFactory(false);
+  if (!createSessionResult.success) {
+    return createSessionResult as ErrorResponse;
   }
 
   const grabResult = await grabAndSaveAdditionalSessionDataAsync(

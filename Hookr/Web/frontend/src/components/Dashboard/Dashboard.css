@@ -1,6 +1,54 @@
 .Dashboard {
 }
 
-.panel-content-container {
-  max-width: 30%;
+.panel-user-container {
+  height: 30%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+
+.panel-user-background {
+  background-color: rgba(0, 0, 0, 0.37);
+  background-size: 125%;
+  height: 120%;
+  width: 120%;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-position: top left;
+  filter: blur(2px);
+  margin: -5px;
+  background-blend-mode: multiply;
+  position: absolute;
+  overflow: no-content;
+  border: 0;
+  z-index: -2754;
+}
+
+.panel-user-content {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  vertical-align: center;
+  margin: 15px;
+}
+
+.panel-user-info-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  align-content: center;
+}
+
+.user-avatar {
+  margin-right: 12px;
+}
+
+.user-info-row {
+  color: white;
+  font-size: 16px;
 }
