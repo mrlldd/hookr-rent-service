@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Hookr.Core;
@@ -18,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace Hookr.Web.Backend
 {
@@ -33,60 +35,94 @@ namespace Hookr.Web.Backend
             jwtConfig = new JwtConfig()
                 .SideEffect(configurationRoot.GetSection("Jwt").Bind);
         }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services
                 .AddUtilities()
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
+                .AddSwaggerGen(options =>
                     {
-                        ValidAudience = jwtConfig.Audience,
-                        ValidateAudience = true,
-                        ValidIssuer = jwtConfig.Issuer,
-                        ValidateIssuer = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(jwtConfig.Key.Utf8Bytes()),
-                        ClockSkew = TimeSpan.Zero
-                    };
-                });
-            services
-                .AddControllers()
-                .AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.WriteIndented = true;
-                    options.JsonSerializerOptions.IgnoreNullValues = true;
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-                });
-            services
-                .AddHookrCore(typeof(Startup).Assembly, coreApplicationConfig);
-            services
-                .AddSingleton(jwtConfig)
-                .AddConfig(coreApplicationConfig)
-                .AddOperations();
-        }
-        
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+                        options.SwaggerDoc("v1", new OpenApiInfo
+                        {
+                            Version = "v1",
+                            Title = "Hookr Web API "
+                        });
+                        options.CustomSchemaIds(type =>
+                        {
+                            string GetTypeName(Type x)
+                            {
+                                if (x.IsNested)
+                                {
+                                    return $"{x.DeclaringType?.Name}.{x.Name}";
+                                }
 
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseMiddleware<JwtReaderMiddleware>();
-            app.UseEndpoints(endpoints =>
-            {
-                if (env.IsDevelopment())
-                {
-                    endpoints.MapGet("/", context => context.Response.WriteAsync("Bruh, here we go again"));
+                                if (!x.IsGenericType)
+                                {
+                                    return string.Join(".", x.Namespace, x.Name);
+                                }
+
+                                var genericTypeName = x.GetGenericTypeDefinition().Name.Replace("`1", string.Empty);
+                                var genericArguments = string.Join(", ", x.GetGenericArguments().Select(GetTypeName));
+                                return $"{genericTypeName}<{genericArguments}>";
+                            }
+
+                            return GetTypeName(type);
+                        });
+                        options.OperationFilter<SwaggerResponseFilter>();
+                    })
+                    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                        .AddJwtBearer(options =>
+                        {
+                            options.TokenValidationParameters = new TokenValidationParameters
+                            {
+                                ValidAudience = jwtConfig.Audience,
+                                ValidateAudience = true,
+                                ValidIssuer = jwtConfig.Issuer,
+                                ValidateIssuer = true,
+                                IssuerSigningKey = new SymmetricSecurityKey(jwtConfig.Key.Utf8Bytes()),
+                                ClockSkew = TimeSpan.Zero
+                            };
+                        });
+                    services
+                        .AddControllers()
+                        .AddJsonOptions(options =>
+                        {
+                            options.JsonSerializerOptions.WriteIndented = true;
+                            options.JsonSerializerOptions.IgnoreNullValues = true;
+                            options.JsonSerializerOptions.Converters.Add(
+                                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+                        });
+                    services
+                        .AddHookrCore(typeof(Startup).Assembly, coreApplicationConfig);
+                    services
+                        .AddSingleton(jwtConfig)
+                        .AddConfig(coreApplicationConfig)
+                        .AddOperations();
                 }
 
-                endpoints.MapControllers();
-            });
+            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hookr Web API"));
+
+                if (env.IsDevelopment())
+                {
+                    app.UseDeveloperExceptionPage();
+                }
+
+                app.UseRouting();
+                app.UseAuthentication();
+                app.UseAuthorization();
+                app.UseMiddleware<JwtReaderMiddleware>();
+                app.UseEndpoints(endpoints =>
+                {
+                    if (env.IsDevelopment())
+                    {
+                        endpoints.MapGet("/", context => context.Response.WriteAsync("Bruh, here we go again"));
+                    }
+
+                    endpoints.MapControllers();
+                });
+            }
         }
     }
-}

@@ -4,7 +4,7 @@ namespace Hookr.Web.Backend.Utilities.Jwt
 {
     public class JwtPayloadWriter : JwtPayloadInteractor
     {
-        public Claim[] Write(JwtPayload payload) 
+        public Claim[] WriteClaims(JwtPayload payload) 
             => new[]
             {
                 new Claim(RoleType, payload.Role.ToString("G")),

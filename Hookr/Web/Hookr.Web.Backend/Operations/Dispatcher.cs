@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Hookr.Core.Utilities.Extensions;
 using Hookr.Web.Backend.Operations.Base;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Hookr.Web.Backend.Operations
 {
@@ -27,6 +28,10 @@ namespace Hookr.Web.Backend.Operations
         private T FindAndPopulate<T>(CancellationToken token) where T : IHandler
             => serviceProvider
                 .GetRequiredService<T>()
-                .SideEffect(x => x.Populate(token));
+                .SideEffect(handler => handler
+                    .Populate(serviceProvider
+                        .GetRequiredService<ILogger<IHandler>>(),
+                    token)
+                );
     }
 }

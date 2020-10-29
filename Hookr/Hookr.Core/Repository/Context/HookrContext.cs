@@ -329,8 +329,12 @@ namespace Hookr.Core.Repository.Context
                             break;
                     }
                 });
+            // todo optimize
             user.LastUpdatedAt = now;
-            if (ChangeTracker.Entries<TelegramUser>().All(x => x.Entity.Id != user.Id))
+            if (entries
+                .Select(x => x.Entity)
+                .OfType<TelegramUser>()
+                .All(x => x.Id != user.Id))
             {
                 Update(user);
             }

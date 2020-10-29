@@ -41,7 +41,6 @@ namespace Hookr.Web.Backend.Operations.Queries.Auth
             {
                 throw new RefreshTokenNotFoundException();
             }
-            Console.WriteLine(JsonConvert.SerializeObject(token.User.PhotoUrl));
             telegramUserIdProvider.Set(token.UserId);
             var result = await CreateAndSaveSessionAsync(token.User);
             token.Used = true;
