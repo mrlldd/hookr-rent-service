@@ -1,6 +1,7 @@
 import { TelegramUser } from "telegram-login-button";
 import { LeveledUser } from "./user/user-context-instance";
 import { AuthResult } from "../core/api/auth/auth-api";
+import { Dispatch, useState } from "react";
 
 export enum Role {
   Default = "default",
@@ -21,7 +22,8 @@ export type LocalStorageKeys =
   | Exclude<keyof AuthResult, "user">
   | keyof JwtBundle
   | keyof TelegramUser
-  | "expiresAt";
+  | "expiresAt"
+  | "theme";
 
 export function saveJwtTokensToLocalStorage(jwtInfo: JwtInfo): void {
   localStorage.setItem("token", jwtInfo.token);
@@ -80,4 +82,30 @@ export function saveAuthResultToLocalStorage(authResult: AuthResult): void {
   setToLocalStorage("token", authResult.token);
   setToLocalStorage("role", authResult.role);
   setToLocalStorage("lifetime", authResult.lifetime.toString());
+}
+
+function ensureExistsInLocalStorage<T extends string>(
+  key: LocalStorageKeys,
+  instead: T
+): T {
+  const existing = getFromLocalStorage(key) as T;
+  if (!existing) {
+    setToLocalStorage(key, instead);
+    return instead;
+  }
+  return existing;
+}
+
+export function useLocalStorageState<T extends string>(
+  key: LocalStorageKeys,
+  initial: T
+): [T, Dispatch<T>] {
+  const [state, setter] = useState<T>(ensureExistsInLocalStorage(key, initial));
+  return [
+    state,
+    (x) => {
+      setToLocalStorage(key, x);
+      setter(x);
+    },
+  ];
 }

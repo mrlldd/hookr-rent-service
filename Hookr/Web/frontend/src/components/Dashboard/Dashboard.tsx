@@ -16,26 +16,31 @@ const Dashboard: React.FC = () => {
   );
 };
 
-function useDashboardStyles(photoUrl: string | undefined) {
-  return makeStyles((theme: Theme) =>
-    createStyles({
-      box: {
-        width: "65%",
-      },
-      avatarBackground: {
-        backgroundImage: `url(${photoUrl})`,
-      },
-      avatar: {
-        width: theme.spacing(8),
-        height: theme.spacing(8),
-      },
-    })
-  )();
+const useDashboardStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    box: {
+      width: "65%",
+      backgroundColor: theme.palette.background.paper,
+    },
+    avatarBackground: {
+      backgroundImage: (props: StylesProps) => `url(${props.backgroundUrl})`,
+    },
+    avatar: {
+      width: theme.spacing(8),
+      height: theme.spacing(8),
+    },
+  })
+);
+
+interface StylesProps {
+  backgroundUrl: string;
 }
 
 const RealDashboard: React.FC = () => {
   const { state } = useContext(UserContextInstance);
-  const styles = useDashboardStyles(state && state.photo_url);
+  const styles = useDashboardStyles({
+    backgroundUrl: state.photo_url,
+  });
   const [panelState, panelStateSetter] = useState(false);
   return (
     <SwipeableDrawer

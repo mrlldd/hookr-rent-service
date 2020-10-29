@@ -16,12 +16,16 @@ import {
 } from "./context/user/user-context-instance";
 import Dashboard from "./components/Dashboard/Dashboard";
 import { nullString } from "./core/utils";
+import { ThemeProvider } from "@material-ui/core/styles";
+import { defaultTheme, getTheme, Themes } from "./core/themes";
+import { useLocalStorageState } from "./context/local-storage-utils";
 
 export const loginRoute = "/login";
 export const dashboardRoute = "/dashboard";
 export const deciderRoute = "/decide";
 
 function App() {
+  const [theme, themeSetter] = useLocalStorageState("theme", defaultTheme);
   const [state, setter] = useState<ErrorMessage>(errorNotificatorInitialState);
   const [userState, userSetter] = useState<LeveledUser>(userInitialState);
   useEffect(() => {
@@ -32,27 +36,29 @@ function App() {
     // just to trigger avatar load (and cache later)
   }, [userState]);
   return (
-    <ErrorNotificatorContextInstance.Provider
-      value={{
-        errorMessage: state,
-        sendError: setter,
-      }}
-    >
-      <ErrorNotificator />
-      <UserContextInstance.Provider
+    <ThemeProvider theme={getTheme(theme)}>
+      <ErrorNotificatorContextInstance.Provider
         value={{
-          state: userState,
-          dispatch: userSetter,
+          errorMessage: state,
+          sendError: setter,
         }}
       >
-        <BrowserRouter>
-          <Route path={deciderRoute} component={Decider} />
-          <Route path={loginRoute} component={Login} />
-          <Route path={dashboardRoute} component={Dashboard} />
-          <Redirect from="/" to={deciderRoute} />
-        </BrowserRouter>
-      </UserContextInstance.Provider>
-    </ErrorNotificatorContextInstance.Provider>
+        <ErrorNotificator />
+        <UserContextInstance.Provider
+          value={{
+            state: userState,
+            dispatch: userSetter,
+          }}
+        >
+          <BrowserRouter>
+            <Route path={deciderRoute} component={Decider} />
+            <Route path={loginRoute} component={Login} />
+            <Route path={dashboardRoute} component={Dashboard} />
+            <Redirect from="/" to={deciderRoute} />
+          </BrowserRouter>
+        </UserContextInstance.Provider>
+      </ErrorNotificatorContextInstance.Provider>
+    </ThemeProvider>
   );
 }
 

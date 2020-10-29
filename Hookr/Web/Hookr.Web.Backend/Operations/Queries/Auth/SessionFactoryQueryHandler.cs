@@ -1,11 +1,9 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
-using Hookr.Core.Repository.Context.Entities;
 using Hookr.Core.Repository.Context.Entities.Base;
 using Hookr.Core.Utilities.Caches;
 using Hookr.Core.Utilities.Extensions;
-using Hookr.Core.Utilities.Loaders;
 using Hookr.Web.Backend.Config;
 using Hookr.Web.Backend.Models.Auth;
 using Hookr.Web.Backend.Operations.Base;
@@ -36,7 +34,7 @@ namespace Hookr.Web.Backend.Operations.Queries.Auth
             await sessionsCache
                 .SetAsync(session, Token);
             var claims = new JwtPayloadWriter()
-                .Write(new JwtPayload
+                .WriteClaims(new JwtPayload
                 {
                     Id = session.Id,
                     Key = session.Key,

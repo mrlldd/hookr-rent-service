@@ -22,15 +22,27 @@ import { grabAndSaveAdditionalSessionDataAsync } from "../../core/api/auth/auth-
 import FullPageWrapper from "../FullPageWrapper/FullPageWrapper";
 import TelegramLoginButton, { TelegramUser } from "telegram-login-button";
 import { Redirect } from "react-router";
-import { dashboardRoute, deciderRoute } from "../../App";
+import { deciderRoute } from "../../App";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import { createStyles, Theme } from "@material-ui/core";
+
+const useStyles = makeStyles((theme: Theme) => {
+  console.log(theme.palette.text.primary);
+  return createStyles({
+    title: {
+      color: theme.palette.text.primary,
+    },
+  });
+});
 
 const Login: React.FC = () => {
   const [user, setter] = useState<TelegramUser>();
   const [state, dispatch] = useLoadableState(authenticate, false);
   useEffect(() => user && dispatch(user), [dispatch, user]);
+  const styles = useStyles();
   return (
     <FullPageWrapper className="Login" data-testid="Login">
-      <h1>Hookr</h1>
+      <h1 className={styles.title}>Hookr</h1>
       {state.data ? (
         <Redirect to={deciderRoute} />
       ) : (
