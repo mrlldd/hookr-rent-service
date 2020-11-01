@@ -21,8 +21,7 @@ export interface JwtBundle extends JwtInfo {
 export type LocalStorageKeys =
   | Exclude<keyof AuthResult, "user">
   | keyof JwtBundle
-  | keyof TelegramUser
-  | "expiresAt"
+  | Exclude<keyof TelegramUser, "hash">
   | "theme";
 
 export function saveJwtTokensToLocalStorage(jwtInfo: JwtInfo): void {
@@ -42,14 +41,6 @@ export function clearLocalStorage(): void {
   localStorage.clear();
 }
 
-export function getJwtBundleFromLocalStorage(): Partial<JwtBundle> {
-  return {
-    refresh: getFromLocalStorage("refresh"),
-    role: getFromLocalStorage("role") as Role,
-    token: getFromLocalStorage("token"),
-  };
-}
-
 const requiredKeys: LocalStorageKeys[] = [
   "id",
   "token",
@@ -60,6 +51,10 @@ const requiredKeys: LocalStorageKeys[] = [
   "photo_url",
   "lifetime",
 ];
+
+export function clearSession(): void {
+  requiredKeys.forEach((x) => localStorage.removeItem(x));
+}
 
 export function localStorageHasNeededUserData(): boolean {
   return requiredKeys.map(getFromLocalStorage).every(Boolean);

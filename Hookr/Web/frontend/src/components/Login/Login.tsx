@@ -27,7 +27,6 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { createStyles, Theme } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) => {
-  console.log(theme.palette.text.primary);
   return createStyles({
     title: {
       color: theme.palette.text.primary,

@@ -1,21 +1,21 @@
-import { Theme } from "@material-ui/core";
+import { Theme, ThemeOptions } from "@material-ui/core";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 
 export enum Themes {
   DarkBlue = "dark-blue",
   Dark = "dark",
-  White = "white",
+  Light = "light",
 }
 
-export const defaultTheme = Themes.DarkBlue;
+export const defaultTheme = Themes.Light;
 
-export function getTheme(key: Themes): Theme {
+function getOptions(key: Themes): ThemeOptions {
   switch (key) {
     case Themes.DarkBlue:
       return darkBlueTheme;
     case Themes.Dark:
       return darkTheme;
-    case Themes.White:
+    case Themes.Light:
       return whiteTheme;
     default: {
       throw new Error("Not found theme: " + key);
@@ -23,7 +23,11 @@ export function getTheme(key: Themes): Theme {
   }
 }
 
-const darkBlueTheme = createMuiTheme({
+export function getTheme(key: Themes): Theme {
+  return createMuiTheme(getOptions(key));
+}
+
+const darkBlueTheme: ThemeOptions = {
   palette: {
     background: {
       default: "rgb(12,46,72)",
@@ -31,22 +35,22 @@ const darkBlueTheme = createMuiTheme({
     },
     type: "dark",
   },
-});
+};
 
-const darkTheme = createMuiTheme({
+const darkTheme: ThemeOptions = {
   palette: {
     /*background: {
             default: "rgb(55,55,55)"
         },*/
     type: "dark",
   },
-});
+};
 
-const whiteTheme = createMuiTheme({
+const whiteTheme: ThemeOptions = {
   palette: {
     /*background: {
             default: "rgb(255,255,255)"
         },*/
     type: "light",
   },
-});
+};
