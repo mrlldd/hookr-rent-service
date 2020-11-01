@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Hookr.Core.Utilities.Extensions;
 using Hookr.Web.Backend.Filters.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
@@ -16,6 +18,17 @@ namespace Hookr.Web.Backend
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var responses = operation.Responses;
+
+            
+            if (context.MethodInfo.DeclaringType?
+                .GetCustomAttributes()
+                .FirstOrDefault(x => x is AuthorizeAttribute) is AuthorizeAttribute authorize)
+            {
+                operation.Summary = authorize.Roles
+                    .Replace(",", ", ")
+                    .Map(x => "Accessible by: " + x);
+            }
+            
             responses.Clear();
 
             responses.Add("200", new OpenApiResponse
